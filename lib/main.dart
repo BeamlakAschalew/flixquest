@@ -94,14 +94,17 @@ Future<DevicePresentation> appInitialize({
   await settingsProvider.getBackgroundSubtitleColor();
   await settingsProvider.getAppLanguage();
   await settingsProvider.getAppColorIndex();
+  await settingsProvider.getStreamProviderOrder();
   await settingsProvider.getPlayerTimeStyle();
   await settingsProvider.getUseProxyMode();
   await settingsProvider.getSubtitleStyle();
   await settingsProvider.getEnableNextEpisodeButton();
+  settingsProvider.completeHydration();
   await recentProvider.fetchMovies();
   await recentProvider.fetchEpisodes();
   await bookmarkProvider.fetchBookmarks();
   await appDependencyProvider.getFlixQuestLogo();
+  await appDependencyProvider.getOccasionalTheme();
   await appDependencyProvider.getFQUrl();
   await appDependencyProvider.getTmdbProxy();
 

@@ -11,9 +11,11 @@ import '/models/watchprovider_countries.dart';
 import '/screens/common/country_choose.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '/provider/settings_provider.dart';
+import '/provider/app_dependency_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'player_settings.dart';
+import 'provider_choose.dart';
 import '../../ui_components/app_ui_components.dart';
 
 class Settings extends StatefulWidget {
@@ -57,6 +59,9 @@ class _SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
     final settingsValues = Provider.of<SettingsProvider>(context);
+    final appDependencies = context.watch<AppDependencyProvider>();
+    final occasionalCatalog = appDependencies.occasionalThemeCatalog;
+    final occasionalThemes = appDependencies.availableOccasionalThemes;
 
     List<AppLanguages> langs = [
       AppLanguages(
@@ -338,6 +343,42 @@ class _SettingsState extends State<Settings> {
                   onChanged: (value) =>
                       setState(() => settingsValues.appTheme = value),
                 ),
+                if (occasionalCatalog.enabled)
+                  SwitchListTile(
+                    value: appDependencies.occasionalThemeEnabled,
+                    secondary: Icon(
+                      PhosphorIcons.sparkle(),
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    title: Text(tr('seasonal_themes')),
+                    subtitle: Text(tr('seasonal_themes_description')),
+                    onChanged: (value) {
+                      appDependencies.occasionalThemeEnabled = value;
+                    },
+                  ),
+                if (occasionalCatalog.enabled &&
+                    appDependencies.occasionalThemeEnabled &&
+                    occasionalCatalog.allowUserSelection &&
+                    occasionalThemes.isNotEmpty)
+                  _OccasionalThemeChoiceTile(
+                    provider: appDependencies,
+                  ),
+                if (occasionalCatalog.enabled &&
+                    appDependencies.occasionalThemeEnabled &&
+                    occasionalCatalog.effectsEnabled &&
+                    occasionalCatalog.allowUserEffectsToggle)
+                  SwitchListTile(
+                    value: appDependencies.occasionalEffectsEnabled,
+                    secondary: Icon(
+                      PhosphorIcons.sparkle(),
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    title: Text(tr('seasonal_effects')),
+                    subtitle: Text(tr('seasonal_effects_description')),
+                    onChanged: (value) {
+                      appDependencies.occasionalEffectsEnabled = value;
+                    },
+                  ),
                 ListTile(
                   leading: Icon(
                     PhosphorIcons.play(),
@@ -351,6 +392,22 @@ class _SettingsState extends State<Settings> {
                         MaterialPageRoute(builder: ((context) {
                       return const PlayerSettings();
                     })));
+                  },
+                ),
+                ListTile(
+                  leading: Icon(
+                    PhosphorIcons.arrowsDownUp(),
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  title: Text(tr('provider_precedence')),
+                  trailing: Icon(PhosphorIcons.caretRight()),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ProviderChooseScreen(),
+                      ),
+                    );
                   },
                 ),
                 Visibility(
@@ -578,8 +635,8 @@ class _SettingsState extends State<Settings> {
                             settingsValues.appColorIndex == appColor.index;
                         return Padding(
                           padding: const EdgeInsets.only(right: 14),
-                          child: GestureDetector(
-                            behavior: HitTestBehavior.opaque,
+                          child: InkWell(
+                            customBorder: const CircleBorder(),
                             onTap: () => setState(() {
                               settingsValues.appColorIndex =
                                   selected ? -1 : appColor.index;
@@ -731,5 +788,201 @@ class _SettingsChoiceTile<T> extends StatelessWidget {
       ),
     );
     if (selected != null) onChanged(selected);
+  }
+}
+
+class _OccasionalThemeChoiceTile extends StatelessWidget {
+  const _OccasionalThemeChoiceTile({required this.provider});
+
+  final AppDependencyProvider provider;
+
+  String get _selectedLabel {
+    if (provider.selectedOccasionalThemeId == 'automatic') {
+      return tr('automatic');
+    }
+    for (final theme in provider.availableOccasionalThemes) {
+      if (theme.id == provider.selectedOccasionalThemeId) {
+        return theme.displayName;
+      }
+    }
+    return tr('automatic');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      onTap: () => _showChoices(context),
+      leading: Icon(
+        PhosphorIcons.sparkle(),
+        color: Theme.of(context).colorScheme.primary,
+      ),
+      title: Text(tr('occasional_theme')),
+      subtitle: Text(
+        tr('seasonal_theme_selection_description'),
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 120),
+            child: Text(
+              _selectedLabel,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+          const SizedBox(width: 5),
+          Icon(PhosphorIcons.caretRight()),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showChoices(BuildContext context) {
+    return showModalBottomSheet<void>(
+      context: context,
+      useSafeArea: true,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (sheetContext) => ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.sizeOf(sheetContext).height * .78,
+        ),
+        child: ListView(
+          shrinkWrap: true,
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 4, 8, 14),
+              child: Text(
+                tr('occasional_theme'),
+                style: Theme.of(sheetContext).textTheme.titleLarge,
+              ),
+            ),
+            _OccasionalThemeOption(
+              title: tr('automatic'),
+              description: tr('automatic_theme_description'),
+              colors: const [],
+              selected: provider.selectedOccasionalThemeId == 'automatic',
+              onTap: () {
+                provider.selectOccasionalTheme('automatic');
+                Navigator.pop(sheetContext);
+              },
+            ),
+            for (final theme in provider.availableOccasionalThemes)
+              _OccasionalThemeOption(
+                title: theme.displayName,
+                description: theme.description.isEmpty
+                    ? tr('active_seasonal_theme')
+                    : theme.description,
+                colors: [
+                  theme.primaryColor,
+                  theme.secondaryColor,
+                  theme.tertiaryColor,
+                ],
+                selected: provider.selectedOccasionalThemeId == theme.id,
+                onTap: () {
+                  provider.selectOccasionalTheme(theme.id);
+                  Navigator.pop(sheetContext);
+                },
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _OccasionalThemeOption extends StatelessWidget {
+  const _OccasionalThemeOption({
+    required this.title,
+    required this.description,
+    required this.colors,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String title;
+  final String description;
+  final List<Color> colors;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Material(
+        color: selected
+            ? scheme.primary.withValues(alpha: .1)
+            : scheme.surfaceContainerHighest.withValues(alpha: .45),
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 48,
+                  height: 34,
+                  child: colors.isEmpty
+                      ? Icon(PhosphorIcons.magicWand(), color: scheme.primary)
+                      : Stack(
+                          children: [
+                            for (var index = 0; index < colors.length; index++)
+                              Positioned(
+                                left: index * 11,
+                                top: index.isOdd ? 7 : 1,
+                                child: Container(
+                                  width: 25,
+                                  height: 25,
+                                  decoration: BoxDecoration(
+                                    color: colors[index],
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: scheme.surface,
+                                      width: 2,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                ),
+                const SizedBox(width: 13),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        description,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(color: scheme.onSurfaceVariant),
+                      ),
+                    ],
+                  ),
+                ),
+                if (selected)
+                  Icon(PhosphorIcons.check(), color: scheme.primary),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

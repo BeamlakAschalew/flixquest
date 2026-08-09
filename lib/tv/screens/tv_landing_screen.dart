@@ -8,6 +8,7 @@ import '../../services/flixquest_auth_service.dart';
 import '../app/tv_design.dart';
 import '../focus/tv_focusable.dart';
 import 'tv_auth_screen.dart';
+import '../../widgets/app_logo.dart';
 
 class TvLandingScreen extends StatefulWidget {
   const TvLandingScreen({super.key});
@@ -209,7 +210,7 @@ class _TvLandingIntro extends StatelessWidget {
             color: Colors.white,
             borderRadius: BorderRadius.circular(24),
           ),
-          child: Image.asset('assets/images/logo.png'),
+          child: const AppLogo(),
         ),
         SizedBox(height: compact ? 22 : 30),
         Text(

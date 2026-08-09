@@ -125,8 +125,7 @@ class AppGenreTile extends StatelessWidget {
         ),
       ),
       clipBehavior: Clip.antiAlias,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
+      child: InkWell(
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -492,8 +491,7 @@ class AppPersonTile extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     return Card(
       clipBehavior: Clip.antiAlias,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
+      child: InkWell(
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(12),
@@ -672,8 +670,7 @@ class AppSelectionTile extends StatelessWidget {
         ),
       ),
       clipBehavior: Clip.antiAlias,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
+      child: InkWell(
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -790,8 +787,7 @@ class AppStreamSourceTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(17),
         side: BorderSide(color: colors.outline.withValues(alpha: .14)),
       ),
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
+      child: InkWell(
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(13),
@@ -978,8 +974,8 @@ class AppFilterPill extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: colors.primary, width: 1.4),
       ),
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(24),
         onTap: onPressed,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
@@ -1313,8 +1309,7 @@ class AppMediaListCard extends StatelessWidget {
 
     return Card(
       clipBehavior: Clip.antiAlias,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
+      child: InkWell(
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(10),
@@ -1642,48 +1637,6 @@ class _ShimmerBlock extends StatelessWidget {
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(radius),
-      ),
-    );
-  }
-}
-
-class AppPressable extends StatefulWidget {
-  const AppPressable({
-    super.key,
-    required this.child,
-    this.onTap,
-    this.onLongPress,
-    this.pressedScale = 0.97,
-  });
-
-  final Widget child;
-  final VoidCallback? onTap;
-  final VoidCallback? onLongPress;
-  final double pressedScale;
-
-  @override
-  State<AppPressable> createState() => _AppPressableState();
-}
-
-class _AppPressableState extends State<AppPressable> {
-  bool _pressed = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTapDown: (_) => setState(() => _pressed = true),
-      onTapUp: (_) => setState(() => _pressed = false),
-      onTapCancel: () => setState(() => _pressed = false),
-      onLongPressEnd: (_) => setState(() => _pressed = false),
-      onLongPressCancel: () => setState(() => _pressed = false),
-      onTap: widget.onTap,
-      onLongPress: widget.onLongPress,
-      child: AnimatedScale(
-        scale: _pressed ? widget.pressedScale : 1,
-        duration: const Duration(milliseconds: 110),
-        curve: Curves.easeOut,
-        child: widget.child,
       ),
     );
   }

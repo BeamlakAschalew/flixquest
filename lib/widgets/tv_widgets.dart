@@ -46,7 +46,6 @@ import '/screens/tv/tv_detail.dart';
 import '/screens/tv/genre_tv.dart';
 import 'categorized_feed.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '/screens/person/crew_detail.dart';
@@ -55,6 +54,7 @@ import '/screens/tv/main_tv_list.dart';
 import 'movie_widgets.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '/widgets/common_widgets.dart';
+import 'app_logo.dart';
 
 class MainTVDisplay extends StatefulWidget {
   const MainTVDisplay({
@@ -298,8 +298,7 @@ class DiscoverTVState extends State<DiscoverTV>
     );
 
     try {
-      final results =
-          await Future.wait([trendingFuture, randomDiscoverFuture]);
+      final results = await Future.wait([trendingFuture, randomDiscoverFuture]);
       final trendingList = results[0];
       final randomList = results[1];
 
@@ -414,14 +413,12 @@ class DiscoverTVState extends State<DiscoverTV>
                                 children: [
                                   Padding(
                                     padding: const EdgeInsets.all(8),
-                                    child: SvgPicture.asset(
-                                      'assets/images/fq_svg.svg',
+                                    child: AppLogo(
+                                      fallbackAsset: 'assets/images/fq_svg.svg',
                                       width: 28,
                                       height: 28,
-                                      colorFilter: ColorFilter.mode(
-                                        Theme.of(context).colorScheme.primary,
-                                        BlendMode.srcIn,
-                                      ),
+                                      fallbackColor:
+                                          Theme.of(context).colorScheme.primary,
                                     ),
                                   ),
                                   const Spacer(),
@@ -893,7 +890,8 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
                   'S${episode.seasonNum.toString().padLeft(2, '0')} · E${episode.episodeNum.toString().padLeft(2, '0')}';
               return SizedBox(
                 width: cardWidth,
-                child: AppPressable(
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(18),
                   onLongPress: () => _deleteEpisode(episode),
                   onTap: () => _openEpisode(episode),
                   child: Column(
@@ -3774,31 +3772,43 @@ class ParticularGenreTVState extends State<ParticularGenreTV> {
   final _scrollController = ScrollController();
   int pageNum = 2;
   bool isLoading = false;
+  bool hasMore = true;
 
-  void getMoreData() async {
-    _scrollController.addListener(() async {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        setState(() {
-          isLoading = true;
-        });
-        final isProxyEnabled =
-            Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-        final proxyUrl =
-            Provider.of<AppDependencyProvider>(context, listen: false)
-                .tmdbProxy;
-        fetchTV('${widget.api}&page=$pageNum&include_adult=${widget.includeAdult}',
-                isProxyEnabled, proxyUrl)
-            .then((value) {
-          if (mounted) {
-            setState(() {
-              tvList!.addAll(value);
-              isLoading = false;
-              pageNum++;
-            });
-          }
-        });
-      }
+  String _requestUrl({int? page}) {
+    final uri = Uri.parse(widget.api);
+    final queryParameters = Map<String, String>.from(uri.queryParameters)
+      ..['include_adult'] = widget.includeAdult.toString();
+
+    if (page != null) {
+      queryParameters['page'] = page.toString();
+    }
+
+    return uri.replace(queryParameters: queryParameters).toString();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.extentAfter < 300) {
+      _loadMore();
+    }
+  }
+
+  Future<void> _loadMore() async {
+    if (isLoading || !hasMore || tvList == null) return;
+
+    setState(() => isLoading = true);
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final value =
+        await fetchTV(_requestUrl(page: pageNum), isProxyEnabled, proxyUrl);
+
+    if (!mounted) return;
+    setState(() {
+      tvList!.addAll(value);
+      isLoading = false;
+      hasMore = value.isNotEmpty;
+      if (value.isNotEmpty) pageNum++;
     });
   }
 
@@ -3809,16 +3819,22 @@ class ParticularGenreTVState extends State<ParticularGenreTV> {
         Provider.of<SettingsProvider>(context, listen: false).enableProxy;
     final proxyUrl =
         Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
-    fetchTV('${widget.api}&include_adult=${widget.includeAdult}',
-            isProxyEnabled, proxyUrl)
-        .then((value) {
+    fetchTV(_requestUrl(), isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
           tvList = value;
         });
       }
     });
-    getMoreData();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController
+      ..removeListener(_onScroll)
+      ..dispose();
+    super.dispose();
   }
 
   @override
@@ -4951,12 +4967,8 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
                                       child: ClipRRect(
                                         borderRadius:
                                             BorderRadius.circular(8.0),
-                                        child: const FadeInImage(
-                                          image: AssetImage(
-                                              'assets/images/logo.png'),
+                                        child: const AppLogo(
                                           fit: BoxFit.cover,
-                                          placeholder: AssetImage(
-                                              'assets/images/loading_5.gif'),
                                         ),
                                       ),
                                     ),
@@ -5154,8 +5166,8 @@ class TVStreamingServicesWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: 92,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(18),
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import '../app/tv_design.dart';
 import '../focus/tv_focus_memory.dart';
 import '../focus/tv_focusable.dart';
+import '../../widgets/app_logo.dart';
 
 class TvNavigationDestination {
   const TvNavigationDestination({
@@ -125,13 +125,10 @@ class TvNavigationRailState extends State<TvNavigationRail> {
                 widget.metrics.compact ? 10 : 18,
               ),
               child: widget.metrics.compact
-                  ? SvgPicture.asset(
-                      'assets/images/fq_svg.svg',
+                  ? AppLogo(
+                      fallbackAsset: 'assets/images/fq_svg.svg',
                       height: 28,
-                      colorFilter: ColorFilter.mode(
-                        colors.primary,
-                        BlendMode.srcIn,
-                      ),
+                      fallbackColor: colors.primary,
                     )
                   : Text(
                       'FLIXQUEST',

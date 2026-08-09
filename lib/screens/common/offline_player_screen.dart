@@ -3,11 +3,14 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:provider/provider.dart';
 
+import '../../functions/player_subtitle_configuration.dart';
 import '../../models/offline_download.dart';
 import '../../models/movie_stream_metadata.dart';
 import '../../models/tv_stream_metadata.dart';
 import '../../constants/app_constants.dart';
+import '../../provider/settings_provider.dart';
 import 'player/player_external_subtitles.dart';
 
 /// The lightweight offline variant of FlixQuest's Better Player. The controls
@@ -39,6 +42,7 @@ class _OfflinePlayerScreenState extends State<OfflinePlayerScreen> {
     _initialized = true;
     final colors = Theme.of(context).colorScheme;
     final accent = Theme.of(context).primaryColor;
+    final settings = context.read<SettingsProvider>();
     final controls = BetterPlayerControlsConfiguration(
       gestureConfiguration: const BetterPlayerGestureConfiguration(
         enableVolumeSwipe: true,
@@ -107,6 +111,12 @@ class _OfflinePlayerScreenState extends State<OfflinePlayerScreen> {
         autoDispose: true,
         allowedScreenSleep: false,
         controlsConfiguration: controls,
+        subtitlesConfiguration: buildPlayerSubtitleConfiguration(
+          backgroundColor: settings.subtitleBackgroundColor,
+          foregroundColor: settings.subtitleForegroundColor,
+          fontSize: settings.subtitleFontSize,
+          textStyle: settings.subtitleTextStyle,
+        ),
         showPlaceholderUntilPlay: true,
         errorBuilder: (_, __) => const Center(
           child: Text(

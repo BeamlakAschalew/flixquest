@@ -10,6 +10,7 @@ import '../../models/provider_video_source.dart';
 import '../../video_providers/names.dart';
 import '../../video_providers/provider_loader.dart';
 import '../../functions/video_utils.dart';
+import '../../functions/player_subtitle_configuration.dart';
 import '/constants/app_constants.dart';
 import '/widgets/common_widgets.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,7 @@ import '../../provider/settings_provider.dart';
 import '../../provider/offline_download_provider.dart';
 import '../../constants/api_constants.dart';
 import '../../ui_components/app_ui_components.dart';
+import '../../widgets/branded_stream_intro.dart';
 import '../movie/movie_video_loader.dart';
 import '../tv/tv_video_loader.dart';
 import 'player/player_data_management.dart';
@@ -80,8 +82,13 @@ class PlayerOne extends StatefulWidget {
 
 class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   static const int _tvMaxBufferDurationMs = 120000;
+  static const int _mobileBackBufferDurationMs = 120000;
+  static const int _tvBackBufferDurationMs = 30000;
+  static const int _bufferForPlaybackMs = 6000;
+  static const int _bufferForPlaybackAfterRebufferMs = 12000;
 
   late BetterPlayerController _betterPlayerController;
+  late final Completer<void> _initialMainReady;
   final BetterPlayerTvControlsController _tvControlsController =
       BetterPlayerTvControlsController();
   late BetterPlayerControlsConfiguration betterPlayerControlsConfiguration;
@@ -129,6 +136,18 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   final Set<String> _loadingProviders =
       {}; // Track which providers are being loaded
   final Map<String, String> _providerErrors = {};
+  late final DateTime _analyticsSessionStartedAt;
+  late final String _analyticsSessionId;
+  DateTime? _analyticsPlayingStartedAt;
+  DateTime? _analyticsBufferingStartedAt;
+  int _analyticsWatchedMs = 0;
+  int _analyticsBufferingMs = 0;
+  int _analyticsBufferCount = 0;
+  int _analyticsProviderSwitchCount = 0;
+  int _analyticsInitializationCount = 0;
+  bool _analyticsWasPlayingBeforeBuffering = false;
+  String? _lastAnalyticsError;
+  DateTime? _lastAnalyticsErrorAt;
 
   @override
   void initState() {
@@ -141,19 +160,13 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         widget.videoFormats == null ? null : Map.of(widget.videoFormats!);
     _activeVideoHeaders = Map.of(widget.videoHeaders);
     super.initState();
+    _analyticsSessionStartedAt = DateTime.now();
+    _analyticsSessionId =
+        '${_analyticsSessionStartedAt.microsecondsSinceEpoch}-${identityHashCode(this)}';
+    _initialMainReady = Completer<void>();
 
     // Initialize episode selection with current season
     _episodeSelection = PlayerEpisodeSelection(widget.tvMetadata?.seasonNumber);
-
-    String backgroundColorString = widget.settings.subtitleBackgroundColor;
-    String foregroundColorString = widget.settings.subtitleForegroundColor;
-    String hexColorBackground =
-        backgroundColorString.replaceAll('Color(0x', '').replaceAll(')', '');
-    String hexColorForeground =
-        foregroundColorString.replaceAll('Color(0x', '').replaceAll(')', '');
-
-    Color backgroundColor = Color(int.parse('0x$hexColorBackground'));
-    Color foregroundColor = Color(int.parse('0x$hexColorForeground'));
 
     WidgetsBinding.instance.addObserver(this);
     final configuredMaxBufferMs = widget.settings.defaultMaxBufferDuration;
@@ -164,6 +177,12 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     betterPlayerBufferingConfiguration = BetterPlayerBufferingConfiguration(
       maxBufferMs: maxBufferMs,
       minBufferMs: 15000,
+      bufferForPlaybackMs: _bufferForPlaybackMs,
+      bufferForPlaybackAfterRebufferMs: _bufferForPlaybackAfterRebufferMs,
+      backBufferDurationMs: widget.useTvControls
+          ? _tvBackBufferDurationMs
+          : _mobileBackBufferDurationMs,
+      retainBackBufferFromKeyframe: !widget.useTvControls,
     );
     betterPlayerControlsConfiguration = BetterPlayerControlsConfiguration(
         // Gesture controls configuration
@@ -215,6 +234,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         },
         enableNextEpisodeButton: widget.mediaType == MediaType.tvShow &&
             widget.settings.enableNextEpisodeButton,
+        enableCast: !widget.useTvControls,
         name: widget.mediaType == MediaType.movie
             ? '${widget.movieMetadata!.movieName!} (${widget.movieMetadata!.releaseYear!})'
             : '${widget.tvMetadata!.seriesName!} - ${widget.tvMetadata!.episodeName!} | ${episodeSeasonFormatter(widget.tvMetadata!.episodeNumber!, widget.tvMetadata!.seasonNumber!)}',
@@ -322,9 +342,8 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     BetterPlayerConfiguration betterPlayerConfiguration =
         BetterPlayerConfiguration(
             autoDetectFullscreenDeviceOrientation: !widget.useTvControls,
-            fullScreenByDefault:
-                widget.useTvControls ? false : widget.settings.defaultViewMode,
-            autoPlay: true,
+            fullScreenByDefault: false,
+            autoPlay: false,
             fit: BoxFit.contain,
             autoDispose: true,
             controlsConfiguration: betterPlayerControlsConfiguration,
@@ -333,16 +352,13 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
             autoDetectFullscreenAspectRatio: !widget.useTvControls,
             errorBuilder: (context, errorMessage) =>
                 _buildCustomPlayerErrorWidget(context, errorMessage),
-            subtitlesConfiguration: BetterPlayerSubtitlesConfiguration(
-                backgroundColor: backgroundColor,
-                fontFamily: widget.subtitleStyle == 'regular'
-                    ? 'Figtree'
-                    : widget.subtitleStyle == 'bold'
-                        ? 'FigtreeSB'
-                        : 'FigtreeLight',
-                fontColor: foregroundColor,
-                outlineEnabled: false,
-                fontSize: widget.settings.subtitleFontSize.toDouble()));
+            subtitlesConfiguration: buildPlayerSubtitleConfiguration(
+              backgroundColor: widget.settings.subtitleBackgroundColor,
+              foregroundColor: widget.settings.subtitleForegroundColor,
+              fontSize: widget.settings.subtitleFontSize,
+              textStyle:
+                  widget.subtitleStyle ?? widget.settings.subtitleTextStyle,
+            ));
 
     final dataSource = _buildDataSource(
       sources: _activeSources,
@@ -351,30 +367,10 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       videoHeaders: _activeVideoHeaders,
     );
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
-    _betterPlayerController.setupDataSource(dataSource).then((value) {
-      // If initial playback position provided (from provider switch), seek to it
-      if (widget.initialPlaybackPosition != null) {
-        _betterPlayerController.videoPlayerController!
-            .seekTo(widget.initialPlaybackPosition!);
-      } else {
-        // Otherwise use the elapsed time from metadata
-        _betterPlayerController.videoPlayerController!.seekTo(Duration(
-            seconds: widget.mediaType == MediaType.movie
-                ? widget.movieMetadata!.elapsed!
-                : widget.tvMetadata!.elapsed!));
-      }
-      duration = _betterPlayerController
-          .videoPlayerController!.value.duration!.inSeconds;
-    });
+    unawaited(_setupInitialDataSource(dataSource));
     _betterPlayerController.setBetterPlayerGlobalKey(_betterPlayerKey);
 
-    // Add event listener for video finish detection
-    _betterPlayerController.addEventsListener((BetterPlayerEvent event) {
-      if (event.betterPlayerEventType == BetterPlayerEventType.finished) {
-        // Video finished, check if there's a next episode
-        _handleVideoFinished();
-      }
-    });
+    _betterPlayerController.addEventsListener(_onAnalyticsPlayerEvent);
 
     // Start checking progress for next episode button
     if (widget.mediaType == MediaType.tvShow) {
@@ -393,6 +389,167 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     //     resetDurationTimer();
     //   }
     // });
+  }
+
+  Future<void> _setupInitialDataSource(
+      BetterPlayerDataSource dataSource) async {
+    try {
+      await _betterPlayerController.setupDataSource(dataSource);
+      if (!mounted) return;
+      _applyPreferredAdaptiveQuality();
+      final initialPosition = widget.initialPlaybackPosition ??
+          Duration(
+            seconds: widget.mediaType == MediaType.movie
+                ? widget.movieMetadata!.elapsed!
+                : widget.tvMetadata!.elapsed!,
+          );
+      await _betterPlayerController.seekTo(initialPosition);
+      duration = _betterPlayerController
+              .videoPlayerController?.value.duration?.inSeconds ??
+          0;
+      if (!_initialMainReady.isCompleted) _initialMainReady.complete();
+    } catch (error, stackTrace) {
+      if (!_initialMainReady.isCompleted) {
+        _initialMainReady.completeError(error, stackTrace);
+      }
+    }
+  }
+
+  void _onInitialStreamStarted() {
+    if (!mounted || widget.useTvControls || !widget.settings.defaultViewMode) {
+      return;
+    }
+    if (!_betterPlayerController.isFullScreen) {
+      _betterPlayerController.enterFullScreen();
+    }
+  }
+
+  String get _analyticsMediaType =>
+      widget.mediaType == MediaType.movie ? 'movie' : 'tv';
+
+  dynamic get _analyticsContentId => widget.mediaType == MediaType.movie
+      ? widget.movieMetadata?.movieId
+      : widget.tvMetadata?.tvId;
+
+  String? get _analyticsContentTitle => widget.mediaType == MediaType.movie
+      ? widget.movieMetadata?.movieName
+      : widget.tvMetadata?.seriesName;
+
+  String get _analyticsSurface => widget.useTvControls ? 'tv' : 'standard';
+
+  int get _analyticsElapsedMs =>
+      DateTime.now().difference(_analyticsSessionStartedAt).inMilliseconds;
+
+  void _onAnalyticsPlayerEvent(BetterPlayerEvent event) {
+    switch (event.betterPlayerEventType) {
+      case BetterPlayerEventType.initialized:
+        _analyticsInitializationCount++;
+        _trackPlaybackEvent(
+          _analyticsInitializationCount == 1 ? 'initialized' : 'reinitialized',
+          startupMs:
+              _analyticsInitializationCount == 1 ? _analyticsElapsedMs : null,
+        );
+        break;
+      case BetterPlayerEventType.play:
+        _analyticsPlayingStartedAt ??= DateTime.now();
+        _trackPlaybackEvent('play');
+        break;
+      case BetterPlayerEventType.pause:
+        _analyticsWasPlayingBeforeBuffering = false;
+        _stopAnalyticsWatchClock();
+        _trackPlaybackEvent('pause');
+        break;
+      case BetterPlayerEventType.bufferingStart:
+        _analyticsWasPlayingBeforeBuffering =
+            _analyticsPlayingStartedAt != null;
+        _stopAnalyticsWatchClock();
+        _analyticsBufferingStartedAt ??= DateTime.now();
+        _analyticsBufferCount++;
+        _trackPlaybackEvent('buffering_started');
+        break;
+      case BetterPlayerEventType.bufferingEnd:
+        final startedAt = _analyticsBufferingStartedAt;
+        final bufferingMs = startedAt == null
+            ? 0
+            : DateTime.now().difference(startedAt).inMilliseconds;
+        _analyticsBufferingMs += bufferingMs;
+        _analyticsBufferingStartedAt = null;
+        if (_analyticsWasPlayingBeforeBuffering) {
+          _analyticsPlayingStartedAt = DateTime.now();
+        }
+        _analyticsWasPlayingBeforeBuffering = false;
+        _trackPlaybackEvent('buffering_ended', bufferingMs: bufferingMs);
+        break;
+      case BetterPlayerEventType.exception:
+        final error = event.parameters?['exception']?.toString() ??
+            'Unknown player error';
+        final now = DateTime.now();
+        if (error != _lastAnalyticsError ||
+            _lastAnalyticsErrorAt == null ||
+            now.difference(_lastAnalyticsErrorAt!).inSeconds >= 10) {
+          _lastAnalyticsError = error;
+          _lastAnalyticsErrorAt = now;
+          _trackPlaybackEvent('error', error: error);
+        }
+        break;
+      case BetterPlayerEventType.finished:
+        _stopAnalyticsWatchClock();
+        _trackPlaybackEvent('finished');
+        _handleVideoFinished();
+        break;
+      case BetterPlayerEventType.changedResolution:
+        final name = event.parameters?['name']?.toString();
+        settings.analytics.trackQualityChanged(quality: name ?? 'automatic');
+        _trackPlaybackEvent('quality_changed', value: name ?? 'automatic');
+        break;
+      case BetterPlayerEventType.changedTrack:
+        final height = event.parameters?['height'];
+        final quality = height == null ? 'automatic' : '${height}p';
+        settings.analytics.trackQualityChanged(quality: quality);
+        _trackPlaybackEvent('quality_changed', value: quality);
+        break;
+      case BetterPlayerEventType.changedSubtitles:
+        final source = _betterPlayerController.betterPlayerSubtitlesSource;
+        final language = source?.type == BetterPlayerSubtitlesSourceType.none
+            ? 'off'
+            : source?.name ?? 'default';
+        settings.analytics.trackSubtitleLanguageChanged(language: language);
+        _trackPlaybackEvent('subtitle_changed', value: language);
+        break;
+      default:
+        break;
+    }
+  }
+
+  void _stopAnalyticsWatchClock() {
+    final startedAt = _analyticsPlayingStartedAt;
+    if (startedAt == null) return;
+    _analyticsWatchedMs += DateTime.now().difference(startedAt).inMilliseconds;
+    _analyticsPlayingStartedAt = null;
+  }
+
+  void _trackPlaybackEvent(
+    String event, {
+    int? startupMs,
+    int? bufferingMs,
+    String? value,
+    String? error,
+  }) {
+    settings.analytics.trackPlaybackEvent(
+      mediaType: _analyticsMediaType,
+      contentId: _analyticsContentId,
+      contentTitle: _analyticsContentTitle,
+      surface: _analyticsSurface,
+      sessionId: _analyticsSessionId,
+      event: event,
+      sessionElapsedMs: _analyticsElapsedMs,
+      provider: _currentProviderCode,
+      startupMs: startupMs,
+      bufferingMs: bufferingMs,
+      bufferCount: _analyticsBufferCount,
+      value: value,
+      error: error,
+    );
   }
 
   void _startProgressCheck() {
@@ -496,29 +653,104 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     required Map<String, BetterPlayerVideoFormat?>? videoFormats,
     required Map<String, Map<String, String>> videoHeaders,
   }) {
-    final preferredQuality = widget.settings.defaultVideoResolution == 0
-        ? 'auto'
-        : widget.settings.defaultVideoResolution.toString();
-    final selectedSource = sources.entries.firstWhere(
-      (entry) => entry.key == preferredQuality,
-      orElse: () => sources.entries.first,
-    );
+    final selectedSource = VideoUtils.preferredVideoSource(
+      sources,
+      widget.settings.defaultVideoResolution,
+    )!;
     final link = selectedSource.value;
     final suppliedHeaders = videoHeaders[selectedSource.key];
+    final resolvedHeaders = suppliedHeaders?.isNotEmpty == true
+        ? suppliedHeaders!
+        : VideoUtils.inferVideoHeaders(link) ?? const <String, String>{};
 
     return BetterPlayerDataSource(
       BetterPlayerDataSourceType.network,
       link,
       resolutions: sources.length > 1 ? sources : null,
+      selectedResolution: selectedSource.key,
       videoFormat: videoFormats?[selectedSource.key] ?? _inferVideoFormat(link),
-      headers: suppliedHeaders?.isNotEmpty == true
-          ? suppliedHeaders
-          : VideoUtils.inferVideoHeaders(link),
+      headers: resolvedHeaders,
+      castConfiguration: widget.useTvControls
+          ? null
+          : BetterPlayerCastConfiguration(
+              title: widget.mediaType == MediaType.movie
+                  ? widget.movieMetadata?.movieName
+                  : widget.tvMetadata?.seriesName,
+              subtitle: widget.mediaType == MediaType.movie
+                  ? widget.movieMetadata?.releaseYear?.toString()
+                  : 'S${widget.tvMetadata?.seasonNumber ?? 0} '
+                      'E${widget.tvMetadata?.episodeNumber ?? 0} · '
+                      '${widget.tvMetadata?.episodeName ?? ''}',
+              imageUrl: _castArtworkUrl(),
+              contentType: _castContentType(
+                videoFormats?[selectedSource.key] ?? _inferVideoFormat(link),
+              ),
+              requestHeaders: resolvedHeaders,
+              customData: <String, Object?>{
+                'mediaType':
+                    widget.mediaType == MediaType.movie ? 'movie' : 'tv',
+                'mediaId': widget.mediaType == MediaType.movie
+                    ? widget.movieMetadata?.movieId
+                    : widget.tvMetadata?.tvId,
+                if (widget.tvMetadata != null)
+                  'seasonNumber': widget.tvMetadata!.seasonNumber,
+                if (widget.tvMetadata != null)
+                  'episodeNumber': widget.tvMetadata!.episodeNumber,
+              },
+            ),
       subtitles: subtitles,
       // Streaming already has a bounded in-memory buffer. A persistent media
       // cache can fill the limited internal storage available on Android TVs.
       cacheConfiguration: const BetterPlayerCacheConfiguration(useCache: false),
       bufferingConfiguration: betterPlayerBufferingConfiguration,
+    );
+  }
+
+  String? _castArtworkUrl() {
+    final path = widget.mediaType == MediaType.movie
+        ? widget.movieMetadata?.backdropPath ?? widget.movieMetadata?.posterPath
+        : widget.tvMetadata?.backdropPath ?? widget.tvMetadata?.posterPath;
+    return path == null || path.isEmpty
+        ? null
+        : '${TMDB_BASE_IMAGE_URL}w780$path';
+  }
+
+  String _castContentType(BetterPlayerVideoFormat? format) => switch (format) {
+        BetterPlayerVideoFormat.hls => 'application/x-mpegURL',
+        BetterPlayerVideoFormat.dash => 'application/dash+xml',
+        _ => 'video/mp4',
+      };
+
+  void _applyPreferredAdaptiveQuality() {
+    final preferredHeight = widget.settings.defaultVideoResolution;
+    if (preferredHeight == 0) return;
+
+    final tracks = _betterPlayerController.betterPlayerAsmsTracks
+        .where((track) => (track.height ?? 0) > 0)
+        .toList();
+    if (tracks.isEmpty) return;
+
+    final exact = tracks.where((track) => track.height == preferredHeight);
+    if (exact.isNotEmpty) {
+      _betterPlayerController.setTrack(exact.first);
+      return;
+    }
+
+    final atOrBelow = tracks.where(
+      (track) => track.height! <= preferredHeight,
+    );
+    if (atOrBelow.isNotEmpty) {
+      _betterPlayerController.setTrack(
+        atOrBelow.reduce(
+          (best, track) => track.height! > best.height! ? track : best,
+        ),
+      );
+      return;
+    }
+    _betterPlayerController.setTrack(
+      tracks.reduce(
+        (best, track) => track.height! < best.height! ? track : best,
+      ),
     );
   }
 
@@ -613,6 +845,27 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
 
     // Restore original brightness before disposing
     BetterPlayerBrightnessManager.restoreOriginalBrightness();
+
+    _betterPlayerController.removeEventsListener(_onAnalyticsPlayerEvent);
+    _stopAnalyticsWatchClock();
+    final bufferingStartedAt = _analyticsBufferingStartedAt;
+    if (bufferingStartedAt != null) {
+      _analyticsBufferingMs +=
+          DateTime.now().difference(bufferingStartedAt).inMilliseconds;
+    }
+    settings.analytics.trackPlaybackSessionEnded(
+      mediaType: _analyticsMediaType,
+      contentId: _analyticsContentId,
+      contentTitle: _analyticsContentTitle,
+      surface: _analyticsSurface,
+      sessionId: _analyticsSessionId,
+      durationMs: _analyticsElapsedMs,
+      watchedMs: _analyticsWatchedMs,
+      bufferingMs: _analyticsBufferingMs,
+      bufferCount: _analyticsBufferCount,
+      providerSwitchCount: _analyticsProviderSwitchCount,
+      provider: _currentProviderCode,
+    );
 
     // Dispose the BetterPlayer controller to clean up resources
     _betterPlayerController.dispose();
@@ -1173,6 +1426,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     required VoidCallback closeMenu,
   }) async {
     if (_isSwitchingProvider || providerCode == _currentProviderCode) return;
+    final analyticsStopwatch = Stopwatch()..start();
 
     setState(() {
       _isSwitchingProvider = true;
@@ -1254,6 +1508,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           videoHeaders: nextSource.videoHeaders,
         ),
       );
+      _applyPreferredAdaptiveQuality();
       await _betterPlayerController.seekTo(position);
       if (!wasPlaying) await _betterPlayerController.pause();
 
@@ -1268,8 +1523,44 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
             .videoPlayerController?.value.duration?.inSeconds;
         if (switchedDuration != null) duration = switchedDuration;
       });
+      _analyticsProviderSwitchCount++;
+      settings.analytics.trackStreamServerChanged(
+        mediaType: _analyticsMediaType,
+        serverName: nextSource.providerName,
+      );
+      settings.analytics.trackProviderAttempt(
+        mediaType: _analyticsMediaType,
+        provider: nextSource.providerName,
+        purpose: 'provider_switch',
+        success: true,
+        durationMs: analyticsStopwatch.elapsedMilliseconds,
+        sourceCount: nextSource.videoSources.length,
+        subtitleCount: nextSource.subtitles.length,
+      );
+      _trackPlaybackEvent(
+        'provider_switch_succeeded',
+        value: nextSource.providerName,
+      );
       switched = true;
     } catch (error) {
+      settings.analytics.trackProviderAttempt(
+        mediaType: _analyticsMediaType,
+        provider: providerCode,
+        purpose: 'provider_switch',
+        success: false,
+        durationMs: analyticsStopwatch.elapsedMilliseconds,
+        sourceCount: 0,
+        subtitleCount: 0,
+        error: error.toString(),
+      );
+      _trackPlaybackEvent(
+        'provider_switch_failed',
+        value: providerCode,
+        error: error.toString(),
+      );
+      debugPrint(
+        '[Player] Provider switch failed for $providerCode: $error',
+      );
       if (!mounted) return;
       if (replacementStarted && previousDataSource != null) {
         try {
@@ -1282,7 +1573,12 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       } else if (wasPlaying) {
         await _betterPlayerController.play();
       }
-      setState(() => _providerErrors[providerCode] = _sanitizeError(error));
+      // Provider errors are intentionally kept in debug logs only. Scraper and
+      // platform exceptions can contain URLs, native class names, and complete
+      // stack traces that should never be rendered in either player UI.
+      setState(
+        () => _providerErrors[providerCode] = tr('switch_provider_error'),
+      );
     } finally {
       if (mounted) {
         setState(() {
@@ -1321,6 +1617,15 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                   controller: _betterPlayerController,
                   key: _betterPlayerKey,
                 ),
+              ),
+            ),
+            Positioned.fill(
+              child: BrandedStreamIntro(
+                apiBaseUrl: widget.scraperApiUrl,
+                mainController: _betterPlayerController,
+                initialMainReady: _initialMainReady.future,
+                accentColor: widget.colors.first,
+                onInitialStreamStarted: _onInitialStreamStarted,
               ),
             ),
             if (_tvMenu case final menu?)
@@ -1456,6 +1761,13 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
               subtitleTrackHeaders: subtitleTrack?.headers ?? const {},
             ),
           );
+      settings.analytics.trackDownload(
+        action: 'enqueue_from_player',
+        mediaType: _analyticsMediaType,
+        outcome: 'success',
+        provider: providerName,
+        quality: resolution,
+      );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -1463,6 +1775,14 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         ),
       );
     } catch (error) {
+      settings.analytics.trackDownload(
+        action: 'enqueue_from_player',
+        mediaType: _analyticsMediaType,
+        outcome: 'error',
+        provider: providerName,
+        quality: resolution,
+        error: error.toString(),
+      );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Could not start download: $error')),
@@ -1575,8 +1895,14 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   }
 
   String _sanitizeError(dynamic error) {
-    if (error == null) return tr('movie_vid_404');
+    if (error == null) return tr('switch_provider_error');
     String msg = error.toString();
+    final isDeveloperError = RegExp(
+      r'(PlatformException|IndexOutOfBoundsException|MethodChannel|SourceFile:|java\.|android\.|io\.flutter|\n\s*at\s)',
+      caseSensitive: false,
+    ).hasMatch(msg);
+    if (isDeveloperError) return tr('switch_provider_error');
+
     msg = msg.replaceAll(RegExp(r'https?://[^\s]+'), '').trim();
     msg = msg
         .replaceAll(
@@ -1585,8 +1911,10 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           '',
         )
         .trim();
-    if (msg.isEmpty) {
-      return tr('movie_vid_404');
+    // Player surfaces are intentionally compact. Multi-line or very long
+    // errors are diagnostics, not useful recovery guidance for the viewer.
+    if (msg.isEmpty || msg.contains('\n') || msg.length > 160) {
+      return tr('switch_provider_error');
     }
     return msg;
   }

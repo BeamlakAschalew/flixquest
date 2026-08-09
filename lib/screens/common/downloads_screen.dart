@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../models/offline_download.dart';
 import '../../provider/offline_download_provider.dart';
+import '../../services/analytics_service.dart';
 import '../../services/offline_download_service.dart';
 import 'offline_player_screen.dart';
 
@@ -120,8 +121,7 @@ class _DownloadCard extends StatelessWidget {
     );
     return Card(
       clipBehavior: Clip.antiAlias,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
+      child: InkWell(
         onTap: download.isComplete ? () => _playOffline(context) : null,
         child: Padding(
           padding: const EdgeInsets.all(12),
@@ -268,6 +268,12 @@ class _DownloadCard extends StatelessWidget {
   }
 
   void _playOffline(BuildContext context) {
+    AnalyticsService.instance.trackDownload(
+      action: 'play_offline',
+      mediaType: download.mediaType,
+      outcome: 'started',
+      quality: download.quality,
+    );
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -392,16 +398,20 @@ class _DownloadActions extends StatelessWidget {
         switch (action) {
           case _DownloadAction.pause:
             await provider.pause(download.id);
+            if (context.mounted) _track(context, 'pause', 'success');
           case _DownloadAction.resume:
             await provider.resume(download.id);
+            if (context.mounted) _track(context, 'resume', 'success');
           case _DownloadAction.retry:
             await provider.retry(download.id);
+            if (context.mounted) _track(context, 'retry', 'success');
           case _DownloadAction.openExternal:
             if (context.mounted) await _openExternal(context, provider);
           case _DownloadAction.saveCopy:
             if (context.mounted) await _saveCopy(context, provider);
           case _DownloadAction.delete:
             await provider.remove(download.id);
+            if (context.mounted) _track(context, 'delete', 'success');
           case null:
             break;
         }
@@ -415,6 +425,7 @@ class _DownloadActions extends StatelessWidget {
   ) async {
     await _runExportAction(
       context,
+      analyticsAction: 'open_external',
       operation: () async {
         await provider.openExternal(download.id);
         return false;
@@ -428,6 +439,7 @@ class _DownloadActions extends StatelessWidget {
   ) async {
     await _runExportAction(
       context,
+      analyticsAction: 'save_copy',
       operation: () => provider.saveCopy(download.id),
       successMessage: 'Video copy saved',
     );
@@ -435,20 +447,40 @@ class _DownloadActions extends StatelessWidget {
 
   Future<void> _runExportAction(
     BuildContext context, {
+    required String analyticsAction,
     required Future<bool> Function() operation,
     String? successMessage,
   }) async {
     try {
       final completed = await operation();
+      if (context.mounted) _track(context, analyticsAction, 'success');
       if (completed && successMessage != null && context.mounted) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text(successMessage)));
       }
     } catch (error) {
+      if (context.mounted) {
+        _track(context, analyticsAction, 'error', error: error);
+      }
       if (!context.mounted) return;
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(_exportErrorMessage(error))));
     }
+  }
+
+  void _track(
+    BuildContext context,
+    String action,
+    String outcome, {
+    Object? error,
+  }) {
+    AnalyticsService.instance.trackDownload(
+      action: action,
+      mediaType: download.mediaType,
+      outcome: outcome,
+      quality: download.quality,
+      error: error?.toString(),
+    );
   }
 }
 
@@ -599,8 +631,8 @@ class _DownloadActionTile extends StatelessWidget {
     return Material(
       color: accent.withValues(alpha: .08),
       borderRadius: BorderRadius.circular(16),
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(14),

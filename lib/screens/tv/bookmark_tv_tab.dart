@@ -75,8 +75,8 @@ class _TVBookmarkState extends State<TVBookmark> {
       itemBuilder: (_, index) {
         final item = items[index];
         return Card(
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(16),
             onTap: () => _open(item),
             child: Padding(
               padding: const EdgeInsets.all(10),
@@ -179,8 +179,8 @@ class _TVGridCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
+    return InkWell(
+      borderRadius: BorderRadius.circular(AppUI.cardRadius),
       onTap: onOpen,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

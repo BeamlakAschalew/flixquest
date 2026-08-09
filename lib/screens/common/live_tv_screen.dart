@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -9,6 +11,7 @@ import '../../models/live_tv.dart';
 import '../../provider/app_dependency_provider.dart';
 import '../../provider/settings_provider.dart';
 import '../../services/daddylive_service.dart';
+import '../../services/analytics_service.dart';
 import '../../ui_components/app_ui_components.dart';
 import 'live_player.dart';
 
@@ -33,6 +36,7 @@ class ChannelList extends StatefulWidget {
 }
 
 class _ChannelListState extends State<ChannelList> {
+  static const _analyticsSurface = 'standard';
   final _database = LiveTVDatabaseController();
   final _searchController = TextEditingController();
   DaddyLiveService? _service;
@@ -45,6 +49,7 @@ class _ChannelListState extends State<ChannelList> {
   String _query = '';
   String? _error;
   bool _loading = true;
+  Timer? _searchAnalyticsDebounce;
   _ChannelScope _scope = _ChannelScope.all;
   _LiveTvMode _mode = _LiveTvMode.channels;
   int _selectedDayIndex = 0;
@@ -52,11 +57,15 @@ class _ChannelListState extends State<ChannelList> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _load());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _analytics.trackLiveTVScreenOpened(surface: _analyticsSurface);
+      _load();
+    });
   }
 
   @override
   void dispose() {
+    _searchAnalyticsDebounce?.cancel();
     _service?.close();
     _searchController.dispose();
     super.dispose();
@@ -66,7 +75,11 @@ class _ChannelListState extends State<ChannelList> {
         baseUrl: context.read<AppDependencyProvider>().flixquestAPIURL,
       );
 
+  AnalyticsService get _analytics => context.read<SettingsProvider>().analytics;
+
   Future<void> _load({bool refresh = false}) async {
+    final stopwatch = Stopwatch()..start();
+    var cacheHit = false;
     if (mounted) {
       setState(() {
         _loading = true;
@@ -79,6 +92,7 @@ class _ChannelListState extends State<ChannelList> {
       List<Channel> channels;
       DaddyLiveEpg? epg;
       if (!refresh && await _database.isCacheValid()) {
+        cacheHit = true;
         channels = await _database.getCachedChannels();
         epg = await _database.getCachedEpg();
       } else {
@@ -97,6 +111,15 @@ class _ChannelListState extends State<ChannelList> {
         _recentIds = recent;
         _loading = false;
       });
+      _analytics.trackLiveTVCatalogLoad(
+        surface: _analyticsSurface,
+        refresh: refresh,
+        cacheHit: cacheHit,
+        success: true,
+        durationMs: stopwatch.elapsedMilliseconds,
+        channelCount: channels.length,
+        epgDayCount: epg?.days.length ?? 0,
+      );
     } catch (error) {
       final cached = await _database.getCachedChannels();
       final cachedEpg = await _database.getCachedEpg();
@@ -107,6 +130,17 @@ class _ChannelListState extends State<ChannelList> {
         _loading = false;
         _error = cached.isEmpty ? error.toString() : null;
       });
+      _analytics.trackLiveTVCatalogLoad(
+        surface: _analyticsSurface,
+        refresh: refresh,
+        cacheHit: cacheHit,
+        success: false,
+        fallbackToCache: cached.isNotEmpty,
+        durationMs: stopwatch.elapsedMilliseconds,
+        channelCount: cached.length,
+        epgDayCount: cachedEpg?.days.length ?? 0,
+        error: error.toString(),
+      );
     }
   }
 
@@ -189,18 +223,33 @@ class _ChannelListState extends State<ChannelList> {
         _favoriteIds.remove(channel.id);
       }
     });
+    _analytics.trackLiveTVFavorite(
+      surface: _analyticsSurface,
+      channelId: channel.id,
+      channelName: channel.name,
+      added: isFavorite,
+    );
   }
 
   Future<void> _play(Channel channel) async {
+    final stopwatch = Stopwatch()..start();
     setState(() => _resolvingId = channel.id);
     try {
       final stream = await _api().getStream(channel.id);
       await _database.addRecent(channel.id);
       if (!mounted) return;
-      context.read<SettingsProvider>().analytics.trackLiveTVChannelView(
-            channelName: channel.name,
-            streamId: channel.id,
-          );
+      _analytics.trackLiveTVChannelView(
+        channelName: channel.name,
+        streamId: channel.id,
+      );
+      _analytics.trackLiveTVStreamResolution(
+        surface: _analyticsSurface,
+        channelId: channel.id,
+        channelName: channel.name,
+        outcome: 'success',
+        durationMs: stopwatch.elapsedMilliseconds,
+        source: _mode.name,
+      );
       final autoFullScreen = context.read<SettingsProvider>().defaultViewMode;
       await Navigator.of(context).push<void>(
         MaterialPageRoute<void>(
@@ -216,6 +265,10 @@ class _ChannelListState extends State<ChannelList> {
             channels: _visibleChannels,
             initialChannelId: channel.id,
             service: _api(),
+            analytics: _analytics,
+            analyticsSurface: _analyticsSurface,
+            scraperApiUrl:
+                context.read<AppDependencyProvider>().flixquestAPIURL,
             onChannelSwitch: (switched) => _database.addRecent(switched.id),
           ),
         ),
@@ -223,6 +276,15 @@ class _ChannelListState extends State<ChannelList> {
       _recentIds = await _database.getRecentIds();
       if (mounted) setState(() {});
     } catch (error) {
+      _analytics.trackLiveTVStreamResolution(
+        surface: _analyticsSurface,
+        channelId: channel.id,
+        channelName: channel.name,
+        outcome: 'error',
+        durationMs: stopwatch.elapsedMilliseconds,
+        source: _mode.name,
+        error: error.toString(),
+      );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(error.toString())),
@@ -231,6 +293,65 @@ class _ChannelListState extends State<ChannelList> {
     } finally {
       if (mounted) setState(() => _resolvingId = null);
     }
+  }
+
+  void _onSearchChanged(String value) {
+    setState(() => _query = value);
+    _searchAnalyticsDebounce?.cancel();
+    _searchAnalyticsDebounce = Timer(const Duration(milliseconds: 750), () {
+      if (!mounted || value != _query) return;
+      _analytics.trackLiveTVInteraction(
+        surface: _analyticsSurface,
+        action: 'search',
+        value: _mode.name,
+        resultCount: _mode == _LiveTvMode.channels
+            ? _visibleChannels.length
+            : _visibleEventCount,
+      );
+    });
+  }
+
+  void _selectMode(_LiveTvMode mode) {
+    if (mode == _mode) return;
+    setState(() => _mode = mode);
+    _analytics.trackLiveTVInteraction(
+      surface: _analyticsSurface,
+      action: 'view_changed',
+      value: mode.name,
+    );
+  }
+
+  void _selectScope(_ChannelScope scope) {
+    if (scope == _scope) return;
+    setState(() => _scope = scope);
+    _analytics.trackLiveTVInteraction(
+      surface: _analyticsSurface,
+      action: 'collection_changed',
+      value: scope.name,
+      resultCount: _visibleChannels.length,
+    );
+  }
+
+  void _selectCategory(String? category) {
+    if (category == _selectedCategory) return;
+    setState(() => _selectedCategory = category);
+    _analytics.trackLiveTVInteraction(
+      surface: _analyticsSurface,
+      action: 'category_changed',
+      value: category ?? 'all',
+      resultCount: _visibleChannels.length,
+    );
+  }
+
+  void _selectDay(int index) {
+    if (index == _selectedDayIndex) return;
+    setState(() => _selectedDayIndex = index);
+    _analytics.trackLiveTVInteraction(
+      surface: _analyticsSurface,
+      action: 'schedule_day_changed',
+      value: _epg?.days[index].label,
+      resultCount: _visibleEventCount,
+    );
   }
 
   @override
@@ -401,13 +522,13 @@ class _ChannelListState extends State<ChannelList> {
                   icon: PhosphorIcons.televisionSimple(),
                   label: 'Channels',
                   selected: !isSchedule,
-                  onTap: () => setState(() => _mode = _LiveTvMode.channels),
+                  onTap: () => _selectMode(_LiveTvMode.channels),
                 ),
                 _ModeTab(
                   icon: PhosphorIcons.calendarDots(),
                   label: 'Schedule',
                   selected: isSchedule,
-                  onTap: () => setState(() => _mode = _LiveTvMode.schedule),
+                  onTap: () => _selectMode(_LiveTvMode.schedule),
                 ),
               ],
             ),
@@ -415,7 +536,7 @@ class _ChannelListState extends State<ChannelList> {
           const SizedBox(height: 14),
           TextField(
             controller: _searchController,
-            onChanged: (value) => setState(() => _query = value),
+            onChanged: _onSearchChanged,
             decoration: InputDecoration(
               hintText: isSchedule
                   ? 'Search matches, teams & leagues'
@@ -451,7 +572,7 @@ class _ChannelListState extends State<ChannelList> {
                   AppFilterPill(
                     label: entry.$2,
                     selected: _scope == entry.$1,
-                    onPressed: () => setState(() => _scope = entry.$1),
+                    onPressed: () => _selectScope(entry.$1),
                   ),
               ],
             ),
@@ -466,8 +587,7 @@ class _ChannelListState extends State<ChannelList> {
                   AppFilterPill(
                     label: _prettyDayLabel(epg.days[i].label),
                     selected: _selectedDayIndex == i,
-                    onPressed: () =>
-                        setState(() => _selectedDayIndex = i),
+                    onPressed: () => _selectDay(i),
                   ),
               ],
             ),
@@ -521,7 +641,7 @@ class _ChannelListState extends State<ChannelList> {
               if (_selectedCategory != null)
                 IconButton(
                   tooltip: 'Clear category filter',
-                  onPressed: () => setState(() => _selectedCategory = null),
+                  onPressed: () => _selectCategory(null),
                   icon: Icon(
                     PhosphorIcons.xCircle(),
                     size: 20,
@@ -560,9 +680,7 @@ class _ChannelListState extends State<ChannelList> {
       ),
     );
     if (!mounted || selected == null) return;
-    setState(() {
-      _selectedCategory = selected == _allCategoriesKey ? null : selected;
-    });
+    _selectCategory(selected == _allCategoriesKey ? null : selected);
   }
 }
 
@@ -603,7 +721,8 @@ class _ModeTab extends StatelessWidget {
                 Text(
                   label,
                   style: TextStyle(
-                    color: selected ? colors.onPrimary : colors.onSurfaceVariant,
+                    color:
+                        selected ? colors.onPrimary : colors.onSurfaceVariant,
                     fontFamily: selected ? 'FigtreeSB' : 'Figtree',
                     fontSize: 14,
                   ),
@@ -679,9 +798,7 @@ class _ChannelCard extends StatelessWidget {
                               ? PhosphorIcons.clockCounterClockwise()
                               : PhosphorIcons.radio(),
                       size: 15,
-                      color: _isLive
-                          ? colors.primary
-                          : colors.onSurfaceVariant,
+                      color: _isLive ? colors.primary : colors.onSurfaceVariant,
                     ),
                     const SizedBox(width: 6),
                     Expanded(

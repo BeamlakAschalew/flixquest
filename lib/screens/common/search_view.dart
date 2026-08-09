@@ -26,6 +26,8 @@ class Search extends SearchDelegate<String> {
   final String lang;
   Timer? _debounce;
   final SettingsPreferences _settingsPreferences = SettingsPreferences();
+  final ValueNotifier<int> _recentSearchesRevision = ValueNotifier<int>(0);
+  bool _isDisposed = false;
 
   Search(
       {required this.includeAdult, required this.lang})
@@ -35,8 +37,14 @@ class Search extends SearchDelegate<String> {
 
   @override
   void dispose() {
+    _isDisposed = true;
     _debounce?.cancel();
+    _recentSearchesRevision.dispose();
     super.dispose();
+  }
+
+  void _refreshRecentSearches() {
+    if (!_isDisposed) _recentSearchesRevision.value++;
   }
 
   void _onSearchChanged(String searchQuery) {
@@ -51,9 +59,11 @@ class Search extends SearchDelegate<String> {
   @override
   ThemeData appBarTheme(BuildContext context) {
     final theme = Theme.of(context);
+    final isPhone = MediaQuery.sizeOf(context).width < 600;
     return theme.copyWith(
       appBarTheme: theme.appBarTheme.copyWith(
         toolbarHeight: 76,
+        titleSpacing: isPhone ? 4 : theme.appBarTheme.titleSpacing,
         surfaceTintColor: Colors.transparent,
       ),
       inputDecorationTheme: theme.inputDecorationTheme.copyWith(
@@ -72,6 +82,7 @@ class Search extends SearchDelegate<String> {
           PhosphorIcons.x(),
         ),
         onPressed: () {
+          _debounce?.cancel();
           query = '';
         },
       )
@@ -241,84 +252,87 @@ class Search extends SearchDelegate<String> {
   // ─────────────────────────────────────────────────────────────────────────
 
   Widget _recentSearchesWidget(BuildContext context) {
-    return FutureBuilder<List<String>>(
-      future: _settingsPreferences.getRecentSearches(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return _searchATermWidget();
-        }
+    return ValueListenableBuilder<int>(
+      valueListenable: _recentSearchesRevision,
+      builder: (context, _, __) => FutureBuilder<List<String>>(
+        future: _settingsPreferences.getRecentSearches(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return _searchATermWidget();
+          }
 
-        final recentSearches = snapshot.data!;
-        final colors = Theme.of(context).colorScheme;
+          final recentSearches = snapshot.data!;
+          final colors = Theme.of(context).colorScheme;
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.fromLTRB(
-                  AppUI.pagePadding(context), 16, AppUI.pagePadding(context), 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    tr('recent_searches'),
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontFamily: 'FigtreeSB',
-                          fontWeight: FontWeight.w700,
-                        ),
-                  ),
-                  TextButton(
-                    onPressed: () async {
-                      await _settingsPreferences.clearRecentSearches();
-                      // Trigger rebuild
-                      query = query; // This forces a rebuild
-                    },
-                    child: Text(
-                      tr('clear_all'),
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.fromLTRB(AppUI.pagePadding(context), 16,
+                    AppUI.pagePadding(context), 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      tr('recent_searches'),
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontFamily: 'FigtreeSB',
+                            fontWeight: FontWeight.w700,
+                          ),
                     ),
-                  ),
-                ],
+                    TextButton(
+                      onPressed: () async {
+                        _debounce?.cancel();
+                        await _settingsPreferences.clearRecentSearches();
+                        _refreshRecentSearches();
+                      },
+                      child: Text(
+                        tr('clear_all'),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Expanded(
-              child: ListView.builder(
-                physics: const BouncingScrollPhysics(),
-                itemCount: recentSearches.length,
-                itemBuilder: (context, index) {
-                  final searchTerm = recentSearches[index];
-                  return ListTile(
-                    contentPadding: EdgeInsets.symmetric(
-                        horizontal: AppUI.pagePadding(context)),
-                    leading: Icon(
-                      PhosphorIcons.clockCounterClockwise(),
-                      color: colors.onSurfaceVariant,
-                    ),
-                    title: Text(
-                      searchTerm,
-                    ),
-                    trailing: IconButton(
-                      icon: Icon(
-                        PhosphorIcons.x(),
+              Expanded(
+                child: ListView.builder(
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: recentSearches.length,
+                  itemBuilder: (context, index) {
+                    final searchTerm = recentSearches[index];
+                    return ListTile(
+                      contentPadding: EdgeInsets.symmetric(
+                          horizontal: AppUI.pagePadding(context)),
+                      leading: Icon(
+                        PhosphorIcons.clockCounterClockwise(),
                         color: colors.onSurfaceVariant,
                       ),
-                      onPressed: () async {
-                        await _settingsPreferences
-                            .removeRecentSearch(searchTerm);
-                        // Trigger rebuild
-                        query = query;
+                      title: Text(
+                        searchTerm,
+                      ),
+                      trailing: IconButton(
+                        icon: Icon(
+                          PhosphorIcons.x(),
+                          color: colors.onSurfaceVariant,
+                        ),
+                        onPressed: () async {
+                          _debounce?.cancel();
+                          await _settingsPreferences
+                              .removeRecentSearch(searchTerm);
+                          _refreshRecentSearches();
+                        },
+                      ),
+                      onTap: () {
+                        query = searchTerm;
+                        showResults(context);
                       },
-                    ),
-                    onTap: () {
-                      query = searchTerm;
-                      showResults(context);
-                    },
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
-        );
-      },
+            ],
+          );
+        },
+      ),
     );
   }
 
@@ -580,8 +594,7 @@ class Search extends SearchDelegate<String> {
         final person = personList[index];
         return Card(
           clipBehavior: Clip.antiAlias,
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
+          child: InkWell(
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return SearchedPersonDetailPage(

@@ -154,8 +154,8 @@ class _DownloadChoiceSheet<T> extends StatelessWidget {
                 return Material(
                   color: colors.surfaceContainerHighest.withValues(alpha: .55),
                   borderRadius: BorderRadius.circular(16),
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(16),
                     onTap: () => Navigator.pop(context, choice.value),
                     child: Padding(
                       padding: const EdgeInsets.all(14),

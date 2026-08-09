@@ -43,11 +43,11 @@ import '/models/images.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '/screens/movie/genremovies.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import '/screens/movie/main_movies_list.dart';
 import 'package:provider/provider.dart';
 import 'categorized_feed.dart';
 import 'common_widgets.dart';
+import 'app_logo.dart';
 
 class MainMoviesDisplay extends StatefulWidget {
   const MainMoviesDisplay({
@@ -295,8 +295,7 @@ class DiscoverMoviesState extends State<DiscoverMovies>
     );
 
     try {
-      final results =
-          await Future.wait([trendingFuture, randomDiscoverFuture]);
+      final results = await Future.wait([trendingFuture, randomDiscoverFuture]);
       final trendingList = results[0];
       final randomList = results[1];
 
@@ -409,14 +408,12 @@ class DiscoverMoviesState extends State<DiscoverMovies>
                                 children: [
                                   Padding(
                                     padding: const EdgeInsets.all(8),
-                                    child: SvgPicture.asset(
-                                      'assets/images/fq_svg.svg',
+                                    child: AppLogo(
+                                      fallbackAsset: 'assets/images/fq_svg.svg',
                                       width: 28,
                                       height: 28,
-                                      colorFilter: ColorFilter.mode(
-                                        Theme.of(context).colorScheme.primary,
-                                        BlendMode.srcIn,
-                                      ),
+                                      fallbackColor:
+                                          Theme.of(context).colorScheme.primary,
                                     ),
                                   ),
                                   const Spacer(),
@@ -910,10 +907,10 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
               final total = elapsed + (movie.remaining ?? 0).toDouble();
               return SizedBox(
                 width: cardWidth,
-                child: AppPressable(
-                  onLongPress: () => context
-                      .read<RecentProvider>()
-                      .deleteMovie(movie.id!),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(18),
+                  onLongPress: () =>
+                      context.read<RecentProvider>().deleteMovie(movie.id!),
                   onTap: () => _openMovie(movie),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -3867,34 +3864,43 @@ class ParticularGenreMoviesState extends State<ParticularGenreMovies> {
   final _scrollController = ScrollController();
   int pageNum = 2;
   bool isLoading = false;
+  bool hasMore = true;
 
-  void getMoreData() async {
+  String _requestUrl({int? page}) {
+    final uri = Uri.parse(widget.api);
+    final queryParameters = Map<String, String>.from(uri.queryParameters)
+      ..['include_adult'] = widget.includeAdult.toString();
+
+    if (page != null) {
+      queryParameters['page'] = page.toString();
+    }
+
+    return uri.replace(queryParameters: queryParameters).toString();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.extentAfter < 300) {
+      _loadMore();
+    }
+  }
+
+  Future<void> _loadMore() async {
+    if (isLoading || !hasMore || moviesList == null) return;
+
+    setState(() => isLoading = true);
     final isProxyEnabled =
         Provider.of<SettingsProvider>(context, listen: false).enableProxy;
     final proxyUrl =
         Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
-    _scrollController.addListener(() async {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        setState(() {
-          isLoading = true;
-        });
-        if (mounted) {
-          fetchMovies(
-                  '${widget.api}&include_adult=${widget.includeAdult}&page=$pageNum',
-                  isProxyEnabled,
-                  proxyUrl)
-              .then((value) {
-            if (mounted) {
-              setState(() {
-                moviesList!.addAll(value);
-                isLoading = false;
-                pageNum++;
-              });
-            }
-          });
-        }
-      }
+    final value =
+        await fetchMovies(_requestUrl(page: pageNum), isProxyEnabled, proxyUrl);
+
+    if (!mounted) return;
+    setState(() {
+      moviesList!.addAll(value);
+      isLoading = false;
+      hasMore = value.isNotEmpty;
+      if (value.isNotEmpty) pageNum++;
     });
   }
 
@@ -3905,16 +3911,22 @@ class ParticularGenreMoviesState extends State<ParticularGenreMovies> {
         Provider.of<SettingsProvider>(context, listen: false).enableProxy;
     final proxyUrl =
         Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
-    fetchMovies('${widget.api}&include_adult=${widget.includeAdult}',
-            isProxyEnabled, proxyUrl)
-        .then((value) {
+    fetchMovies(_requestUrl(), isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
           moviesList = value;
         });
       }
     });
-    getMoreData();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController
+      ..removeListener(_onScroll)
+      ..dispose();
+    super.dispose();
   }
 
   @override
@@ -4077,8 +4089,8 @@ class StreamingServicesWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: 92,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(18),
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(

@@ -726,8 +726,8 @@ class _TVTabButton extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     final color = selected ? colors.primary : colors.onSurfaceVariant;
     return Expanded(
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(4, 7, 4, 5),
@@ -834,8 +834,8 @@ class _TVCastCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final settings = Provider.of<SettingsProvider>(context);
     final proxy = Provider.of<AppDependencyProvider>(context).tmdbProxy;
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
+    return InkWell(
+      borderRadius: BorderRadius.circular(10),
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
@@ -970,8 +970,8 @@ class _TVSeasonCard extends StatelessWidget {
     final tag = 'season_${tv.id}_${season.seasonNumber}';
     return SizedBox(
       width: 126,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppUI.cardRadius),
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(
@@ -1136,8 +1136,8 @@ class _TVVideoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final key = video.videoLink;
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
+    return InkWell(
+      borderRadius: BorderRadius.circular(AppUI.cardRadius),
       onTap: (key ?? '').isEmpty
           ? null
           : () => launchUrl(
@@ -1337,8 +1337,8 @@ class _TVPosterCard extends StatelessWidget {
     final tag = '${heroPrefix}_${tv.id}_${tv.posterPath}';
     return SizedBox(
       width: 132,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppUI.cardRadius),
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(

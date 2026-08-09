@@ -4,6 +4,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '/constants/app_constants.dart';
 import 'package:flutter/material.dart';
+import '../../widgets/app_logo.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../ui_components/app_ui_components.dart';
 
@@ -43,7 +44,7 @@ class AboutPage extends StatelessWidget {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(23),
-                  child: Image.asset('assets/images/logo.png'),
+                  child: const AppLogo(),
                 ),
               ),
               const SizedBox(height: 18),
@@ -77,8 +78,8 @@ class AboutPage extends StatelessWidget {
                             ?.copyWith(height: 1.5),
                       ),
                       const SizedBox(height: 18),
-                      GestureDetector(
-                        behavior: HitTestBehavior.opaque,
+                      InkWell(
+                        borderRadius: BorderRadius.circular(16),
                         onTap: () => launchUrl(
                             Uri.parse('https://themoviedb.org'),
                             mode: LaunchMode.externalApplication),

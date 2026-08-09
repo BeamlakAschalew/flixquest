@@ -81,8 +81,6 @@ flutter {
 dependencies {
     def media3Version = '1.8.0'
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
-    implementation platform('com.google.firebase:firebase-bom:32.7.0')
-    implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation "androidx.media3:media3-database:$media3Version"
     implementation "androidx.media3:media3-datasource:$media3Version"

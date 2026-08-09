@@ -114,10 +114,33 @@ class _TvSearchScreenState extends State<TvSearchScreen> {
   }
 
   Future<void> _clearHistory() async {
-    final controller = _historyController;
-    if (controller == null) return;
+    var controller = _historyController;
+    if (controller == null) {
+      final preferences = await SharedPreferencesSingleton.getInstance();
+      controller = TvSearchHistoryController(preferences);
+    }
     await controller.clear();
-    if (mounted) setState(() => _recentSearches = const <String>[]);
+    if (!mounted) return;
+    setState(() {
+      _historyController = controller;
+      _recentSearches = const <String>[];
+      _historyIsLoading = false;
+    });
+  }
+
+  Future<void> _removeHistoryEntry(String query) async {
+    var controller = _historyController;
+    if (controller == null) {
+      final preferences = await SharedPreferencesSingleton.getInstance();
+      controller = TvSearchHistoryController(preferences);
+    }
+    final updated = await controller.remove(query);
+    if (!mounted) return;
+    setState(() {
+      _historyController = controller;
+      _recentSearches = updated;
+      _historyIsLoading = false;
+    });
   }
 
   void _showRecentSearches() {
@@ -464,6 +487,9 @@ class _TvSearchScreenState extends State<TvSearchScreen> {
                     query: _recentSearches[index],
                     isMostRecent: index == 0,
                     onActivate: () => _submit(_recentSearches[index]),
+                    onRemove: () => unawaited(
+                      _removeHistoryEntry(_recentSearches[index]),
+                    ),
                   ),
               ],
             ),
@@ -531,65 +557,95 @@ class _RecentSearchTile extends StatelessWidget {
     required this.query,
     required this.isMostRecent,
     required this.onActivate,
+    required this.onRemove,
   });
 
   final String query;
   final bool isMostRecent;
   final VoidCallback onActivate;
+  final VoidCallback onRemove;
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return TvFocusable(
-      semanticLabel: 'Search again for $query',
-      onActivate: onActivate,
-      autofocus: isMostRecent,
-      focusScale: 1.025,
-      child: Container(
-        constraints: const BoxConstraints(minWidth: 190, maxWidth: 330),
-        height: 64,
-        padding: const EdgeInsets.symmetric(horizontal: 18),
-        decoration: BoxDecoration(
-          color: isMostRecent
-              ? colors.primary.withValues(alpha: 0.12)
-              : colors.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(13),
-          border: Border.all(
-            color: isMostRecent
-                ? colors.primary.withValues(alpha: 0.32)
-                : colors.onSurface.withValues(alpha: 0.08),
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Icon(
-              PhosphorIcons.magnifyingGlass(),
-              color: isMostRecent ? colors.primary : colors.onSurfaceVariant,
-              size: 21,
-            ),
-            const SizedBox(width: 11),
-            Flexible(
-              child: Text(
-                query,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: colors.onSurface,
-                  fontFamily: 'FigtreeSB',
-                  fontSize: 18,
-                ),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        TvFocusable(
+          semanticLabel: 'Search again for $query',
+          onActivate: onActivate,
+          autofocus: isMostRecent,
+          focusScale: 1.025,
+          child: Container(
+            constraints: const BoxConstraints(minWidth: 190, maxWidth: 330),
+            height: 64,
+            padding: const EdgeInsets.symmetric(horizontal: 18),
+            decoration: BoxDecoration(
+              color: isMostRecent
+                  ? colors.primary.withValues(alpha: 0.12)
+                  : colors.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(13),
+              border: Border.all(
+                color: isMostRecent
+                    ? colors.primary.withValues(alpha: 0.32)
+                    : colors.onSurface.withValues(alpha: 0.08),
               ),
             ),
-            const SizedBox(width: 13),
-            Icon(
-              PhosphorIcons.arrowUpRight(),
-              color: colors.onSurfaceVariant,
-              size: 18,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Icon(
+                  PhosphorIcons.magnifyingGlass(),
+                  color:
+                      isMostRecent ? colors.primary : colors.onSurfaceVariant,
+                  size: 21,
+                ),
+                const SizedBox(width: 11),
+                Flexible(
+                  child: Text(
+                    query,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: colors.onSurface,
+                      fontFamily: 'FigtreeSB',
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 13),
+                Icon(
+                  PhosphorIcons.arrowUpRight(),
+                  color: colors.onSurfaceVariant,
+                  size: 18,
+                ),
+              ],
             ),
-          ],
+          ),
         ),
-      ),
+        const SizedBox(width: 8),
+        TvFocusable(
+          semanticLabel: 'Remove $query from recent searches',
+          onActivate: onRemove,
+          focusScale: 1.04,
+          child: Container(
+            width: 54,
+            height: 64,
+            decoration: BoxDecoration(
+              color: colors.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(13),
+              border: Border.all(
+                color: colors.onSurface.withValues(alpha: 0.08),
+              ),
+            ),
+            child: Icon(
+              PhosphorIcons.x(),
+              color: colors.onSurfaceVariant,
+              size: 21,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

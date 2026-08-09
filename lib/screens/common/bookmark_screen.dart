@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -13,6 +12,7 @@ import '../../ui_components/app_ui_components.dart';
 import '../movie/bookmark_movies_tab.dart';
 import '../tv/bookmark_tv_tab.dart';
 import '/screens/common/sync_screen.dart';
+import '../../widgets/app_logo.dart';
 
 class BookmarkScreen extends StatefulWidget {
   const BookmarkScreen({this.embedded = false, super.key});
@@ -87,12 +87,11 @@ class _BookmarkScreenState extends State<BookmarkScreen>
                 padding: const EdgeInsets.fromLTRB(20, 18, 8, 14),
                 child: Row(
                   children: [
-                    SvgPicture.asset(
-                      'assets/images/fq_svg.svg',
+                    AppLogo(
+                      fallbackAsset: 'assets/images/fq_svg.svg',
                       width: 30,
                       height: 30,
-                      colorFilter:
-                          ColorFilter.mode(colors.primary, BlendMode.srcIn),
+                      fallbackColor: colors.primary,
                     ),
                     const SizedBox(width: 14),
                     Expanded(

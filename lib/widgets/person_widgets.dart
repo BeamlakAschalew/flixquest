@@ -492,8 +492,8 @@ class _PersonTabButton extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     final color = selected ? colors.primary : colors.onSurfaceVariant;
     return Expanded(
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(4, 7, 4, 5),
@@ -837,8 +837,7 @@ class PersonImagesDisplay extends StatelessWidget {
                         cacheManager: cacheProp(),
                         imageUrl: url,
                         fit: BoxFit.cover,
-                        imageBuilder: (context, imageProvider) => GestureDetector(
-                          behavior: HitTestBehavior.opaque,
+                        imageBuilder: (context, imageProvider) => InkWell(
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(

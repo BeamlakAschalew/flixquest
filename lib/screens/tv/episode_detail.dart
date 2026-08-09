@@ -615,8 +615,7 @@ class _EpisodeCastCard extends StatelessWidget {
     final settings = Provider.of<SettingsProvider>(context);
     final proxy = Provider.of<AppDependencyProvider>(context).tmdbProxy;
     final tag = 'episode_cast_${cast.id}_${cast.creditId}';
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
+    return InkWell(
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(

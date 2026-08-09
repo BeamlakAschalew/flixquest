@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -7,7 +9,9 @@ import '../../controllers/live_tv_database_controller.dart';
 import '../../functions/function.dart';
 import '../../models/live_tv.dart';
 import '../../provider/app_dependency_provider.dart';
+import '../../provider/settings_provider.dart';
 import '../../screens/common/live_player.dart';
+import '../../services/analytics_service.dart';
 import '../../services/daddylive_service.dart';
 import '../app/tv_design.dart';
 import '../focus/tv_focusable.dart';
@@ -28,6 +32,7 @@ class TvLiveScreen extends StatefulWidget {
 }
 
 class _TvLiveScreenState extends State<TvLiveScreen> {
+  static const _analyticsSurface = 'tv';
   final _database = LiveTVDatabaseController();
   final _searchController = TextEditingController();
   final _searchFocus = FocusNode(debugLabel: 'Live TV search');
@@ -44,15 +49,20 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
   String _query = '';
   String? _error;
   bool _loading = true;
+  Timer? _searchAnalyticsDebounce;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _load());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _analytics.trackLiveTVScreenOpened(surface: _analyticsSurface);
+      _load();
+    });
   }
 
   @override
   void dispose() {
+    _searchAnalyticsDebounce?.cancel();
     _service?.close();
     _searchController.dispose();
     _searchFocus.dispose();
@@ -63,7 +73,11 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
         baseUrl: context.read<AppDependencyProvider>().flixquestAPIURL,
       );
 
+  AnalyticsService get _analytics => context.read<SettingsProvider>().analytics;
+
   Future<void> _load({bool refresh = false}) async {
+    final stopwatch = Stopwatch()..start();
+    var cacheHit = false;
     if (mounted) {
       setState(() {
         _loading = true;
@@ -76,6 +90,7 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
       List<Channel> channels;
       DaddyLiveEpg? epg;
       if (!refresh && await _database.isCacheValid()) {
+        cacheHit = true;
         channels = await _database.getCachedChannels();
         epg = await _database.getCachedEpg();
       } else {
@@ -94,6 +109,15 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
         _recent = recent;
         _loading = false;
       });
+      _analytics.trackLiveTVCatalogLoad(
+        surface: _analyticsSurface,
+        refresh: refresh,
+        cacheHit: cacheHit,
+        success: true,
+        durationMs: stopwatch.elapsedMilliseconds,
+        channelCount: channels.length,
+        epgDayCount: epg?.days.length ?? 0,
+      );
     } catch (error) {
       final cached = await _database.getCachedChannels();
       final cachedEpg = await _database.getCachedEpg();
@@ -104,6 +128,17 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
         _loading = false;
         _error = cached.isEmpty ? error.toString() : null;
       });
+      _analytics.trackLiveTVCatalogLoad(
+        surface: _analyticsSurface,
+        refresh: refresh,
+        cacheHit: cacheHit,
+        success: false,
+        fallbackToCache: cached.isNotEmpty,
+        durationMs: stopwatch.elapsedMilliseconds,
+        channelCount: cached.length,
+        epgDayCount: cachedEpg?.days.length ?? 0,
+        error: error.toString(),
+      );
     }
   }
 
@@ -169,8 +204,8 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
     ]..removeWhere((section) => section.events.isEmpty);
   }
 
-  int get _visibleEventCount => _scheduleSections
-      .fold(0, (sum, section) => sum + section.events.length);
+  int get _visibleEventCount =>
+      _scheduleSections.fold(0, (sum, section) => sum + section.events.length);
 
   Future<void> _toggleFavorite(Channel channel) async {
     final value = await _database.toggleFavorite(channel.id);
@@ -182,14 +217,33 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
         _favorites.remove(channel.id);
       }
     });
+    _analytics.trackLiveTVFavorite(
+      surface: _analyticsSurface,
+      channelId: channel.id,
+      channelName: channel.name,
+      added: value,
+    );
   }
 
   Future<void> _play(Channel channel) async {
+    final stopwatch = Stopwatch()..start();
     setState(() => _resolvingId = channel.id);
     try {
       final stream = await _api().getStream(channel.id);
       await _database.addRecent(channel.id);
       if (!mounted) return;
+      _analytics.trackLiveTVChannelView(
+        channelName: channel.name,
+        streamId: channel.id,
+      );
+      _analytics.trackLiveTVStreamResolution(
+        surface: _analyticsSurface,
+        channelId: channel.id,
+        channelName: channel.name,
+        outcome: 'success',
+        durationMs: stopwatch.elapsedMilliseconds,
+        source: _mode.name,
+      );
       final theme = Theme.of(context);
       await Navigator.of(context).push<void>(
         MaterialPageRoute<void>(
@@ -206,7 +260,12 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
               channels: _visible,
               initialChannelId: channel.id,
               service: _api(),
+              analytics: _analytics,
+              analyticsSurface: _analyticsSurface,
+              scraperApiUrl:
+                  context.read<AppDependencyProvider>().flixquestAPIURL,
               onChannelSwitch: (switched) => _database.addRecent(switched.id),
+              enableCast: false,
             ),
           ),
         ),
@@ -214,6 +273,15 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
       _recent = await _database.getRecentIds();
       if (mounted) setState(() {});
     } catch (error) {
+      _analytics.trackLiveTVStreamResolution(
+        surface: _analyticsSurface,
+        channelId: channel.id,
+        channelName: channel.name,
+        outcome: 'error',
+        durationMs: stopwatch.elapsedMilliseconds,
+        source: _mode.name,
+        error: error.toString(),
+      );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(error.toString())),
@@ -222,6 +290,65 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
     } finally {
       if (mounted) setState(() => _resolvingId = null);
     }
+  }
+
+  void _onSearchChanged(String value) {
+    setState(() => _query = value);
+    _searchAnalyticsDebounce?.cancel();
+    _searchAnalyticsDebounce = Timer(const Duration(milliseconds: 750), () {
+      if (!mounted || value != _query) return;
+      _analytics.trackLiveTVInteraction(
+        surface: _analyticsSurface,
+        action: 'search',
+        value: _mode.name,
+        resultCount: _mode == _TvLiveMode.channels
+            ? _visible.length
+            : _visibleEventCount,
+      );
+    });
+  }
+
+  void _selectMode(_TvLiveMode mode) {
+    if (mode == _mode) return;
+    setState(() => _mode = mode);
+    _analytics.trackLiveTVInteraction(
+      surface: _analyticsSurface,
+      action: 'view_changed',
+      value: mode.name,
+    );
+  }
+
+  void _selectScope(_TvLiveScope scope) {
+    if (scope == _scope) return;
+    setState(() => _scope = scope);
+    _analytics.trackLiveTVInteraction(
+      surface: _analyticsSurface,
+      action: 'collection_changed',
+      value: scope.name,
+      resultCount: _visible.length,
+    );
+  }
+
+  void _selectCategory(String? category) {
+    if (category == _category) return;
+    setState(() => _category = category);
+    _analytics.trackLiveTVInteraction(
+      surface: _analyticsSurface,
+      action: 'category_changed',
+      value: category ?? 'all',
+      resultCount: _visible.length,
+    );
+  }
+
+  void _selectDay(int index) {
+    if (index == _selectedDayIndex) return;
+    setState(() => _selectedDayIndex = index);
+    _analytics.trackLiveTVInteraction(
+      surface: _analyticsSurface,
+      action: 'schedule_day_changed',
+      value: _epg?.days[index].label,
+      resultCount: _visibleEventCount,
+    );
   }
 
   @override
@@ -279,7 +406,9 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
             borderRadius: BorderRadius.circular(14),
           ),
           child: Icon(
-            isSchedule ? PhosphorIcons.calendarDots() : PhosphorIcons.broadcast(),
+            isSchedule
+                ? PhosphorIcons.calendarDots()
+                : PhosphorIcons.broadcast(),
             color: colors.primary,
             size: 27,
           ),
@@ -334,7 +463,7 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
           TvFocusable(
             semanticLabel: '${entry.$2} view',
             selected: _mode == entry.$1,
-            onActivate: () => setState(() => _mode = entry.$1),
+            onActivate: () => _selectMode(entry.$1),
             focusScale: 1.025,
             child: _TvPill(
               icon: entry.$3,
@@ -349,7 +478,7 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
           child: TextField(
             controller: _searchController,
             focusNode: _searchFocus,
-            onChanged: (value) => setState(() => _query = value),
+            onChanged: _onSearchChanged,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSurface,
               fontSize: 20,
@@ -378,7 +507,7 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
             TvFocusable(
               semanticLabel: '${entry.$2} channels',
               selected: _scope == entry.$1,
-              onActivate: () => setState(() => _scope = entry.$1),
+              onActivate: () => _selectScope(entry.$1),
               focusScale: 1.025,
               child: _TvPill(
                 icon: entry.$3,
@@ -402,7 +531,7 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
           TvFocusable(
             semanticLabel: 'All categories',
             selected: _category == null,
-            onActivate: () => setState(() => _category = null),
+            onActivate: () => _selectCategory(null),
             focusScale: 1.025,
             child:
                 _TvPill(label: 'All categories', selected: _category == null),
@@ -412,7 +541,7 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
             TvFocusable(
               semanticLabel: '$category category',
               selected: _category == category,
-              onActivate: () => setState(() => _category = category),
+              onActivate: () => _selectCategory(category),
               focusScale: 1.025,
               child: _TvPill(
                 label: category,
@@ -437,7 +566,7 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
             TvFocusable(
               semanticLabel: '${_prettyDayLabel(days[i].label)} schedule',
               selected: _selectedDayIndex == i,
-              onActivate: () => setState(() => _selectedDayIndex = i),
+              onActivate: () => _selectDay(i),
               focusScale: 1.025,
               child: _TvPill(
                 label: _prettyDayLabel(days[i].label),
@@ -499,7 +628,9 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
             : "Refresh to load today's schedule.",
         icon: PhosphorIcons.calendarDots(),
         actionLabel: (_epg?.days.isNotEmpty ?? false) ? null : 'Refresh',
-        onAction: (_epg?.days.isNotEmpty ?? false) ? null : () => _load(refresh: true),
+        onAction: (_epg?.days.isNotEmpty ?? false)
+            ? null
+            : () => _load(refresh: true),
       );
     }
     return ListView.builder(
@@ -839,9 +970,7 @@ class _TvChannelCard extends StatelessWidget {
                             ? PhosphorIcons.clockCounterClockwise()
                             : PhosphorIcons.radio(),
                     size: 16,
-                    color: _isLive
-                        ? colors.primary
-                        : colors.onSurfaceVariant,
+                    color: _isLive ? colors.primary : colors.onSurfaceVariant,
                   ),
                   const SizedBox(width: 7),
                   Expanded(
@@ -850,7 +979,8 @@ class _TvChannelCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        color: _isLive ? colors.primary : colors.onSurfaceVariant,
+                        color:
+                            _isLive ? colors.primary : colors.onSurfaceVariant,
                         fontFamily: _isLive ? 'FigtreeSB' : 'Figtree',
                         fontSize: 15,
                       ),

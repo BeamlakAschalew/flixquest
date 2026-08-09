@@ -139,8 +139,20 @@ class _SyncScreenState extends State<SyncScreen>
   Future<void> _runFullSync() async {
     if (_isActionRunning) return;
     setState(() => _isActionRunning = true);
+    final stopwatch = Stopwatch()..start();
 
     final success = await BookmarkSyncService.instance.syncNow(force: true);
+    if (mounted) {
+      context.read<SettingsProvider>().analytics.trackCloudSync(
+            action: 'full_sync',
+            itemCount: _localMovieCount +
+                _localTvCount +
+                _cloudMovies.length +
+                _cloudTvShows.length,
+            outcome: success ? 'success' : 'error',
+            durationMs: stopwatch.elapsedMilliseconds,
+          );
+    }
 
     if (mounted) {
       setState(() => _isActionRunning = false);
@@ -161,8 +173,17 @@ class _SyncScreenState extends State<SyncScreen>
   Future<void> _pushLocalToCloud() async {
     if (_isActionRunning) return;
     setState(() => _isActionRunning = true);
+    final stopwatch = Stopwatch()..start();
 
     final success = await BookmarkSyncService.instance.pushLocalToCloud();
+    if (mounted) {
+      context.read<SettingsProvider>().analytics.trackCloudSync(
+            action: 'push_to_cloud',
+            itemCount: _localMovieCount + _localTvCount,
+            outcome: success ? 'success' : 'error',
+            durationMs: stopwatch.elapsedMilliseconds,
+          );
+    }
 
     if (mounted) {
       setState(() => _isActionRunning = false);
@@ -183,8 +204,17 @@ class _SyncScreenState extends State<SyncScreen>
   Future<void> _pullCloudToLocal() async {
     if (_isActionRunning) return;
     setState(() => _isActionRunning = true);
+    final stopwatch = Stopwatch()..start();
 
     final success = await BookmarkSyncService.instance.pullCloudToLocal();
+    if (mounted) {
+      context.read<SettingsProvider>().analytics.trackCloudSync(
+            action: 'pull_to_local',
+            itemCount: _cloudMovies.length + _cloudTvShows.length,
+            outcome: success ? 'success' : 'error',
+            durationMs: stopwatch.elapsedMilliseconds,
+          );
+    }
 
     if (mounted) {
       setState(() => _isActionRunning = false);
@@ -208,6 +238,13 @@ class _SyncScreenState extends State<SyncScreen>
 
     final success =
         await BookmarkSyncService.instance.deleteMovieFromCloud(movie.id!);
+    if (mounted) {
+      context.read<SettingsProvider>().analytics.trackCloudSync(
+            action: 'delete_cloud_movie',
+            itemCount: 1,
+            outcome: success ? 'success' : 'error',
+          );
+    }
     if (success && mounted) {
       setState(() {
         _cloudMovies.removeAt(index);
@@ -221,6 +258,13 @@ class _SyncScreenState extends State<SyncScreen>
 
     final success =
         await BookmarkSyncService.instance.deleteTVFromCloud(tv.id!);
+    if (mounted) {
+      context.read<SettingsProvider>().analytics.trackCloudSync(
+            action: 'delete_cloud_tv',
+            itemCount: 1,
+            outcome: success ? 'success' : 'error',
+          );
+    }
     if (success && mounted) {
       setState(() {
         _cloudTvShows.removeAt(index);
@@ -429,8 +473,7 @@ class _SyncScreenState extends State<SyncScreen>
         return ValueListenableBuilder<SyncStatus>(
           valueListenable: BookmarkSyncService.instance.statusNotifier,
           builder: (context, status, _) {
-            final isSyncing =
-                status == SyncStatus.syncing || _isActionRunning;
+            final isSyncing = status == SyncStatus.syncing || _isActionRunning;
 
             return Card(
               margin: EdgeInsets.zero,
@@ -486,8 +529,8 @@ class _SyncScreenState extends State<SyncScreen>
                                       vertical: 2,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: colors.primary
-                                          .withValues(alpha: .2),
+                                      color:
+                                          colors.primary.withValues(alpha: .2),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Text(
@@ -965,8 +1008,8 @@ class _CloudMediaGridCard extends StatelessWidget {
             settings.imageQuality +
             posterPath!;
 
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
+    return InkWell(
+      borderRadius: BorderRadius.circular(AppUI.cardRadius),
       onTap: onTap,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

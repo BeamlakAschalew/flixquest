@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../provider/settings_provider.dart';
 import '../../services/flixquest_auth_service.dart';
+import '../../services/auth_navigation_service.dart';
 import '../../services/bookmark_sync_service.dart';
 import '../app/tv_design.dart';
 import '../focus/tv_focusable.dart';
@@ -91,7 +92,7 @@ class _TvAuthScreenState extends State<TvAuthScreen> {
         }
       }
       if (mounted) {
-        Navigator.of(context).popUntil((route) => route.isFirst);
+        await AuthNavigationService.returnToAppRoot(context);
       }
     } on FirebaseAuthException catch (error) {
       if (mounted) setState(() => _error = _authMessage(error));

@@ -8,6 +8,7 @@ import '../../services/globle_method.dart';
 import '../../services/flixquest_auth_service.dart';
 import '../user/login_screen.dart';
 import '../user/signup_screen.dart';
+import '../../widgets/app_logo.dart';
 
 class LandingScreen extends StatefulWidget {
   const LandingScreen({super.key});
@@ -165,7 +166,7 @@ class _Intro extends StatelessWidget {
           ),
           child: Hero(
             tag: 'logo_shadow',
-            child: Image.asset('assets/images/logo.png'),
+            child: const AppLogo(),
           ),
         ),
         const SizedBox(height: 28),

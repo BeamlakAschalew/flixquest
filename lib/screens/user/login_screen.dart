@@ -10,7 +10,9 @@ import 'package:provider/provider.dart';
 import '../../services/globle_method.dart';
 import '../../services/flixquest_auth_service.dart';
 import '../../services/bookmark_sync_service.dart';
+import '../../services/auth_navigation_service.dart';
 import '../../ui_components/app_ui_components.dart';
+import '../../widgets/app_logo.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -35,65 +37,62 @@ class _LoginScreenState extends State<LoginScreen> {
   //   super.dispose();
   // }
 
-  void submitForm() async {
+  Future<void> submitForm() async {
+    if (isLoading) return;
     final isValid = formKey.currentState!.validate();
     FocusScope.of(context).unfocus();
-    checkConnection().then((value) async {
-      if (value) {
-        if (isValid && mounted) {
-          setState(() {
-            isLoading = true;
-          });
-          formKey.currentState!.save();
-          try {
-            await authService
-                .signIn(email: emailAddress, password: password)
-                .then((value) {
-              if (mounted) {
-                BookmarkSyncService.instance.autoSyncIfSignedIn();
-                Provider.of<SettingsProvider>(context, listen: false)
-                    .analytics
-                    .trackLogin('email');
-                // UserState's auth stream owns the handheld/TV destination.
-                // Return to it instead of forcing the handheld home shell.
-                Navigator.of(context).popUntil((route) => route.isFirst);
-              }
-            });
-          } on FirebaseAuthException catch (error) {
-            if (mounted) {
-              if (error.code == 'wrong-password') {
-                globalMethods.authErrorHandle(
-                    tr('invalid_credential'), context);
-              } else if (error.code == 'invalid-email') {
-                globalMethods.authErrorHandle(tr('invalid_email'), context);
-              } else if (error.code == 'user-disabled') {
-                globalMethods.authErrorHandle(tr('banned_user'), context);
-              } else if (error.code == 'user-not-found') {
-                globalMethods.authErrorHandle(tr('user_not_found'), context);
-              }
-            }
-            // print('error occured $error}');
-          } finally {
-            if (mounted) {
-              setState(() {
-                isLoading = false;
-              });
-            }
-          }
-        }
-      } else {
+    if (!isValid) return;
+
+    if (!await checkConnection()) {
+      if (mounted) {
         GlobalMethods.showCustomScaffoldMessage(
-            SnackBar(
-              content: Text(
-                tr('check_connection'),
-                maxLines: 3,
-                style: kTextSmallBodyStyle,
-              ),
-              duration: const Duration(seconds: 3),
+          SnackBar(
+            content: Text(
+              tr('check_connection'),
+              maxLines: 3,
+              style: kTextSmallBodyStyle,
             ),
-            context.mounted ? context : null);
+            duration: const Duration(seconds: 3),
+          ),
+          context,
+        );
       }
-    });
+      return;
+    }
+
+    if (!mounted) return;
+    setState(() => isLoading = true);
+    formKey.currentState!.save();
+    try {
+      await authService.signIn(email: emailAddress, password: password);
+      if (!mounted) return;
+      BookmarkSyncService.instance.autoSyncIfSignedIn();
+      Provider.of<SettingsProvider>(context, listen: false)
+          .analytics
+          .trackLogin('email');
+      await AuthNavigationService.returnToAppRoot(context);
+    } on FirebaseAuthException catch (error) {
+      if (!mounted) return;
+      if (error.code == 'wrong-password' ||
+          error.code == 'invalid-credential') {
+        globalMethods.authErrorHandle(tr('invalid_credential'), context);
+      } else if (error.code == 'invalid-email') {
+        globalMethods.authErrorHandle(tr('invalid_email'), context);
+      } else if (error.code == 'user-disabled') {
+        globalMethods.authErrorHandle(tr('banned_user'), context);
+      } else if (error.code == 'user-not-found') {
+        globalMethods.authErrorHandle(tr('user_not_found'), context);
+      } else if (error.code == 'network-request-failed') {
+        globalMethods.authErrorHandle(tr('check_connection'), context);
+      } else {
+        globalMethods.authErrorHandle(
+          error.message ?? tr('error_occured'),
+          context,
+        );
+      }
+    } finally {
+      if (mounted) setState(() => isLoading = false);
+    }
   }
 
   @override
@@ -111,9 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Hero(
                       tag: 'logo_shadow',
                       child: SizedBox(
-                          height: 112,
-                          width: 112,
-                          child: Image.asset('assets/images/logo.png'))),
+                          height: 112, width: 112, child: const AppLogo())),
                   const SizedBox(height: 20),
                   Card(
                     child: Padding(

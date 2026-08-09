@@ -1,5 +1,6 @@
 // ignore_for_file: unnecessary_const, prefer_const_constructors
 import 'package:flixquest/models/app_colors.dart';
+import 'package:flixquest/models/occasional_theme.dart';
 import 'package:flutter/material.dart';
 
 ThemeData darkThemeData(
@@ -136,8 +137,10 @@ ThemeData darkThemeData(
       disabledBorder: InputBorder.none,
     ),
     tabBarTheme: TabBarThemeData(
-      labelStyle: const TextStyle(fontFamily: 'FigtreeSB', fontWeight: FontWeight.w600),
-      unselectedLabelStyle: const TextStyle(fontFamily: 'FigtreeSB', fontWeight: FontWeight.w500),
+      labelStyle:
+          const TextStyle(fontFamily: 'FigtreeSB', fontWeight: FontWeight.w600),
+      unselectedLabelStyle:
+          const TextStyle(fontFamily: 'FigtreeSB', fontWeight: FontWeight.w500),
       indicatorColor: isM3Enabled
           ? darkDynamicColor?.primary ?? Color(0xFFF57C00)
           : useUserColor
@@ -410,8 +413,10 @@ ThemeData lightThemeData(
       disabledBorder: InputBorder.none,
     ),
     tabBarTheme: TabBarThemeData(
-        labelStyle: const TextStyle(fontFamily: 'FigtreeSB', fontWeight: FontWeight.w600),
-        unselectedLabelStyle: const TextStyle(fontFamily: 'FigtreeSB', fontWeight: FontWeight.w500),
+        labelStyle: const TextStyle(
+            fontFamily: 'FigtreeSB', fontWeight: FontWeight.w600),
+        unselectedLabelStyle: const TextStyle(
+            fontFamily: 'FigtreeSB', fontWeight: FontWeight.w500),
         indicatorColor: isM3Enabled
             ? lightDynamicColor?.primary ?? Color(0xFFF57C00)
             : useUserColor
@@ -688,8 +693,10 @@ ThemeData lightsOutThemeData(
       disabledBorder: InputBorder.none,
     ),
     tabBarTheme: TabBarThemeData(
-      labelStyle: const TextStyle(fontFamily: 'FigtreeSB', fontWeight: FontWeight.w600),
-      unselectedLabelStyle: const TextStyle(fontFamily: 'FigtreeSB', fontWeight: FontWeight.w500),
+      labelStyle:
+          const TextStyle(fontFamily: 'FigtreeSB', fontWeight: FontWeight.w600),
+      unselectedLabelStyle:
+          const TextStyle(fontFamily: 'FigtreeSB', fontWeight: FontWeight.w500),
       indicatorColor: isM3Enabled
           ? darkDynamicColor?.primary ?? Color(0xFFF57C00)
           : useUserColor
@@ -835,27 +842,86 @@ class Styles {
       required ColorScheme? lightDynamicColor,
       required ColorScheme? darkDynamicColor,
       required BuildContext context,
-      required AppColor appColor}) {
-    final baseTheme = appThemeMode == 'dark'
+      required AppColor appColor,
+      OccasionalTheme? occasionalTheme}) {
+    var baseTheme = appThemeMode == 'dark'
         ? darkThemeData(isM3Enabled, darkDynamicColor, appColor)
         : appThemeMode == 'light'
             ? lightThemeData(isM3Enabled, lightDynamicColor, appColor)
             : appThemeMode == 'amoled'
                 ? lightsOutThemeData(isM3Enabled, darkDynamicColor, appColor)
                 : darkThemeData(isM3Enabled, darkDynamicColor, appColor);
-    return _applyFlixQuestUI(baseTheme);
+    final activeTheme =
+        occasionalTheme?.isActive == true ? occasionalTheme : null;
+    if (activeTheme != null) {
+      baseTheme = _applyOccasionalColors(baseTheme, activeTheme);
+    }
+    return _applyFlixQuestUI(
+      baseTheme,
+      surfaceOverride:
+          activeTheme?.backgroundFor(baseTheme.colorScheme.brightness),
+    );
   }
 }
 
-ThemeData _applyFlixQuestUI(ThemeData base) {
+ThemeData _applyOccasionalColors(ThemeData base, OccasionalTheme theme) {
+  final brightness = base.colorScheme.brightness;
+  final generated = ColorScheme.fromSeed(
+    seedColor: theme.primaryColor,
+    brightness: brightness,
+  );
+  final secondary = ColorScheme.fromSeed(
+    seedColor: theme.secondaryColor,
+    brightness: brightness,
+  );
+  final tertiary = ColorScheme.fromSeed(
+    seedColor: theme.tertiaryColor,
+    brightness: brightness,
+  );
+  final background = theme.backgroundFor(brightness);
+  final scheme = generated.copyWith(
+    primary: theme.primaryColor,
+    onPrimary: _readableOn(theme.primaryColor),
+    secondary: theme.secondaryColor,
+    onSecondary: _readableOn(theme.secondaryColor),
+    secondaryContainer: secondary.primaryContainer,
+    onSecondaryContainer: secondary.onPrimaryContainer,
+    tertiary: theme.tertiaryColor,
+    onTertiary: _readableOn(theme.tertiaryColor),
+    tertiaryContainer: tertiary.primaryContainer,
+    onTertiaryContainer: tertiary.onPrimaryContainer,
+    surface: background ?? generated.surface,
+    onSurface:
+        background == null ? generated.onSurface : _readableOn(background),
+  );
+  return base.copyWith(
+    colorScheme: scheme,
+    primaryColor: theme.primaryColor,
+    scaffoldBackgroundColor: background ?? base.scaffoldBackgroundColor,
+    canvasColor: background ?? base.canvasColor,
+  );
+}
+
+Color _readableOn(Color color) =>
+    ThemeData.estimateBrightnessForColor(color) == Brightness.dark
+        ? Colors.white
+        : const Color(0xDE000000);
+
+ThemeData _applyFlixQuestUI(ThemeData base, {Color? surfaceOverride}) {
   final colors = base.colorScheme;
   final dark = colors.brightness == Brightness.dark;
-  final surface = dark
-      ? (base.scaffoldBackgroundColor == Colors.black
-          ? Colors.black
-          : const Color(0xFF111315))
-      : const Color(0xFFFCFCFD);
-  final softSurface = dark ? const Color(0xFF1D2023) : const Color(0xFFF3F3F5);
+  final surface = surfaceOverride ??
+      (dark
+          ? (base.scaffoldBackgroundColor == Colors.black
+              ? Colors.black
+              : const Color(0xFF111315))
+          : const Color(0xFFFCFCFD));
+  final softSurface = surfaceOverride == null
+      ? (dark ? const Color(0xFF1D2023) : const Color(0xFFF3F3F5))
+      : Color.alphaBlend(
+          colors.onSurface.withValues(alpha: dark ? .08 : .055),
+          surface,
+        );
   final outline = colors.onSurface.withValues(alpha: .12);
   final primaryIsDark =
       ThemeData.estimateBrightnessForColor(colors.primary) == Brightness.dark;
@@ -875,6 +941,9 @@ ThemeData _applyFlixQuestUI(ThemeData base) {
 
   return base.copyWith(
     colorScheme: colors.copyWith(onPrimary: solidButtonForeground),
+    splashColor: colors.primary.withValues(alpha: .08),
+    highlightColor: colors.primary.withValues(alpha: .04),
+    hoverColor: colors.primary.withValues(alpha: .035),
     scaffoldBackgroundColor: surface,
     canvasColor: surface,
     textTheme: base.textTheme.apply(fontFamily: 'Figtree').copyWith(
@@ -1005,8 +1074,10 @@ ThemeData _applyFlixQuestUI(ThemeData base) {
       indicatorColor: colors.primary,
       labelColor: colors.primary,
       unselectedLabelColor: colors.onSurfaceVariant,
-      labelStyle: const TextStyle(fontFamily: 'FigtreeSB', fontWeight: FontWeight.w600, fontSize: 15),
-      unselectedLabelStyle: const TextStyle(fontFamily: 'FigtreeSB', fontWeight: FontWeight.w500, fontSize: 15),
+      labelStyle: const TextStyle(
+          fontFamily: 'FigtreeSB', fontWeight: FontWeight.w600, fontSize: 15),
+      unselectedLabelStyle: const TextStyle(
+          fontFamily: 'FigtreeSB', fontWeight: FontWeight.w500, fontSize: 15),
       indicatorSize: TabBarIndicatorSize.label,
     ),
     navigationBarTheme: NavigationBarThemeData(

@@ -243,8 +243,7 @@ class PlayerMovieRecommendations {
                                       .surfaceContainerLow,
                               borderRadius: BorderRadius.circular(14),
                               clipBehavior: Clip.antiAlias,
-                              child: GestureDetector(
-                                behavior: HitTestBehavior.opaque,
+                              child: InkWell(
                                 onTap: () => setDialogState(
                                   () => selectedIndex = index,
                                 ),

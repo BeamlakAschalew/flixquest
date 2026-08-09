@@ -11,7 +11,10 @@ import 'package:provider/provider.dart';
 import '../../provider/settings_provider.dart';
 import '../../services/globle_method.dart';
 import '../../services/flixquest_auth_service.dart';
+import '../../services/auth_navigation_service.dart';
+import '../../services/bookmark_sync_service.dart';
 import '../../ui_components/app_ui_components.dart';
+import '../../widgets/app_logo.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -49,67 +52,72 @@ class _SignupScreenState extends State<SignupScreen> {
     super.dispose();
   }
 
-  void submitForm() async {
+  Future<void> submitForm() async {
+    if (_isLoading) return;
     final isValid = _formKey.currentState!.validate();
     FocusScope.of(context).unfocus();
-    checkConnection().then((value) async {
-      if (value) {
-        if (isValid && mounted) {
-          _formKey.currentState!.save();
-          try {
-            setState(() {
-              _isLoading = true;
-            });
+    if (!isValid) return;
 
-            await _authService.createAccount(
-              fullName: _fullName,
-              email: _emailAddress,
-              username: _userName,
-              password: _password,
-              profileId: selectedProfile,
-              verified: _isUserVerified,
-            );
-            Provider.of<SettingsProvider>(context, listen: false)
-                .analytics
-                .trackSignup();
-            // UserState's auth stream owns the handheld/TV destination.
-            Navigator.of(context).popUntil((route) => route.isFirst);
-          } on FirebaseAuthException catch (error) {
-            if (error.code == 'weak-password') {
-              _globalMethods.authErrorHandle(tr('weak_password'), context);
-            } else if (error.code == 'email-already-in-use') {
-              _globalMethods.authErrorHandle(tr('email_exists'), context);
-            } else if (error.code == 'username-already-in-use') {
-              _globalMethods.authErrorHandle(tr('username_exists'), context);
-            } else if (error.code == 'invalid-email') {
-              _globalMethods.authErrorHandle(tr('invalid_email'), context);
-            } else if (error.code == 'operation-not-allowed') {
-              _globalMethods.authErrorHandle(
-                  tr('operation_not_allowed'), context);
-            }
-          } catch (e) {
-            _globalMethods.authErrorHandle(e.toString(), context);
-          } finally {
-            if (mounted) {
-              setState(() {
-                _isLoading = false;
-              });
-            }
-          }
-        }
-      } else {
+    if (!await checkConnection()) {
+      if (mounted) {
         GlobalMethods.showCustomScaffoldMessage(
-            SnackBar(
-              content: Text(
-                tr('check_connection'),
-                maxLines: 3,
-                style: kTextSmallBodyStyle,
-              ),
-              duration: const Duration(seconds: 3),
+          SnackBar(
+            content: Text(
+              tr('check_connection'),
+              maxLines: 3,
+              style: kTextSmallBodyStyle,
             ),
-            context);
+            duration: const Duration(seconds: 3),
+          ),
+          context,
+        );
       }
-    });
+      return;
+    }
+
+    if (!mounted) return;
+    _formKey.currentState!.save();
+    setState(() => _isLoading = true);
+    try {
+      await _authService.createAccount(
+        fullName: _fullName,
+        email: _emailAddress,
+        username: _userName,
+        password: _password,
+        profileId: selectedProfile,
+        verified: _isUserVerified,
+      );
+      if (!mounted) return;
+      BookmarkSyncService.instance.autoSyncIfSignedIn();
+      Provider.of<SettingsProvider>(context, listen: false)
+          .analytics
+          .trackSignup();
+      await AuthNavigationService.returnToAppRoot(context);
+    } on FirebaseAuthException catch (error) {
+      if (!mounted) return;
+      if (error.code == 'weak-password') {
+        _globalMethods.authErrorHandle(tr('weak_password'), context);
+      } else if (error.code == 'email-already-in-use') {
+        _globalMethods.authErrorHandle(tr('email_exists'), context);
+      } else if (error.code == 'username-already-in-use') {
+        _globalMethods.authErrorHandle(tr('username_exists'), context);
+      } else if (error.code == 'invalid-email') {
+        _globalMethods.authErrorHandle(tr('invalid_email'), context);
+      } else if (error.code == 'operation-not-allowed') {
+        _globalMethods.authErrorHandle(tr('operation_not_allowed'), context);
+      } else if (error.code == 'network-request-failed') {
+        _globalMethods.authErrorHandle(tr('check_connection'), context);
+      } else {
+        _globalMethods.authErrorHandle(
+          error.message ?? tr('error_occured'),
+          context,
+        );
+      }
+    } catch (error) {
+      if (mounted) _globalMethods.authErrorHandle(error.toString(), context);
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -138,9 +146,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       child: Hero(
                         tag: 'logo_shadow',
                         child: SizedBox(
-                            width: 90,
-                            height: 90,
-                            child: Image.asset('assets/images/logo.png')),
+                            width: 90, height: 90, child: const AppLogo()),
                       ),
                     ),
                     const SizedBox(
@@ -192,8 +198,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                           profileImages.profile()[index];
                                       final selected =
                                           profileValue == profile.index;
-                                      return GestureDetector(
-                                        behavior: HitTestBehavior.opaque,
+                                      return InkWell(
+                                        customBorder: const CircleBorder(),
                                         onTap: () => setState(() {
                                           profileValue = profile.index;
                                           selectedProfile = profile.index;

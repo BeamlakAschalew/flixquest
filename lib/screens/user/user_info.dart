@@ -9,6 +9,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../provider/app_dependency_provider.dart';
 import '../../provider/settings_provider.dart';
 import '../../ui_components/app_ui_components.dart';
+import '../../widgets/app_logo.dart';
 import '../common/about.dart';
 import '../common/landing_screen.dart';
 import '../common/live_tv_screen.dart';
@@ -85,8 +86,7 @@ class _UserInfoState extends State<UserInfo> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.asset('assets/images/logo.png',
-                      width: 34, height: 34),
+                  child: const AppLogo(width: 34, height: 34),
                 ),
                 const SizedBox(width: 12),
                 Text(tr('profile'),
@@ -162,8 +162,7 @@ class _UserInfoState extends State<UserInfo> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.asset('assets/images/logo.png',
-                      width: 34, height: 34),
+                  child: const AppLogo(width: 34, height: 34),
                 ),
                 const SizedBox(width: 12),
                 Text(tr('profile'),
@@ -288,8 +287,7 @@ class _UserInfoState extends State<UserInfo> {
   }
 
   Widget _profileActions({required bool authenticated}) {
-    final showLiveTV =
-        context.watch<AppDependencyProvider>().displayOTTDrawer;
+    final showLiveTV = context.watch<AppDependencyProvider>().displayOTTDrawer;
     final actions = <Widget>[
       if (authenticated)
         _ProfileAction(

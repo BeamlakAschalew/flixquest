@@ -51,3 +51,29 @@ class VideoProvider {
     );
   }
 }
+
+/// Applies a persisted provider preference to the providers currently
+/// advertised by the backend.
+///
+/// Missing providers are ignored and newly advertised providers are appended
+/// in backend order. Provider codes, rather than display names or list indexes,
+/// keep the preference stable when names change or the catalog is updated.
+abstract final class VideoProviderOrder {
+  static List<VideoProvider> apply(
+    Iterable<VideoProvider> availableProviders,
+    Iterable<String> preferredCodes,
+  ) {
+    final remaining = <String, VideoProvider>{};
+    for (final provider in availableProviders) {
+      remaining.putIfAbsent(provider.codeName, () => provider);
+    }
+
+    final ordered = <VideoProvider>[];
+    for (final code in preferredCodes) {
+      final provider = remaining.remove(code);
+      if (provider != null) ordered.add(provider);
+    }
+    ordered.addAll(remaining.values);
+    return ordered;
+  }
+}

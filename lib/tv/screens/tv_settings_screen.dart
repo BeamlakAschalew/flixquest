@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../models/app_colors.dart';
 import '../../provider/settings_provider.dart';
+import '../../provider/app_dependency_provider.dart';
 import '../app/tv_design.dart';
 import '../focus/tv_focusable.dart';
 import '../widgets/tv_dialog.dart';
@@ -17,6 +18,9 @@ class TvSettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final settings = context.watch<SettingsProvider>();
+    final appDependencies = context.watch<AppDependencyProvider>();
+    final occasionalCatalog = appDependencies.occasionalThemeCatalog;
+    final occasionalThemes = appDependencies.availableOccasionalThemes;
     return Padding(
       padding: EdgeInsets.fromLTRB(
         metrics.contentPadding,
@@ -54,6 +58,48 @@ class TvSettingsScreen extends StatelessWidget {
                     icon: PhosphorIcons.moonStars(),
                     onActivate: () => _showThemeModePicker(context, settings),
                   ),
+                  if (occasionalCatalog.enabled) ...<Widget>[
+                    const SizedBox(height: 14),
+                    _TvSettingTile(
+                      label: 'Seasonal themes',
+                      value:
+                          appDependencies.occasionalThemeEnabled ? 'On' : 'Off',
+                      icon: PhosphorIcons.sparkle(),
+                      onActivate: () => appDependencies.occasionalThemeEnabled =
+                          !appDependencies.occasionalThemeEnabled,
+                    ),
+                  ],
+                  if (occasionalCatalog.enabled &&
+                      appDependencies.occasionalThemeEnabled &&
+                      occasionalCatalog.allowUserSelection &&
+                      occasionalThemes.isNotEmpty) ...<Widget>[
+                    const SizedBox(height: 14),
+                    _TvSettingTile(
+                      label: 'Seasonal theme',
+                      value: _occasionalThemeLabel(appDependencies),
+                      icon: PhosphorIcons.sparkle(),
+                      onActivate: () => _showOccasionalThemePicker(
+                        context,
+                        appDependencies,
+                      ),
+                    ),
+                  ],
+                  if (occasionalCatalog.enabled &&
+                      appDependencies.occasionalThemeEnabled &&
+                      occasionalCatalog.effectsEnabled &&
+                      occasionalCatalog.allowUserEffectsToggle) ...<Widget>[
+                    const SizedBox(height: 14),
+                    _TvSettingTile(
+                      label: 'Seasonal effects',
+                      value: appDependencies.occasionalEffectsEnabled
+                          ? 'On'
+                          : 'Off',
+                      icon: PhosphorIcons.sparkle(),
+                      onActivate: () =>
+                          appDependencies.occasionalEffectsEnabled =
+                              !appDependencies.occasionalEffectsEnabled,
+                    ),
+                  ],
                   const SizedBox(height: 14),
                   _TvSettingTile(
                     label: 'Color theme',
@@ -100,6 +146,16 @@ class TvSettingsScreen extends StatelessWidget {
       'w600_and_h900_bestv2/' => 'Medium',
       _ => 'Low',
     };
+  }
+
+  static String _occasionalThemeLabel(AppDependencyProvider provider) {
+    if (provider.selectedOccasionalThemeId == 'automatic') return 'Automatic';
+    for (final theme in provider.availableOccasionalThemes) {
+      if (theme.id == provider.selectedOccasionalThemeId) {
+        return theme.displayName;
+      }
+    }
+    return 'Automatic';
   }
 
   static String _colorThemeLabel(int index) => switch (index) {
@@ -196,6 +252,36 @@ class TvSettingsScreen extends StatelessWidget {
           label: 'Done',
           onPressed: () => Navigator.of(context).pop(),
         ),
+      ],
+    );
+  }
+
+  static Future<void> _showOccasionalThemePicker(
+    BuildContext context,
+    AppDependencyProvider provider,
+  ) {
+    final options = <String, String>{
+      'automatic': 'Automatic',
+      for (final theme in provider.availableOccasionalThemes)
+        theme.id: theme.displayName,
+    };
+    return showTvDialog<void>(
+      context: context,
+      title: 'Seasonal theme',
+      content: const Text(
+        'Automatic uses the highest-priority active occasion.',
+      ),
+      actions: <TvDialogAction>[
+        for (final option in options.entries)
+          TvDialogAction(
+            label: option.value,
+            autofocus: provider.selectedOccasionalThemeId == option.key,
+            isPrimary: provider.selectedOccasionalThemeId == option.key,
+            onPressed: () {
+              provider.selectOccasionalTheme(option.key);
+              Navigator.of(context).pop();
+            },
+          ),
       ],
     );
   }

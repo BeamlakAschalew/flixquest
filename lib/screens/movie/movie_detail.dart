@@ -1048,8 +1048,8 @@ class _CastCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final settings = Provider.of<SettingsProvider>(context);
     final dependencies = Provider.of<AppDependencyProvider>(context);
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
+    return InkWell(
+      borderRadius: BorderRadius.circular(8),
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
@@ -1203,8 +1203,8 @@ class _MovieTabButton extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     final color = selected ? colors.primary : colors.onSurfaceVariant;
     return Expanded(
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(4, 7, 4, 5),
@@ -1320,8 +1320,8 @@ class _VideoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final key = video.videoLink;
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
+    return InkWell(
+      borderRadius: BorderRadius.circular(AppUI.cardRadius),
       onTap: key == null || key.isEmpty
           ? null
           : () => launchUrl(
@@ -1500,8 +1500,8 @@ class _GalleryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final settings = Provider.of<SettingsProvider>(context);
     final dependencies = Provider.of<AppDependencyProvider>(context);
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
+    return InkWell(
+      borderRadius: BorderRadius.circular(AppUI.cardRadius),
       onTap: onTap,
       child: AspectRatio(
         aspectRatio: aspectRatio,
@@ -1799,8 +1799,8 @@ class _MoviePosterCard extends StatelessWidget {
     final tag = '${heroPrefix}_${movie.id}_${movie.posterPath}';
     return SizedBox(
       width: 132,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppUI.cardRadius),
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(
@@ -1947,8 +1947,8 @@ class _CollectionBanner extends StatelessWidget {
     final settings = Provider.of<SettingsProvider>(context);
     final dependencies = Provider.of<AppDependencyProvider>(context);
     final path = collection.backdropPath ?? collection.posterPath;
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
+    return InkWell(
+      borderRadius: BorderRadius.circular(AppUI.cardRadius),
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(

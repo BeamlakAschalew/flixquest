@@ -7,7 +7,9 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../functions/function.dart';
 import '../../models/live_tv.dart';
+import '../../services/analytics_service.dart';
 import '../../services/daddylive_service.dart';
+import '../../widgets/branded_stream_intro.dart';
 
 class LivePlayer extends StatefulWidget {
   const LivePlayer({
@@ -15,12 +17,16 @@ class LivePlayer extends StatefulWidget {
     required this.colors,
     required this.autoFullScreen,
     required this.channelName,
+    required this.analytics,
+    required this.analyticsSurface,
+    required this.scraperApiUrl,
     this.headers = const <String, String>{},
     this.streamIcon,
     this.channels = const <Channel>[],
     this.initialChannelId,
     this.service,
     this.onChannelSwitch,
+    this.enableCast = true,
     super.key,
   });
 
@@ -28,6 +34,9 @@ class LivePlayer extends StatefulWidget {
   final List<Color> colors;
   final bool autoFullScreen;
   final String channelName;
+  final AnalyticsService analytics;
+  final String analyticsSurface;
+  final String scraperApiUrl;
   final Map<String, String> headers;
   final String? streamIcon;
 
@@ -37,6 +46,7 @@ class LivePlayer extends StatefulWidget {
   final String? initialChannelId;
   final DaddyLiveService? service;
   final void Function(Channel channel)? onChannelSwitch;
+  final bool enableCast;
 
   @override
   State<LivePlayer> createState() => _LivePlayerState();
@@ -44,21 +54,39 @@ class LivePlayer extends StatefulWidget {
 
 class _LivePlayerState extends State<LivePlayer> {
   late BetterPlayerController _betterPlayerController;
+  late final Completer<void> _initialMainReady;
   late BetterPlayerControlsConfiguration betterPlayerControlsConfiguration;
   late BetterPlayerBufferingConfiguration betterPlayerBufferingConfiguration;
 
   final GlobalKey _betterPlayerKey = GlobalKey();
+  final GlobalKey<BrandedStreamIntroState> _introKey = GlobalKey();
 
   String? _currentChannelId;
+  late String _currentChannelName;
   bool _isSwitching = false;
   String? _bannerText;
   Timer? _bannerTimer;
+  late final DateTime _sessionStartedAt;
+  late final String _sessionId;
+  DateTime? _playingStartedAt;
+  DateTime? _bufferingStartedAt;
+  int _watchedMs = 0;
+  int _bufferingMs = 0;
+  int _bufferCount = 0;
+  int _channelSwitchCount = 0;
+  bool _hasInitialized = false;
+  bool _wasPlayingBeforeBuffering = false;
 
   @override
   void initState() {
     super.initState();
+    _sessionStartedAt = DateTime.now();
+    _sessionId =
+        '${_sessionStartedAt.microsecondsSinceEpoch}-${identityHashCode(this)}';
+    _initialMainReady = Completer<void>();
     _currentChannelId =
         widget.initialChannelId ?? widget.channels.firstOrNull?.id;
+    _currentChannelName = widget.channelName;
 
     betterPlayerBufferingConfiguration =
         const BetterPlayerBufferingConfiguration(
@@ -74,6 +102,7 @@ class _LivePlayerState extends State<LivePlayer> {
       enableFullscreen: true,
       enableSubtitles: false,
       enablePip: true,
+      enableCast: widget.enableCast,
       backgroundColor: widget.colors.elementAt(1).withValues(alpha: 0.6),
       controlBarColor: Colors.black.withValues(alpha: 0.3),
       progressBarBackgroundColor: Colors.white,
@@ -113,7 +142,7 @@ class _LivePlayerState extends State<LivePlayer> {
         BetterPlayerConfiguration(
       autoDetectFullscreenDeviceOrientation: true,
       looping: true,
-      autoPlay: true,
+      autoPlay: false,
       allowedScreenSleep: false,
       fit: BoxFit.contain,
       autoDispose: true,
@@ -129,16 +158,21 @@ class _LivePlayerState extends State<LivePlayer> {
     );
 
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
-    _betterPlayerController
-        .setupDataSource(_buildDataSource(widget.videoUrl, widget.headers))
-        .then((value) {
-      if (_betterPlayerController.videoPlayerController!.value.aspectRatio >
-          1.0) {
-        if (widget.autoFullScreen) {
-          _betterPlayerController.enterFullScreen();
-        }
+    _betterPlayerController.addEventsListener(_onPlayerEvent);
+    unawaited(_setupInitialStream());
+    _betterPlayerController.setBetterPlayerGlobalKey(_betterPlayerKey);
+  }
+
+  Future<void> _setupInitialStream() async {
+    try {
+      await _betterPlayerController
+          .setupDataSource(_buildDataSource(widget.videoUrl, widget.headers));
+      if (!_initialMainReady.isCompleted) _initialMainReady.complete();
+    } catch (error, stackTrace) {
+      if (!_initialMainReady.isCompleted) {
+        _initialMainReady.completeError(error, stackTrace);
       }
-    }).catchError((error) {
+      _trackPlayerEvent('setup_error', error: error.toString());
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -153,8 +187,16 @@ class _LivePlayerState extends State<LivePlayer> {
           ),
         );
       }
-    });
-    _betterPlayerController.setBetterPlayerGlobalKey(_betterPlayerKey);
+    }
+  }
+
+  void _onInitialStreamStarted() {
+    if (!mounted || !widget.autoFullScreen) return;
+    final aspectRatio =
+        _betterPlayerController.videoPlayerController?.value.aspectRatio ?? 0;
+    if (aspectRatio > 1 && !_betterPlayerController.isFullScreen) {
+      _betterPlayerController.enterFullScreen();
+    }
   }
 
   bool get canSwitchChannels =>
@@ -166,26 +208,142 @@ class _LivePlayerState extends State<LivePlayer> {
     String url,
     Map<String, String> headers,
   ) {
+    final resolvedHeaders = <String, String>{
+      'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+      'Connection': 'keep-alive',
+      ...headers,
+    };
     return BetterPlayerDataSource(
       BetterPlayerDataSourceType.network,
       url,
       liveStream: true,
       bufferingConfiguration: betterPlayerBufferingConfiguration,
-      headers: {
-        'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        'Connection': 'keep-alive',
-        ...headers,
-      },
+      headers: resolvedHeaders,
       videoFormat: BetterPlayerVideoFormat.hls,
+      castConfiguration: widget.enableCast
+          ? BetterPlayerCastConfiguration(
+              title: _currentChannelName,
+              subtitle: 'Live TV',
+              imageUrl: widget.streamIcon,
+              contentType: 'application/x-mpegURL',
+              isLive: true,
+              requestHeaders: resolvedHeaders,
+              customData: <String, Object?>{
+                'mediaType': 'live',
+                'channelId': _currentChannelId,
+              },
+            )
+          : null,
     );
   }
 
   void _retryStream() {
+    _trackPlayerEvent('retry');
     _betterPlayerController.retryDataSource();
   }
 
+  void _onPlayerEvent(BetterPlayerEvent event) {
+    switch (event.betterPlayerEventType) {
+      case BetterPlayerEventType.initialized:
+        if (!_hasInitialized) {
+          _hasInitialized = true;
+          _trackPlayerEvent(
+            'initialized',
+            startupMs: _sessionElapsedMs,
+          );
+        }
+        break;
+      case BetterPlayerEventType.play:
+        _startWatchClock();
+        _trackPlayerEvent('play');
+        break;
+      case BetterPlayerEventType.pause:
+        _wasPlayingBeforeBuffering = false;
+        _stopWatchClock();
+        _trackPlayerEvent('pause');
+        break;
+      case BetterPlayerEventType.bufferingStart:
+        _wasPlayingBeforeBuffering = _playingStartedAt != null;
+        _stopWatchClock();
+        _bufferingStartedAt ??= DateTime.now();
+        _bufferCount++;
+        _trackPlayerEvent('buffering_started');
+        break;
+      case BetterPlayerEventType.bufferingEnd:
+        final startedAt = _bufferingStartedAt;
+        final durationMs = startedAt == null
+            ? 0
+            : DateTime.now().difference(startedAt).inMilliseconds;
+        _bufferingMs += durationMs;
+        _bufferingStartedAt = null;
+        if (_wasPlayingBeforeBuffering) _startWatchClock();
+        _wasPlayingBeforeBuffering = false;
+        _trackPlayerEvent('buffering_ended', bufferingMs: durationMs);
+        break;
+      case BetterPlayerEventType.exception:
+        _trackPlayerEvent(
+          'error',
+          error: event.parameters?['exception']?.toString() ??
+              event.parameters?.toString() ??
+              'Unknown player error',
+        );
+        break;
+      case BetterPlayerEventType.openFullscreen:
+        _trackPlayerEvent('fullscreen_opened');
+        break;
+      case BetterPlayerEventType.hideFullscreen:
+        _trackPlayerEvent('fullscreen_closed');
+        break;
+      case BetterPlayerEventType.pipStart:
+        _trackPlayerEvent('pip_started');
+        break;
+      case BetterPlayerEventType.pipStop:
+        _trackPlayerEvent('pip_stopped');
+        break;
+      default:
+        break;
+    }
+  }
+
+  int get _sessionElapsedMs =>
+      DateTime.now().difference(_sessionStartedAt).inMilliseconds;
+
+  void _startWatchClock() => _playingStartedAt ??= DateTime.now();
+
+  void _stopWatchClock() {
+    final startedAt = _playingStartedAt;
+    if (startedAt == null) return;
+    _watchedMs += DateTime.now().difference(startedAt).inMilliseconds;
+    _playingStartedAt = null;
+  }
+
+  void _trackPlayerEvent(
+    String event, {
+    int? startupMs,
+    int? bufferingMs,
+    String? error,
+  }) {
+    widget.analytics.trackLiveTVPlayerEvent(
+      surface: widget.analyticsSurface,
+      sessionId: _sessionId,
+      channelId: _currentChannelId ?? 'unknown',
+      channelName: _currentChannelName,
+      event: event,
+      sessionElapsedMs: _sessionElapsedMs,
+      startupMs: startupMs,
+      bufferingMs: bufferingMs,
+      bufferCount: _bufferCount,
+      error: error,
+    );
+  }
+
   Future<void> _showChannelSwitcher() async {
+    widget.analytics.trackLiveTVInteraction(
+      surface: widget.analyticsSurface,
+      action: 'channel_switcher_opened',
+      resultCount: widget.channels.length,
+    );
     final selected = await showModalBottomSheet<Channel>(
       context: context,
       useSafeArea: true,
@@ -196,7 +354,14 @@ class _LivePlayerState extends State<LivePlayer> {
         currentChannelId: _currentChannelId,
       ),
     );
-    if (selected != null) await _switchChannel(selected);
+    if (selected == null) {
+      widget.analytics.trackLiveTVInteraction(
+        surface: widget.analyticsSurface,
+        action: 'channel_switcher_dismissed',
+      );
+      return;
+    }
+    await _switchChannel(selected);
   }
 
   Future<void> _switchChannel(Channel channel) async {
@@ -206,25 +371,64 @@ class _LivePlayerState extends State<LivePlayer> {
     }
     setState(() => _isSwitching = true);
     _showBanner('Switching to ${channel.name}…');
+    final stopwatch = Stopwatch()..start();
+    widget.analytics.trackLiveTVInteraction(
+      surface: widget.analyticsSurface,
+      action: 'channel_switch_requested',
+      value: 'player',
+    );
     try {
       final stream = await service.getStream(channel.id);
       if (!mounted) return;
-      await _betterPlayerController.pause();
-      await _betterPlayerController
-          .setupDataSource(_buildDataSource(stream.url, stream.headers));
-      await _betterPlayerController.play();
+      Future<void> prepareStream() async {
+        await _betterPlayerController
+            .setupDataSource(_buildDataSource(stream.url, stream.headers));
+      }
+
+      final introState = _introKey.currentState;
+      if (introState != null) {
+        await introState.playBefore(prepareStream);
+      } else {
+        await _betterPlayerController.pause();
+        await prepareStream();
+        await _betterPlayerController.play();
+      }
       if (!mounted) return;
       setState(() {
         _currentChannelId = channel.id;
+        _currentChannelName = channel.name;
         _isSwitching = false;
       });
+      _channelSwitchCount++;
+      widget.analytics.trackLiveTVChannelView(
+        channelName: channel.name,
+        streamId: channel.id,
+      );
+      widget.analytics.trackLiveTVStreamResolution(
+        surface: widget.analyticsSurface,
+        channelId: channel.id,
+        channelName: channel.name,
+        outcome: 'success',
+        durationMs: stopwatch.elapsedMilliseconds,
+        source: 'player_switcher',
+      );
       widget.onChannelSwitch?.call(channel);
       _showBanner(channel.name);
     } catch (error) {
+      widget.analytics.trackLiveTVStreamResolution(
+        surface: widget.analyticsSurface,
+        channelId: channel.id,
+        channelName: channel.name,
+        outcome: 'error',
+        durationMs: stopwatch.elapsedMilliseconds,
+        source: 'player_switcher',
+        error: error.toString(),
+      );
       if (!mounted) return;
       setState(() => _isSwitching = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Unable to switch channel: ${error.toString()}')),
+        SnackBar(
+            content: Text('Unable to switch channel: ${error.toString()}')),
       );
     }
   }
@@ -240,6 +444,24 @@ class _LivePlayerState extends State<LivePlayer> {
   @override
   void dispose() {
     _bannerTimer?.cancel();
+    _betterPlayerController.removeEventsListener(_onPlayerEvent);
+    _stopWatchClock();
+    final bufferingStartedAt = _bufferingStartedAt;
+    if (bufferingStartedAt != null) {
+      _bufferingMs +=
+          DateTime.now().difference(bufferingStartedAt).inMilliseconds;
+    }
+    widget.analytics.trackLiveTVSessionEnded(
+      surface: widget.analyticsSurface,
+      sessionId: _sessionId,
+      channelId: _currentChannelId ?? 'unknown',
+      channelName: _currentChannelName,
+      durationMs: _sessionElapsedMs,
+      watchedMs: _watchedMs,
+      bufferingMs: _bufferingMs,
+      bufferCount: _bufferCount,
+      channelSwitchCount: _channelSwitchCount,
+    );
     _betterPlayerController.dispose();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -263,6 +485,16 @@ class _LivePlayerState extends State<LivePlayer> {
                 child: BetterPlayer(
                   key: _betterPlayerKey,
                   controller: _betterPlayerController,
+                ),
+              ),
+              Positioned.fill(
+                child: BrandedStreamIntro(
+                  key: _introKey,
+                  apiBaseUrl: widget.scraperApiUrl,
+                  mainController: _betterPlayerController,
+                  initialMainReady: _initialMainReady.future,
+                  accentColor: widget.colors.first,
+                  onInitialStreamStarted: _onInitialStreamStarted,
                 ),
               ),
               Positioned(
@@ -310,8 +542,8 @@ class _LivePlayerState extends State<LivePlayer> {
                                 const SizedBox(width: 9),
                                 ConstrainedBox(
                                   constraints: BoxConstraints(
-                                    maxWidth: MediaQuery.of(context).size.width *
-                                        .62,
+                                    maxWidth:
+                                        MediaQuery.of(context).size.width * .62,
                                   ),
                                   child: Text(
                                     _bannerText ?? '',
@@ -489,7 +721,8 @@ class _ChannelSwitcherSheetState extends State<_ChannelSwitcherSheet> {
                                         ),
                                   ),
                                   if (channel.nowPlaying != null ||
-                                      channel.categories.isNotEmpty) ...<Widget>[
+                                      channel
+                                          .categories.isNotEmpty) ...<Widget>[
                                     const SizedBox(height: 3),
                                     Text(
                                       channel.nowPlaying ??

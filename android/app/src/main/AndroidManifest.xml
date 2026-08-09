@@ -31,6 +31,10 @@
         android:banner="@drawable/tv_banner"
         android:requestLegacyExternalStorage="true"
         android:usesCleartextTraffic="true">    
+        <!-- Replace the default receiver ID after registering cast_receiver/. -->
+        <meta-data
+            android:name="uz.shs.better_player_plus.CAST_RECEIVER_APPLICATION_ID"
+            android:value="CC1AD845" />
         <activity
             android:name=".MainActivity"
             android:supportsPictureInPicture="true"

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -8,9 +10,9 @@ import 'package:flixquest/models/app_colors.dart';
 import 'package:flixquest/screens/common/update_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'constants/app_constants.dart';
 import 'constants/theme_data.dart';
 import 'functions/function.dart';
-import 'main.dart';
 import 'provider/app_dependency_provider.dart';
 import 'provider/recently_watched_provider.dart';
 import 'provider/settings_provider.dart';
@@ -21,9 +23,12 @@ import 'screens/user/user_info.dart';
 import 'screens/user/user_state.dart';
 import 'widgets/movie_widgets.dart';
 import 'widgets/tv_widgets.dart';
+import 'widgets/occasional_effect_overlay.dart';
 import 'provider/bookmark_provider.dart';
 import 'provider/offline_download_provider.dart';
 import 'services/in_app_messaging_service.dart';
+import 'services/app_session_state_store.dart';
+import 'services/app_remote_config.dart';
 import 'screens/common/downloads_screen.dart';
 import 'tv/platform/device_presentation.dart';
 
@@ -51,31 +56,45 @@ class FlixQuest extends StatefulWidget {
 class _FlixQuestState extends State<FlixQuest>
     with ChangeNotifier, WidgetsBindingObserver {
   final FirebaseRemoteConfig _remoteConfig = FirebaseRemoteConfig.instance;
-  Future<void> _initConfig() async {
-    await _remoteConfig.setConfigSettings(RemoteConfigSettings(
-      fetchTimeout: const Duration(minutes: 1),
-      minimumFetchInterval: const Duration(minutes: 1),
-    ));
+  StreamSubscription<RemoteConfigUpdate>? _remoteConfigSubscription;
 
-    _fetchConfig();
+  Future<void> _initConfig() async {
+    try {
+      await AppRemoteConfig.configure(_remoteConfig);
+      await _fetchConfig();
+    } catch (_) {
+      // The persisted app configuration remains usable while Firebase is
+      // temporarily unavailable.
+    }
+    if (mounted) {
+      _remoteConfigSubscription = _remoteConfig.onConfigUpdated.listen(
+        _onRemoteConfigUpdated,
+        onError: (_) {},
+      );
+    }
   }
 
-  Future _fetchConfig() async {
-    await _remoteConfig.fetchAndActivate();
+  Future<void> _fetchConfig() async {
+    try {
+      await _remoteConfig.fetchAndActivate();
+    } catch (_) {
+      // Cached/default values still provide a safe startup when offline.
+    }
     if (mounted) {
-      appDependencyProvider.flixQuestLogo =
-          _remoteConfig.getString('cinemax_logo');
-      appDependencyProvider.displayWatchNowButton =
-          _remoteConfig.getBool('enable_stream');
-      appDependencyProvider.displayOTTDrawer =
-          _remoteConfig.getBool('enable_ott');
-      appDependencyProvider.flixquestAPIURL =
-          _remoteConfig.getString('flixquest_api_url_v2');
-      appDependencyProvider.isForcedUpdate =
-          _remoteConfig.getBool('forced_update');
-      appDependencyProvider.tmdbProxy = _remoteConfig.getString('tmdb_proxy');
+      AppRemoteConfig.apply(_remoteConfig, widget.appDependencyProvider);
     }
     await requestNotificationPermissions();
+  }
+
+  Future<void> _onRemoteConfigUpdated(RemoteConfigUpdate update) async {
+    try {
+      await _remoteConfig.activate();
+      if (mounted) {
+        AppRemoteConfig.apply(_remoteConfig, widget.appDependencyProvider);
+      }
+    } catch (_) {
+      // Keep the last successfully activated configuration.
+    }
   }
 
   @override
@@ -84,6 +103,12 @@ class _FlixQuestState extends State<FlixQuest>
     _initConfig();
     fileDelete();
     InAppMessagingService.initialize();
+  }
+
+  @override
+  void dispose() {
+    _remoteConfigSubscription?.cancel();
+    super.dispose();
   }
 
   @override
@@ -101,6 +126,7 @@ class _FlixQuestState extends State<FlixQuest>
         ) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const MaterialApp(
+              restorationScopeId: 'flixquest',
               debugShowCheckedModeBanner: true,
               home: Scaffold(
                 body: Center(
@@ -151,18 +177,32 @@ class _FlixQuestState extends State<FlixQuest>
                       orElse: () => palette.first,
                     );
                     return MaterialApp(
+                      restorationScopeId: 'flixquest',
                       navigatorKey: InAppMessagingService.navigatorKey,
                       localizationsDelegates: context.localizationDelegates,
                       supportedLocales: context.supportedLocales,
                       locale: context.locale,
                       debugShowCheckedModeBanner: true,
+                      builder: (context, child) => Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          child ?? const SizedBox.shrink(),
+                          OccasionalEffectOverlay(
+                            theme: appDependencyProvider.activeOccasionalTheme,
+                            enabled: appDependencyProvider
+                                .shouldShowOccasionalEffects,
+                          ),
+                        ],
+                      ),
                       theme: Styles.themeData(
                           appThemeMode: settingsProvider.appTheme,
                           isM3Enabled: settingsProvider.isMaterial3Enabled,
                           lightDynamicColor: lightDynamic,
                           darkDynamicColor: darkDynamic,
                           context: context,
-                          appColor: selectedAppColor),
+                          appColor: selectedAppColor,
+                          occasionalTheme:
+                              appDependencyProvider.activeOccasionalTheme),
                       home: UserState(
                         devicePresentation: widget.devicePresentation,
                       ),
@@ -184,43 +224,77 @@ class FlixQuestHomePage extends StatefulWidget {
 }
 
 class _FlixQuestHomePageState extends State<FlixQuestHomePage>
-    with SingleTickerProviderStateMixin {
-  late int selectedIndex;
-  final FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.instance;
+    with SingleTickerProviderStateMixin, RestorationMixin {
+  static const _destinationIds = <String>[
+    'movies',
+    'series',
+    'discover',
+    'bookmarks',
+    'downloads',
+    'profile',
+  ];
+
+  late final AppSessionStateStore _sessionState;
+  late final RestorableString _selectedDestinationId;
+
+  @override
+  String get restorationId => 'handheld_home';
 
   @override
   void initState() {
-    defHome();
+    super.initState();
+    _sessionState = AppSessionStateStore(sharedPrefsSingleton);
+    final defaultHome =
+        Provider.of<SettingsProvider>(context, listen: false).defaultValue;
+    final defaultDestinationId = defaultHome == 3
+        ? 'profile'
+        : defaultHome >= 0 && defaultHome < _destinationIds.length
+            ? _destinationIds[defaultHome]
+            : 'movies';
+    _selectedDestinationId = RestorableString(
+      _sessionState.handheldDestination ?? defaultDestinationId,
+    );
     WidgetsBinding.instance.addPostFrameCallback(
       (_) {
+        Provider.of<SettingsProvider>(context, listen: false)
+            .analytics
+            .trackNavigation(
+              destination: _selectedDestinationId.value,
+              surface: 'standard',
+              source: 'restored',
+            );
         checkForcedUpdate();
-        remoteConfig.onConfigUpdated.listen(onFirebaseRemoteConfigUpdate);
       },
     );
-    super.initState();
   }
 
-  Future<void> onFirebaseRemoteConfigUpdate(RemoteConfigUpdate rcu) async {
-    await remoteConfig.activate();
-    if (mounted) {
-      final appDep = Provider.of<AppDependencyProvider>(context, listen: false);
-      appDep.flixQuestLogo = remoteConfig.getString('cinemax_logo');
-      appDep.displayWatchNowButton = remoteConfig.getBool('enable_stream');
-      appDep.displayOTTDrawer = remoteConfig.getBool('enable_ott');
-      appDep.flixquestAPIURL = remoteConfig.getString('flixquest_api_url_v2');
-      appDep.isForcedUpdate = remoteConfig.getBool('forced_update');
-      appDep.tmdbProxy = remoteConfig.getString('tmdb_proxy');
+  @override
+  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
+    registerForRestoration(
+      _selectedDestinationId,
+      'selected_destination',
+    );
+    if (!_destinationIds.contains(_selectedDestinationId.value)) {
+      _selectedDestinationId.value = 'movies';
     }
   }
 
-  void defHome() {
-    final defaultHome =
-        Provider.of<SettingsProvider>(context, listen: false).defaultValue;
+  @override
+  void dispose() {
+    _selectedDestinationId.dispose();
+    super.dispose();
+  }
+
+  void _selectDestination(int index) {
+    final destinationId = _destinationIds[index];
+    if (_selectedDestinationId.value == destinationId) return;
     setState(() {
-      // `3` is the persisted semantic value for Profile. Keep existing saved
-      // preferences valid as Bookmarks and Downloads are added to navigation.
-      selectedIndex = defaultHome == 3 ? 5 : defaultHome;
+      _selectedDestinationId.value = destinationId;
     });
+    Provider.of<SettingsProvider>(context, listen: false)
+        .analytics
+        .trackNavigation(destination: destinationId, surface: 'standard');
+    unawaited(_sessionState.rememberHandheldDestination(destinationId));
   }
 
   void checkForcedUpdate() async {
@@ -259,6 +333,9 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
   Widget build(BuildContext context) {
     final lang = Provider.of<SettingsProvider>(context).appLanguage;
     final colorScheme = Theme.of(context).colorScheme;
+    final selectedIndex = _destinationIds.indexOf(
+      _selectedDestinationId.value,
+    );
     return Scaffold(
         bottomNavigationBar: Align(
           heightFactor: 1,
@@ -290,11 +367,7 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
                   indicatorColor: colorScheme.primary.withValues(alpha: 0.14),
                   labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
                   selectedIndex: selectedIndex,
-                  onDestinationSelected: (index) {
-                    setState(() {
-                      selectedIndex = index;
-                    });
-                  },
+                  onDestinationSelected: _selectDestination,
                   destinations: [
                     NavigationDestination(
                       icon: Icon(PhosphorIcons.house()),

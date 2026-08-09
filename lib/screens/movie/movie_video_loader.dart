@@ -58,6 +58,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       Provider.of<SettingsProvider>(context, listen: false);
   List<VideoProvider> videoProviders = [];
   List<ProviderLoadState> providerStates = [];
+  final Map<String, Stopwatch> _providerStopwatches = {};
   int currentProviderIndex = 0;
   String _scraperApiUrl = '';
 
@@ -88,10 +89,11 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
     // Keep the app's existing VixSrc implementation as an independent source,
     // even if the scraper API also exposes a provider named "vixsrc".
     providers.add(VideoProvider.directVixSrc);
+    final orderedProviders = settings.orderStreamProviders(providers);
     if (!mounted) return;
     setState(() {
-      videoProviders = providers;
-      providerStates = providers
+      videoProviders = orderedProviders;
+      providerStates = orderedProviders
           .map(
             (provider) => ProviderLoadState(
               codeName: provider.codeName,
@@ -115,6 +117,11 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         );
         if (!mounted) return;
         if (selectedDownloadProvider == null) {
+          settings.analytics.trackDownload(
+            action: 'provider_selection',
+            mediaType: 'movie',
+            outcome: 'cancelled',
+          );
           Navigator.pop(context, false);
           return;
         }
@@ -170,6 +177,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
             ? videoProviders
             : [selectedDownloadProvider],
         load: (provider) {
+          _providerStopwatches[provider.codeName] = Stopwatch()..start();
           debugPrint(
             '[MovieVideoLoader] Request provider=${provider.displayName} '
             '(${provider.codeName}), tmdbId=${widget.metadata.movieId}',
@@ -181,6 +189,22 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           );
         },
         onResult: (index, provider, result) {
+          final durationMs = _providerStopwatches
+                  .remove(provider.codeName)
+                  ?.elapsedMilliseconds ??
+              0;
+          final providerSucceeded =
+              result.success && result.videoLinks?.isNotEmpty == true;
+          settings.analytics.trackProviderAttempt(
+            mediaType: 'movie',
+            provider: provider.displayName,
+            purpose: widget.download ? 'download' : 'playback',
+            success: providerSucceeded,
+            durationMs: durationMs,
+            sourceCount: result.videoLinks?.length ?? 0,
+            subtitleCount: result.subtitleLinks?.length ?? 0,
+            error: result.errorMessage,
+          );
           final providerIndex = videoProviders.indexWhere(
             (candidate) => candidate.codeName == provider.codeName,
           );
@@ -194,7 +218,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
               currentProviderIndex = providerIndex;
               providerStates[providerIndex] =
                   providerStates[providerIndex].copyWith(
-                status: result.success && result.videoLinks?.isNotEmpty == true
+                status: providerSucceeded
                     ? ProviderStatus.success
                     : ProviderStatus.failed,
                 errorMessage: result.errorMessage,
@@ -336,6 +360,12 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
     );
     if (!mounted) return;
     if (quality == null) {
+      settings.analytics.trackDownload(
+        action: 'resolution_selection',
+        mediaType: 'movie',
+        outcome: 'cancelled',
+        provider: providerName,
+      );
       Navigator.pop(context, false);
       return;
     }
@@ -373,8 +403,23 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
               subtitleTrackHeaders: subtitleTrack?.headers ?? const {},
             ),
           );
+      settings.analytics.trackDownload(
+        action: 'enqueue',
+        mediaType: 'movie',
+        outcome: 'success',
+        provider: providerName,
+        quality: quality,
+      );
       if (mounted) Navigator.pop(context, true);
     } catch (error) {
+      settings.analytics.trackDownload(
+        action: 'enqueue',
+        mediaType: 'movie',
+        outcome: 'error',
+        provider: providerName,
+        quality: quality,
+        error: error.toString(),
+      );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Could not start download: $error')),

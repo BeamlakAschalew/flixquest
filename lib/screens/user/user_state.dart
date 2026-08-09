@@ -18,24 +18,35 @@ class UserState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-        stream: FirebaseAuth.instance.authStateChanges(),
+    final auth = FirebaseAuth.instance;
+    return StreamBuilder<User?>(
+        stream: auth.authStateChanges(),
+        initialData: auth.currentUser,
         builder: (context, userSnapshot) {
+          if (userSnapshot.hasError) {
+            return Center(
+              child: Text(tr('error_occured')),
+            );
+          }
+
+          final user = userSnapshot.data;
+          final previewTvHome =
+              devicePresentation == DevicePresentation.television &&
+                  TvDebugOptions.previewHomeShell;
+          final shell = presentationShellFor(
+            devicePresentation: devicePresentation,
+            isAuthenticated: user != null || previewTvHome,
+          );
+
           if (userSnapshot.connectionState == ConnectionState.waiting) {
-            final previewTvHome =
-                devicePresentation == DevicePresentation.television &&
-                    TvDebugOptions.previewHomeShell;
-            return presentationShellFor(
-              devicePresentation: devicePresentation,
-              isAuthenticated: userSnapshot.hasData || previewTvHome,
+            return KeyedSubtree(
+              key: ValueKey(user?.uid ?? 'signed-out'),
+              child: shell,
             );
           } else if (userSnapshot.connectionState == ConnectionState.active) {
-            final previewTvHome =
-                devicePresentation == DevicePresentation.television &&
-                    TvDebugOptions.previewHomeShell;
-            return presentationShellFor(
-              devicePresentation: devicePresentation,
-              isAuthenticated: userSnapshot.hasData || previewTvHome,
+            return KeyedSubtree(
+              key: ValueKey(user?.uid ?? 'signed-out'),
+              child: shell,
             );
           } else {
             return Center(

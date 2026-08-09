@@ -2,6 +2,111 @@ import 'package:flixquest/video_providers/common.dart';
 import 'package:better_player_plus/better_player.dart';
 
 class VideoUtils {
+  static const int _automaticFallbackHeight = 720;
+
+  static const Set<int> _commonVideoHeights = {
+    144,
+    240,
+    360,
+    480,
+    540,
+    576,
+    720,
+    1080,
+    1440,
+    2160,
+    4320,
+  };
+
+  /// Extract the vertical resolution from provider labels such as `480p AAC`,
+  /// `480 AAC`, `1920x1080`, or `1080P (HEVC)`.
+  ///
+  /// Bare numbers are restricted to common video heights so audio bitrates and
+  /// other metadata in the same label aren't mistaken for a resolution.
+  static int? videoQualityHeight(String label) {
+    final dimensions = RegExp(
+      r'(?<!\d)(\d{2,5})\s*[x×]\s*(\d{3,4})(?!\d)',
+      caseSensitive: false,
+    ).firstMatch(label);
+    if (dimensions != null) {
+      return int.tryParse(dimensions.group(2)!);
+    }
+
+    final explicitHeight = RegExp(
+      r'(?<!\d)(\d{3,4})\s*p\b',
+      caseSensitive: false,
+    ).firstMatch(label);
+    if (explicitHeight != null) {
+      return int.tryParse(explicitHeight.group(1)!);
+    }
+
+    for (final match in RegExp(r'(?<!\d)(\d{3,4})(?!\d)').allMatches(label)) {
+      final height = int.tryParse(match.group(1)!);
+      if (height != null && _commonVideoHeights.contains(height)) {
+        return height;
+      }
+    }
+    return null;
+  }
+
+  /// Pick a provider quality using the player's saved height preference.
+  ///
+  /// `0` first honors a provider's explicit Auto/Automatic master playlist. If
+  /// the provider only exposes separate fixed-quality URLs, 720p is used as a
+  /// conservative automatic ceiling. This avoids treating unrelated host
+  /// labels (for example, `Voesx`) as an adaptive source merely because they
+  /// happen to be first in the response.
+  ///
+  /// For a missing exact height, the preference behaves as a ceiling; if every
+  /// source is larger, the smallest source is used.
+  static MapEntry<String, T>? preferredVideoSource<T>(
+    Map<String, T> sources,
+    int preferredHeight,
+  ) {
+    if (sources.isEmpty) return null;
+
+    if (preferredHeight == 0) {
+      for (final entry in sources.entries) {
+        if (RegExp(
+          r'^\s*auto(?:matic)?\b',
+          caseSensitive: false,
+        ).hasMatch(entry.key)) {
+          return entry;
+        }
+      }
+    }
+
+    final measured = <({MapEntry<String, T> entry, int height})>[];
+    for (final entry in sources.entries) {
+      final height = videoQualityHeight(entry.key);
+      if (height != null) measured.add((entry: entry, height: height));
+    }
+    if (measured.isEmpty) return sources.entries.first;
+
+    final targetHeight =
+        preferredHeight == 0 ? _automaticFallbackHeight : preferredHeight;
+
+    for (final source in measured) {
+      if (source.height == targetHeight) return source.entry;
+    }
+
+    final atOrBelow = measured.where(
+      (source) => source.height <= targetHeight,
+    );
+    if (atOrBelow.isNotEmpty) {
+      return atOrBelow
+          .reduce(
+            (best, source) => source.height > best.height ? source : best,
+          )
+          .entry;
+    }
+    return measured
+        .reduce(
+          (best, source) => source.height < best.height ? source : best,
+        )
+        .entry;
+  }
+
   /// Convert video links to a map format for the player
   static Map<String, String> convertVideoLinksToMap(
       List<RegularVideoLinks> vids) {
@@ -204,10 +309,26 @@ class VideoUtils {
         language == 'en';
   }
 
-  /// Reverse video quality map for player (highest quality first)
+  /// Order measurable video qualities from highest to lowest while keeping
+  /// provider-specific, non-quality labels stable at the end.
+  ///
+  /// The legacy method name is retained because movie, TV, download, and
+  /// provider-switching flows all share it.
   static Map<String, T> reverseVideoQualityMap<T>(Map<String, T> videos) {
-    List<MapEntry<String, T>> reversedVideoList =
-        videos.entries.toList().reversed.toList();
-    return Map.fromEntries(reversedVideoList);
+    final indexedEntries = videos.entries.indexed.toList();
+    indexedEntries.sort((left, right) {
+      final leftHeight = videoQualityHeight(left.$2.key);
+      final rightHeight = videoQualityHeight(right.$2.key);
+      if (leftHeight != null && rightHeight != null) {
+        final heightComparison = rightHeight.compareTo(leftHeight);
+        return heightComparison != 0
+            ? heightComparison
+            : left.$1.compareTo(right.$1);
+      }
+      if (leftHeight != null) return -1;
+      if (rightHeight != null) return 1;
+      return left.$1.compareTo(right.$1);
+    });
+    return Map.fromEntries(indexedEntries.map((entry) => entry.$2));
   }
 }

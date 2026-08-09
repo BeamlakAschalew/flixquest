@@ -2,6 +2,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../models/provider_load_state.dart';
+import 'app_logo.dart';
 
 class ProviderLoadingWidget extends StatefulWidget {
   final List<ProviderLoadState> providers;
@@ -91,8 +92,7 @@ class _ProviderLoadingWidgetState extends State<ProviderLoadingWidget>
                 ],
               ),
             ),
-            child: Image.asset(
-              'assets/images/logo.png',
+            child: const AppLogo(
               height: 72,
               width: 72,
             ),

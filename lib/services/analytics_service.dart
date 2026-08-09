@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -62,7 +63,13 @@ class AnalyticsService {
   // ---------------------------------------------------------------------------
 
   void _track(String event, [Map<String, dynamic>? properties]) {
-    _mixpanel?.track(event, properties: properties);
+    final mixpanel = _mixpanel;
+    if (mixpanel == null) return;
+    unawaited(
+      mixpanel.track(event, properties: properties).catchError((Object error) {
+        debugPrint('[AnalyticsService] Failed to track $event: $error');
+      }),
+    );
   }
 
   // ---------------------------------------------------------------------------
@@ -102,6 +109,18 @@ class AnalyticsService {
   // ---------------------------------------------------------------------------
   // Content page views
   // ---------------------------------------------------------------------------
+
+  void trackNavigation({
+    required String destination,
+    required String surface,
+    String source = 'navigation',
+  }) {
+    _track('App Destination Viewed', {
+      'Destination': destination,
+      'Surface': surface,
+      'Source': source,
+    });
+  }
 
   void trackMoviePageView({
     required String? movieName,
@@ -197,6 +216,161 @@ class AnalyticsService {
     });
   }
 
+  /// DaddyLive events deliberately exclude stream URLs, embed URLs and request
+  /// headers because they can contain short-lived access tokens.
+  void trackLiveTVScreenOpened({required String surface}) {
+    _track('Live TV Screen Opened', {
+      'Provider': 'DaddyLive',
+      'Surface': surface,
+    });
+  }
+
+  void trackLiveTVCatalogLoad({
+    required String surface,
+    required bool refresh,
+    required bool cacheHit,
+    required bool success,
+    required int durationMs,
+    required int channelCount,
+    required int epgDayCount,
+    String? error,
+    bool fallbackToCache = false,
+  }) {
+    _track('Live TV Catalog Load', {
+      'Provider': 'DaddyLive',
+      'Surface': surface,
+      'Refresh': refresh,
+      'Cache Hit': cacheHit,
+      'Success': success,
+      'Fallback To Cache': fallbackToCache,
+      'Duration Ms': durationMs,
+      'Channel Count': channelCount,
+      'EPG Day Count': epgDayCount,
+      if (error != null) 'Error': _safeError(error),
+    });
+  }
+
+  void trackLiveTVInteraction({
+    required String surface,
+    required String action,
+    String? value,
+    int? resultCount,
+  }) {
+    _track('Live TV Interaction', {
+      'Provider': 'DaddyLive',
+      'Surface': surface,
+      'Action': action,
+      if (value != null) 'Value': value,
+      if (resultCount != null) 'Result Count': resultCount,
+    });
+  }
+
+  void trackLiveTVFavorite({
+    required String surface,
+    required String channelId,
+    required String channelName,
+    required bool added,
+  }) {
+    _track('Live TV Favorite Toggled', {
+      'Provider': 'DaddyLive',
+      'Surface': surface,
+      'Channel ID': channelId,
+      'Channel Name': channelName,
+      'Added': added,
+    });
+  }
+
+  void trackLiveTVStreamResolution({
+    required String surface,
+    required String channelId,
+    required String channelName,
+    required String outcome,
+    required int durationMs,
+    String? source,
+    String? error,
+  }) {
+    _track('Live TV Stream Resolution', {
+      'Provider': 'DaddyLive',
+      'Surface': surface,
+      'Channel ID': channelId,
+      'Channel Name': channelName,
+      'Outcome': outcome,
+      'Duration Ms': durationMs,
+      if (source != null) 'Source': source,
+      if (error != null) 'Error': _safeError(error),
+    });
+  }
+
+  void trackLiveTVPlayerEvent({
+    required String surface,
+    required String sessionId,
+    required String channelId,
+    required String channelName,
+    required String event,
+    required int sessionElapsedMs,
+    int? startupMs,
+    int? bufferingMs,
+    int? bufferCount,
+    String? error,
+  }) {
+    _track('Live TV Player Event', {
+      'Provider': 'DaddyLive',
+      'Surface': surface,
+      'Session ID': sessionId,
+      'Channel ID': channelId,
+      'Channel Name': channelName,
+      'Player Event': event,
+      'Session Elapsed Ms': sessionElapsedMs,
+      if (startupMs != null) 'Startup Ms': startupMs,
+      if (bufferingMs != null) 'Buffering Ms': bufferingMs,
+      if (bufferCount != null) 'Buffer Count': bufferCount,
+      if (error != null) 'Error': _safeError(error),
+    });
+  }
+
+  void trackLiveTVSessionEnded({
+    required String surface,
+    required String sessionId,
+    required String channelId,
+    required String channelName,
+    required int durationMs,
+    required int watchedMs,
+    required int bufferingMs,
+    required int bufferCount,
+    required int channelSwitchCount,
+  }) {
+    _track('Live TV Session Ended', {
+      'Provider': 'DaddyLive',
+      'Surface': surface,
+      'Session ID': sessionId,
+      'Channel ID': channelId,
+      'Channel Name': channelName,
+      'Duration Ms': durationMs,
+      'Watched Ms': watchedMs,
+      'Buffering Ms': bufferingMs,
+      'Buffer Count': bufferCount,
+      'Channel Switch Count': channelSwitchCount,
+    });
+  }
+
+  static String _safeError(String error) {
+    final redacted = error
+        .replaceAll(RegExp(r'https?://\S+', caseSensitive: false), '[URL]')
+        .replaceAll(
+          RegExp(
+            r'\b(authorization|token|key|signature)\s*[:=]\s*[^,;\s}]+',
+            caseSensitive: false,
+          ),
+          r'$1=[REDACTED]',
+        )
+        .replaceAll(
+          RegExp(r'\bbearer\s+[^,;\s}]+', caseSensitive: false),
+          'Bearer [REDACTED]',
+        );
+    final singleLine = redacted.replaceAll(RegExp(r'\s+'), ' ').trim();
+    return singleLine.length <= 300 ? singleLine : singleLine.substring(0, 300);
+  }
+
   // ---------------------------------------------------------------------------
   // Search & discovery
   // ---------------------------------------------------------------------------
@@ -265,6 +439,88 @@ class AnalyticsService {
     });
   }
 
+  void trackPlaybackEvent({
+    required String mediaType,
+    required dynamic contentId,
+    required String? contentTitle,
+    required String surface,
+    required String sessionId,
+    required String event,
+    required int sessionElapsedMs,
+    String? provider,
+    int? startupMs,
+    int? bufferingMs,
+    int? bufferCount,
+    String? value,
+    String? error,
+  }) {
+    _track('Playback Event', {
+      'Media Type': mediaType,
+      'Content ID': '$contentId',
+      'Content Title': contentTitle ?? 'N/A',
+      'Surface': surface,
+      'Session ID': sessionId,
+      'Playback Event': event,
+      'Session Elapsed Ms': sessionElapsedMs,
+      if (provider != null) 'Provider': provider,
+      if (startupMs != null) 'Startup Ms': startupMs,
+      if (bufferingMs != null) 'Buffering Ms': bufferingMs,
+      if (bufferCount != null) 'Buffer Count': bufferCount,
+      if (value != null) 'Value': value,
+      if (error != null) 'Error': _safeError(error),
+    });
+  }
+
+  void trackPlaybackSessionEnded({
+    required String mediaType,
+    required dynamic contentId,
+    required String? contentTitle,
+    required String surface,
+    required String sessionId,
+    required int durationMs,
+    required int watchedMs,
+    required int bufferingMs,
+    required int bufferCount,
+    required int providerSwitchCount,
+    String? provider,
+  }) {
+    _track('Playback Session Ended', {
+      'Media Type': mediaType,
+      'Content ID': '$contentId',
+      'Content Title': contentTitle ?? 'N/A',
+      'Surface': surface,
+      'Session ID': sessionId,
+      'Duration Ms': durationMs,
+      'Watched Ms': watchedMs,
+      'Buffering Ms': bufferingMs,
+      'Buffer Count': bufferCount,
+      'Provider Switch Count': providerSwitchCount,
+      if (provider != null) 'Provider': provider,
+    });
+  }
+
+  void trackProviderAttempt({
+    required String mediaType,
+    required String provider,
+    required String purpose,
+    required bool success,
+    required int durationMs,
+    required int sourceCount,
+    required int subtitleCount,
+    String? error,
+  }) {
+    _track('Stream Provider Attempt', {
+      'Media Type': mediaType,
+      'Provider': provider,
+      'Purpose': purpose,
+      'Success': success,
+      'Duration Ms': durationMs,
+      'Source Count': sourceCount,
+      'Subtitle Count': subtitleCount,
+      if (error != null) 'Error': _safeError(error),
+    });
+  }
+
   // ---------------------------------------------------------------------------
   // User actions
   // ---------------------------------------------------------------------------
@@ -299,10 +555,34 @@ class AnalyticsService {
   void trackCloudSync({
     required String action,
     required int itemCount,
+    String? outcome,
+    int? durationMs,
+    String? error,
   }) {
     _track('Cloud Sync', {
       'Action': action,
       'Item Count': itemCount,
+      if (outcome != null) 'Outcome': outcome,
+      if (durationMs != null) 'Duration Ms': durationMs,
+      if (error != null) 'Error': _safeError(error),
+    });
+  }
+
+  void trackDownload({
+    required String action,
+    required String mediaType,
+    required String outcome,
+    String? provider,
+    String? quality,
+    String? error,
+  }) {
+    _track('Offline Download', {
+      'Action': action,
+      'Media Type': mediaType,
+      'Outcome': outcome,
+      if (provider != null) 'Provider': provider,
+      if (quality != null) 'Quality': quality,
+      if (error != null) 'Error': _safeError(error),
     });
   }
 

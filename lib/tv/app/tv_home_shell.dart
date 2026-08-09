@@ -1,11 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:provider/provider.dart';
 
+import '../../constants/app_constants.dart';
 import '../../functions/function.dart';
 import '../../models/movie_stream_metadata.dart';
 import '../../models/tv_stream_metadata.dart';
+import '../../provider/settings_provider.dart';
 import '../../screens/movie/movie_video_loader.dart';
 import '../../screens/tv/tv_video_loader.dart';
+import '../../services/app_session_state_store.dart';
 import '../focus/tv_focus_memory.dart';
 import '../models/tv_media_item.dart';
 import '../navigation/tv_back_dispatcher.dart';
@@ -29,14 +35,18 @@ class TvHomeShell extends StatefulWidget {
   State<TvHomeShell> createState() => _TvHomeShellState();
 }
 
-class _TvHomeShellState extends State<TvHomeShell> {
+class _TvHomeShellState extends State<TvHomeShell> with RestorationMixin {
   final TvFocusMemory _focusMemory = TvFocusMemory();
   final GlobalKey<TvNavigationRailState> _navigationRailKey =
       GlobalKey<TvNavigationRailState>();
   late final FocusScopeNode _shellFocusScope;
   late final List<TvNavigationDestination> _destinations;
-  String _selectedDestinationId = 'home';
+  late final AppSessionStateStore _sessionState;
+  late final RestorableString _selectedDestinationId;
   int _libraryRevision = 0;
+
+  @override
+  String get restorationId => 'television_home';
 
   @override
   void initState() {
@@ -91,22 +101,58 @@ class _TvHomeShellState extends State<TvHomeShell> {
         selectedIcon: PhosphorIcons.gear(PhosphorIconsStyle.fill),
       ),
     ];
+    _sessionState = AppSessionStateStore(sharedPrefsSingleton);
+    _selectedDestinationId = RestorableString(
+      _sessionState.televisionDestination ?? 'home',
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<SettingsProvider>().analytics.trackNavigation(
+            destination: _selectedDestinationId.value,
+            surface: 'tv',
+            source: 'restored',
+          );
+    });
+  }
+
+  @override
+  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
+    registerForRestoration(
+      _selectedDestinationId,
+      'selected_destination',
+    );
+    if (!AppSessionStateStore.televisionDestinations
+        .contains(_selectedDestinationId.value)) {
+      _selectedDestinationId.value = 'home';
+    }
   }
 
   @override
   void dispose() {
+    _selectedDestinationId.dispose();
     _shellFocusScope.dispose();
     super.dispose();
   }
 
   void _selectDestination(String destinationId) {
-    if (_selectedDestinationId == destinationId) return;
-    setState(() => _selectedDestinationId = destinationId);
+    if (_selectedDestinationId.value == destinationId) return;
+    setState(() => _selectedDestinationId.value = destinationId);
+    context.read<SettingsProvider>().analytics.trackNavigation(
+          destination: destinationId,
+          surface: 'tv',
+        );
+    unawaited(_sessionState.rememberTelevisionDestination(destinationId));
   }
 
   Future<bool> _handleBack() async {
-    if (_selectedDestinationId == 'home') return false;
-    setState(() => _selectedDestinationId = 'home');
+    if (_selectedDestinationId.value == 'home') return false;
+    setState(() => _selectedDestinationId.value = 'home');
+    context.read<SettingsProvider>().analytics.trackNavigation(
+          destination: 'home',
+          surface: 'tv',
+          source: 'back',
+        );
+    unawaited(_sessionState.rememberTelevisionDestination('home'));
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _navigationRailKey.currentState?.requestFocus('home');
     });
@@ -122,7 +168,8 @@ class _TvHomeShellState extends State<TvHomeShell> {
         previousFocus.requestFocus();
         return;
       }
-      _navigationRailKey.currentState?.requestFocus(_selectedDestinationId);
+      _navigationRailKey.currentState
+          ?.requestFocus(_selectedDestinationId.value);
     });
   }
 
@@ -246,8 +293,8 @@ class _TvHomeShellState extends State<TvHomeShell> {
                         TvNavigationRail(
                           key: _navigationRailKey,
                           destinations: _destinations,
-                          selectedId: _selectedDestinationId,
-                          autofocusId: 'home',
+                          selectedId: _selectedDestinationId.value,
+                          autofocusId: _selectedDestinationId.value,
                           metrics: metrics,
                           onDestinationSelected: _selectDestination,
                         ),
@@ -258,7 +305,8 @@ class _TvHomeShellState extends State<TvHomeShell> {
                               builder: (context) {
                                 final selectedIndex = _destinations.indexWhere(
                                   (destination) =>
-                                      destination.id == _selectedDestinationId,
+                                      destination.id ==
+                                      _selectedDestinationId.value,
                                 );
                                 final screens = <Widget>[
                                   TvHomeScreen(

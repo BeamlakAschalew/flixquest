@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../constants/app_constants.dart';
+import '../../functions/subtitle_style.dart';
 import '/provider/settings_provider.dart';
 import 'package:provider/provider.dart';
 import '../../ui_components/app_ui_components.dart';
@@ -20,37 +21,27 @@ class _PlayerSettingsState extends State<PlayerSettings> {
   Widget build(BuildContext context) {
     final settingValues = Provider.of<SettingsProvider>(context);
     // final subtitleLanguage = Provider.of<SettingsProvider>(context);
-    String backgroundColorString = settingValues.subtitleBackgroundColor;
-    String foregroundColorString = settingValues.subtitleForegroundColor;
-    String hexColorBackground =
-        backgroundColorString.replaceAll('Color(0x', '').replaceAll(')', '');
-    String hexColorForeground =
-        foregroundColorString.replaceAll('Color(0x', '').replaceAll(')', '');
-
-    Color backgroundColor = Color(int.parse('0x$hexColorBackground'));
-    Color foregroundColor = Color(int.parse('0x$hexColorForeground'));
-
-    Color pickerColor = const Color(0xff443a49);
-    Color currentColor = const Color(0xff443a49);
+    final backgroundColor = parseStoredSubtitleColor(
+      settingValues.subtitleBackgroundColor,
+      fallback: Colors.black45,
+    );
+    final foregroundColor = parseStoredSubtitleColor(
+      settingValues.subtitleForegroundColor,
+      fallback: Colors.white,
+    );
 
     String st = settingValues.subtitleTextStyle;
 
-// ValueChanged<Color> callback
-    void changeColor(Color color) {
-      setState(() => pickerColor = color);
-    }
-
     void colorPickerDialog(int type) {
+      var selectedColor = type == 1 ? foregroundColor : backgroundColor;
       showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
             content: SingleChildScrollView(
               child: ColorPicker(
-                pickerColor: type == 1 ? foregroundColor : backgroundColor,
-                onColorChanged: (color) {
-                  changeColor(color);
-                },
+                pickerColor: selectedColor,
+                onColorChanged: (color) => selectedColor = color,
                 hexInputBar: true,
                 enableAlpha: true,
               ),
@@ -61,12 +52,11 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                   tr('save'),
                 ),
                 onPressed: () {
-                  setState(() => currentColor = pickerColor);
                   type == 1
                       ? settingValues.subtitleForegroundColor =
-                          currentColor.toString()
+                          serializeSubtitleColor(selectedColor)
                       : settingValues.subtitleBackgroundColor =
-                          currentColor.toString();
+                          serializeSubtitleColor(selectedColor);
                   Navigator.of(context).pop();
                 },
               ),
@@ -122,11 +112,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                                   style: TextStyle(
                                       backgroundColor: backgroundColor,
                                       color: foregroundColor,
-                                      fontFamily: st == 'regular'
-                                          ? 'Figtree'
-                                          : st == 'bold'
-                                              ? 'FigtreeSB'
-                                              : 'FigtreeLight',
+                                      fontFamily: subtitleFontFamily(st),
                                       fontSize: settingValues.subtitleFontSize
                                           .toDouble())),
                             ),
@@ -289,6 +275,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                       options: {
                         0: tr('auto'),
                         360: '360p',
+                        480: '480p',
                         720: '720p',
                         1080: '1080p',
                       },

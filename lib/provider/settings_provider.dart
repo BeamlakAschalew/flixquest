@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import '../functions/subtitle_style.dart';
 import '../preferences/setting_preferences.dart';
 import '../services/analytics_service.dart';
+import '../video_providers/names.dart';
 
 class SettingsProvider with ChangeNotifier {
   final SettingsPreferences _settingsPreferences = SettingsPreferences();
@@ -48,6 +50,7 @@ class SettingsProvider with ChangeNotifier {
   bool get defaultViewMode => _defaultViewMode;
 
   AnalyticsService? _analytics;
+  bool _isHydrating = true;
 
   AnalyticsService get analytics => _analytics ?? AnalyticsService.instance;
 
@@ -55,10 +58,23 @@ class SettingsProvider with ChangeNotifier {
   /// Prefer [analytics] for new code.
   AnalyticsService get mixpanel => analytics;
 
-  String _subtitleForegroundColor = Colors.white.toString();
+  /// Prevent persisted values loaded at startup from being reported as user
+  /// changes. Call once all settings have been hydrated.
+  void completeHydration() => _isHydrating = false;
+
+  void _trackSetting(String name, Object value) {
+    if (!_isHydrating && _analytics?.isInitialized == true) {
+      analytics.trackSettingsChange(
+        settingName: name,
+        newValue: value.toString(),
+      );
+    }
+  }
+
+  String _subtitleForegroundColor = serializeSubtitleColor(Colors.white);
   String get subtitleForegroundColor => _subtitleForegroundColor;
 
-  String _subtitleBackgroundColor = Colors.black45.toString();
+  String _subtitleBackgroundColor = serializeSubtitleColor(Colors.black45);
   String get subtitleBackgroundColor => _subtitleBackgroundColor;
 
   int _subtitleFontSize = 17;
@@ -72,6 +88,10 @@ class SettingsProvider with ChangeNotifier {
 
   int _appColorIndex = -1;
   int get appColorIndex => _appColorIndex;
+
+  List<String> _streamProviderOrder = const [];
+  List<String> get streamProviderOrder =>
+      List.unmodifiable(_streamProviderOrder);
 
   bool _enableProxy = false;
   bool get enableProxy => _enableProxy;
@@ -90,9 +110,7 @@ class SettingsProvider with ChangeNotifier {
   set appTheme(String value) {
     _appTheme = value;
     _settingsPreferences.setThemeMode(value);
-    if (_analytics?.isInitialized == true) {
-      analytics.trackSettingsChange(settingName: 'App Theme', newValue: value);
-    }
+    _trackSetting('App Theme', value);
     notifyListeners();
   }
 
@@ -104,6 +122,7 @@ class SettingsProvider with ChangeNotifier {
   set isMaterial3Enabled(bool value) {
     _isMaterial3Enabled = value;
     _settingsPreferences.setMaterial3Mode(value);
+    _trackSetting('Material 3', value);
     notifyListeners();
   }
 
@@ -115,9 +134,7 @@ class SettingsProvider with ChangeNotifier {
   set isAdult(bool value) {
     _isAdult = value;
     _settingsPreferences.setAdultMode(value);
-    if (_analytics?.isInitialized == true) {
-      analytics.trackSettingsChange(settingName: 'Adult Mode', newValue: '$value');
-    }
+    _trackSetting('Adult Mode', value);
     notifyListeners();
   }
 
@@ -129,6 +146,7 @@ class SettingsProvider with ChangeNotifier {
   set defaultValue(int value) {
     _defaultValue = value;
     _settingsPreferences.setDefaultHome(value);
+    _trackSetting('Default Screen', value);
     notifyListeners();
   }
 
@@ -140,6 +158,7 @@ class SettingsProvider with ChangeNotifier {
   set imageQuality(String value) {
     _imageQuality = value;
     _settingsPreferences.setImageQuality(value);
+    _trackSetting('Image Quality', value);
     notifyListeners();
   }
 
@@ -151,9 +170,7 @@ class SettingsProvider with ChangeNotifier {
   set defaultCountry(String value) {
     _defaultCountry = value;
     _settingsPreferences.setCountryName(value);
-    if (_analytics?.isInitialized == true) {
-      analytics.trackSettingsChange(settingName: 'Default Country', newValue: value);
-    }
+    _trackSetting('Default Country', value);
     notifyListeners();
   }
 
@@ -171,6 +188,7 @@ class SettingsProvider with ChangeNotifier {
   set defaultView(String value) {
     _defaultView = value;
     _settingsPreferences.setViewType(value);
+    _trackSetting('Default View', value);
     notifyListeners();
   }
 
@@ -181,6 +199,7 @@ class SettingsProvider with ChangeNotifier {
   set defaultSeekDuration(int value) {
     _defaultSeekDuration = value;
     _settingsPreferences.setSeekDuration(value);
+    _trackSetting('Seek Duration', value);
     notifyListeners();
   }
 
@@ -191,6 +210,7 @@ class SettingsProvider with ChangeNotifier {
   set defaultViewMode(bool value) {
     _defaultViewMode = value;
     _settingsPreferences.setDefaultFullScreen(value);
+    _trackSetting('Auto Fullscreen', value);
     notifyListeners();
   }
 
@@ -211,6 +231,7 @@ class SettingsProvider with ChangeNotifier {
   set defaultMaxBufferDuration(int value) {
     _defaultMaxBufferDuration = value;
     _settingsPreferences.setMaxBufferDuration(value);
+    _trackSetting('Max Buffer Duration', value);
     notifyListeners();
   }
 
@@ -222,6 +243,7 @@ class SettingsProvider with ChangeNotifier {
   set defaultVideoResolution(int value) {
     _defaultVideoResolution = value;
     _settingsPreferences.setDefaultVideoQuality(value);
+    _trackSetting('Default Video Resolution', value);
     notifyListeners();
   }
 
@@ -232,9 +254,7 @@ class SettingsProvider with ChangeNotifier {
   set defaultSubtitleLanguage(String value) {
     _defaultSubtitleLanguage = value;
     _settingsPreferences.setDefaultSubtitle(value);
-    if (_analytics?.isInitialized == true) {
-      analytics.trackSettingsChange(settingName: 'Subtitle Language', newValue: value);
-    }
+    _trackSetting('Subtitle Language', value);
     notifyListeners();
   }
 
@@ -243,8 +263,11 @@ class SettingsProvider with ChangeNotifier {
   }
 
   set subtitleForegroundColor(String value) {
-    _subtitleForegroundColor = value;
-    _settingsPreferences.setSubtitleForeground(value);
+    _subtitleForegroundColor = serializeSubtitleColor(
+      parseStoredSubtitleColor(value, fallback: Colors.white),
+    );
+    _settingsPreferences.setSubtitleForeground(_subtitleForegroundColor);
+    _trackSetting('Subtitle Foreground', _subtitleForegroundColor);
     notifyListeners();
   }
 
@@ -253,8 +276,11 @@ class SettingsProvider with ChangeNotifier {
   }
 
   set subtitleBackgroundColor(String value) {
-    _subtitleBackgroundColor = value;
-    _settingsPreferences.setSubtitleBackground(value);
+    _subtitleBackgroundColor = serializeSubtitleColor(
+      parseStoredSubtitleColor(value, fallback: Colors.black45),
+    );
+    _settingsPreferences.setSubtitleBackground(_subtitleBackgroundColor);
+    _trackSetting('Subtitle Background', _subtitleBackgroundColor);
     notifyListeners();
   }
 
@@ -263,8 +289,9 @@ class SettingsProvider with ChangeNotifier {
   }
 
   set subtitleFontSize(int value) {
-    _subtitleFontSize = value;
-    _settingsPreferences.setSubtitleFont(value);
+    _subtitleFontSize = normalizeSubtitleFontSize(value);
+    _settingsPreferences.setSubtitleFont(_subtitleFontSize);
+    _trackSetting('Subtitle Font Size', _subtitleFontSize);
     notifyListeners();
   }
 
@@ -275,9 +302,7 @@ class SettingsProvider with ChangeNotifier {
   set appLanguage(String value) {
     _appLanguage = value;
     _settingsPreferences.setAppLanguage(value);
-    if (_analytics?.isInitialized == true) {
-      analytics.trackSettingsChange(settingName: 'App Language', newValue: value);
-    }
+    _trackSetting('App Language', value);
     notifyListeners();
   }
 
@@ -288,6 +313,7 @@ class SettingsProvider with ChangeNotifier {
   set fetchSpecificLangSubs(bool value) {
     _fetchSpecificLangSubs = value;
     _settingsPreferences.setSubtitleMode(value);
+    _trackSetting('Specific Subtitle Language', value);
     notifyListeners();
   }
 
@@ -298,7 +324,42 @@ class SettingsProvider with ChangeNotifier {
   set appColorIndex(int value) {
     _appColorIndex = value;
     _settingsPreferences.setAppColorIndex(value);
+    _trackSetting('App Color', value);
     notifyListeners();
+  }
+
+  Future<void> getStreamProviderOrder() async {
+    _streamProviderOrder = await _settingsPreferences.getStreamProviderOrder();
+  }
+
+  List<VideoProvider> orderStreamProviders(
+    Iterable<VideoProvider> availableProviders,
+  ) {
+    return VideoProviderOrder.apply(
+      availableProviders,
+      _streamProviderOrder,
+    );
+  }
+
+  void setStreamProviderOrder(Iterable<VideoProvider> providers) {
+    final codes = <String>{};
+    for (final provider in providers) {
+      codes.add(provider.codeName);
+    }
+    final value = codes.toList(growable: false);
+    if (_sameOrder(_streamProviderOrder, value)) return;
+    _streamProviderOrder = value;
+    _settingsPreferences.setStreamProviderOrder(value);
+    _trackSetting('Stream Provider Order', value.join(','));
+    notifyListeners();
+  }
+
+  bool _sameOrder(List<String> left, List<String> right) {
+    if (left.length != right.length) return false;
+    for (var index = 0; index < left.length; index++) {
+      if (left[index] != right[index]) return false;
+    }
+    return true;
   }
 
   Future<void> getPlayerTimeStyle() async {
@@ -308,6 +369,7 @@ class SettingsProvider with ChangeNotifier {
   set playerTimeDisplay(int value) {
     _playerTimeDisplay = value;
     _settingsPreferences.setPlayerStyleIndex(value);
+    _trackSetting('Player Time Display', value);
     notifyListeners();
   }
 
@@ -318,9 +380,7 @@ class SettingsProvider with ChangeNotifier {
   set enableProxy(bool value) {
     _enableProxy = value;
     _settingsPreferences.setUseProxy(value);
-    if (_analytics?.isInitialized == true) {
-      analytics.trackSettingsChange(settingName: 'Proxy Mode', newValue: '$value');
-    }
+    _trackSetting('Proxy Mode', value);
     notifyListeners();
   }
 
@@ -329,8 +389,9 @@ class SettingsProvider with ChangeNotifier {
   }
 
   set subtitleTextStyle(String value) {
-    _subtitleTextStyle = value;
-    _settingsPreferences.setSubtitleStyle(value);
+    _subtitleTextStyle = normalizeSubtitleTextStyle(value);
+    _settingsPreferences.setSubtitleStyle(_subtitleTextStyle);
+    _trackSetting('Subtitle Text Style', _subtitleTextStyle);
     notifyListeners();
   }
 
@@ -342,6 +403,7 @@ class SettingsProvider with ChangeNotifier {
   set enableNextEpisodeButton(bool value) {
     _enableNextEpisodeButton = value;
     _settingsPreferences.setEnableNextEpisodeButton(value);
+    _trackSetting('Next Episode Button', value);
     notifyListeners();
   }
 }
