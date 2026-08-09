@@ -202,7 +202,9 @@ class _FlixQuestState extends State<FlixQuest>
                           context: context,
                           appColor: selectedAppColor,
                           occasionalTheme:
-                              appDependencyProvider.activeOccasionalTheme),
+                              appDependencyProvider.activeOccasionalTheme,
+                          ambientColor:
+                              appDependencyProvider.activeAmbientColor),
                       home: UserState(
                         devicePresentation: widget.devicePresentation,
                       ),

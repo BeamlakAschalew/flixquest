@@ -32,12 +32,24 @@ class AppDependencyProvider extends ChangeNotifier {
   String _selectedOccasionalThemeId = 'automatic';
   bool _occasionalThemeEnabled = true;
   bool _occasionalEffectsEnabled = true;
+  bool _ambientModeEnabled = false;
+  int _nextAmbientScopeId = 0;
+  final Map<int, Color?> _ambientScopes = <int, Color?>{};
   Timer? _occasionalThemeBoundaryTimer;
 
   OccasionalThemeCatalog get occasionalThemeCatalog => _occasionalThemeCatalog;
   String get selectedOccasionalThemeId => _selectedOccasionalThemeId;
   bool get occasionalThemeEnabled => _occasionalThemeEnabled;
   bool get occasionalEffectsEnabled => _occasionalEffectsEnabled;
+  bool get ambientModeEnabled => _ambientModeEnabled;
+  Color? get activeAmbientColor {
+    if (!_ambientModeEnabled || activeOccasionalTheme != null) return null;
+    for (final color in _ambientScopes.values.toList().reversed) {
+      if (color != null) return color;
+    }
+    return null;
+  }
+
   List<OccasionalTheme> get availableOccasionalThemes =>
       _occasionalThemeCatalog.activeThemes
           .where((theme) => theme.userSelectable)
@@ -120,6 +132,38 @@ class AppDependencyProvider extends ChangeNotifier {
         await _preferences.getOccasionalEffectsEnabled();
     _normalizeOccasionalThemeSelection(persist: true);
     _scheduleOccasionalThemeBoundary();
+    notifyListeners();
+  }
+
+  Future<void> getAmbientMode() async {
+    _ambientModeEnabled = await _preferences.getAmbientModeEnabled();
+    notifyListeners();
+  }
+
+  set ambientModeEnabled(bool value) {
+    if (_ambientModeEnabled == value) return;
+    _ambientModeEnabled = value;
+    _preferences.setAmbientModeEnabled(value);
+    notifyListeners();
+  }
+
+  int pushAmbientScope() {
+    final id = ++_nextAmbientScopeId;
+    _ambientScopes[id] = null;
+    return id;
+  }
+
+  void updateAmbientScope(int id, Color color) {
+    if (!_ambientScopes.containsKey(id) || _ambientScopes[id] == color) return;
+    _ambientScopes[id] = color;
+    notifyListeners();
+  }
+
+  void popAmbientScope(int id) {
+    if (!_ambientScopes.containsKey(id)) return;
+    final wasActive = activeAmbientColor;
+    _ambientScopes.remove(id);
+    if (wasActive == activeAmbientColor) return;
     notifyListeners();
   }
 

@@ -845,7 +845,8 @@ class Styles {
       required ColorScheme? darkDynamicColor,
       required BuildContext context,
       required AppColor appColor,
-      OccasionalTheme? occasionalTheme}) {
+      OccasionalTheme? occasionalTheme,
+      Color? ambientColor}) {
     var baseTheme = appThemeMode == 'dark'
         ? darkThemeData(isM3Enabled, darkDynamicColor, appColor)
         : appThemeMode == 'light'
@@ -857,19 +858,35 @@ class Styles {
         occasionalTheme?.isActive == true ? occasionalTheme : null;
     if (activeTheme != null) {
       baseTheme = _applyOccasionalColors(baseTheme, activeTheme);
+    } else if (ambientColor != null) {
+      baseTheme = _applyAmbientColor(baseTheme, ambientColor);
     }
     final themed = _applyFlixQuestUI(
       baseTheme,
       surfaceOverride:
-          activeTheme?.backgroundFor(baseTheme.colorScheme.brightness),
+          activeTheme?.backgroundFor(baseTheme.colorScheme.brightness) ??
+              (ambientColor == null ? null : baseTheme.colorScheme.surface),
     );
     return themed.copyWith(
-      extensions: <ThemeExtension<dynamic>>[
+      extensions: [
         ...themed.extensions.values,
         AppLoadingColors.forThemeMode(appThemeMode),
       ],
     );
   }
+}
+
+ThemeData _applyAmbientColor(ThemeData base, Color seedColor) {
+  final scheme = ColorScheme.fromSeed(
+    seedColor: seedColor,
+    brightness: base.colorScheme.brightness,
+  );
+  return base.copyWith(
+    colorScheme: scheme,
+    primaryColor: scheme.primary,
+    scaffoldBackgroundColor: scheme.surface,
+    canvasColor: scheme.surface,
+  );
 }
 
 ThemeData _applyOccasionalColors(ThemeData base, OccasionalTheme theme) {
@@ -946,6 +963,21 @@ ThemeData _applyFlixQuestUI(ThemeData base, {Color? surfaceOverride}) {
     borderRadius: BorderRadius.circular(15),
     borderSide: BorderSide.none,
   );
+  Color accentFor(Set<WidgetState> states) {
+    if (states.contains(WidgetState.disabled)) {
+      return colors.onSurface.withValues(alpha: .32);
+    }
+    return actionButtonForeground;
+  }
+
+  Color selectedFillFor(Set<WidgetState> states) {
+    if (states.contains(WidgetState.disabled)) {
+      return colors.onSurface.withValues(alpha: .12);
+    }
+    return states.contains(WidgetState.selected)
+        ? colors.primary
+        : Colors.transparent;
+  }
 
   return base.copyWith(
     colorScheme: colors.copyWith(onPrimary: solidButtonForeground),
@@ -954,6 +986,16 @@ ThemeData _applyFlixQuestUI(ThemeData base, {Color? surfaceOverride}) {
     hoverColor: colors.primary.withValues(alpha: .035),
     scaffoldBackgroundColor: surface,
     canvasColor: surface,
+    iconTheme: IconThemeData(color: actionButtonForeground, size: 24),
+    primaryIconTheme: IconThemeData(color: solidButtonForeground, size: 24),
+    iconButtonTheme: IconButtonThemeData(
+      style: ButtonStyle(
+        foregroundColor: WidgetStateProperty.resolveWith(accentFor),
+        overlayColor: WidgetStatePropertyAll(
+          colors.primary.withValues(alpha: .10),
+        ),
+      ),
+    ),
     textTheme: base.textTheme.apply(fontFamily: 'Figtree').copyWith(
           headlineLarge: base.textTheme.headlineLarge
               ?.copyWith(fontFamily: 'FigtreeSB', fontWeight: FontWeight.w700),
@@ -1044,6 +1086,63 @@ ThemeData _applyFlixQuestUI(ThemeData base, {Color? surfaceOverride}) {
         textStyle: const TextStyle(fontFamily: 'FigtreeSB'),
       ),
     ),
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
+      elevation: 2,
+      focusElevation: 4,
+      hoverElevation: 4,
+      backgroundColor: colors.primary,
+      foregroundColor: solidButtonForeground,
+      focusColor: colors.primary.withValues(alpha: .16),
+      hoverColor: colors.primary.withValues(alpha: .12),
+      splashColor: solidButtonForeground.withValues(alpha: .14),
+    ),
+    checkboxTheme: CheckboxThemeData(
+      fillColor: WidgetStateProperty.resolveWith(selectedFillFor),
+      checkColor: WidgetStatePropertyAll(solidButtonForeground),
+      overlayColor: WidgetStatePropertyAll(
+        colors.primary.withValues(alpha: .10),
+      ),
+      side: BorderSide(color: colors.onSurfaceVariant, width: 1.6),
+    ),
+    radioTheme: RadioThemeData(
+      fillColor: WidgetStateProperty.resolveWith(accentFor),
+      overlayColor: WidgetStatePropertyAll(
+        colors.primary.withValues(alpha: .10),
+      ),
+    ),
+    progressIndicatorTheme: ProgressIndicatorThemeData(
+      color: colors.primary,
+      linearTrackColor: colors.primary.withValues(alpha: .14),
+      circularTrackColor: colors.primary.withValues(alpha: .14),
+    ),
+    sliderTheme: base.sliderTheme.copyWith(
+      activeTrackColor: colors.primary,
+      inactiveTrackColor: colors.primary.withValues(alpha: .18),
+      secondaryActiveTrackColor: colors.primary.withValues(alpha: .45),
+      thumbColor: colors.primary,
+      overlayColor: colors.primary.withValues(alpha: .12),
+      valueIndicatorColor: colors.primary,
+      valueIndicatorTextStyle: TextStyle(
+        color: solidButtonForeground,
+        fontFamily: 'FigtreeSB',
+      ),
+    ),
+    textSelectionTheme: TextSelectionThemeData(
+      cursorColor: colors.primary,
+      selectionColor: colors.primary.withValues(alpha: .28),
+      selectionHandleColor: colors.primary,
+    ),
+    toggleButtonsTheme: ToggleButtonsThemeData(
+      color: colors.onSurfaceVariant,
+      selectedColor: solidButtonForeground,
+      fillColor: colors.primary,
+      focusColor: colors.primary.withValues(alpha: .10),
+      hoverColor: colors.primary.withValues(alpha: .08),
+      splashColor: colors.primary.withValues(alpha: .10),
+      borderColor: colors.outline,
+      selectedBorderColor: colors.primary,
+      borderRadius: BorderRadius.circular(12),
+    ),
     chipTheme: base.chipTheme.copyWith(
       backgroundColor: Colors.transparent,
       selectedColor: colors.primary,
@@ -1113,6 +1212,40 @@ ThemeData _applyFlixQuestUI(ThemeData base, {Color? surfaceOverride}) {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
+    ),
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      backgroundColor: surface,
+      selectedItemColor: colors.primary,
+      unselectedItemColor: colors.onSurfaceVariant,
+      selectedIconTheme: IconThemeData(color: colors.primary),
+      unselectedIconTheme: IconThemeData(color: colors.onSurfaceVariant),
+      selectedLabelStyle: const TextStyle(fontFamily: 'FigtreeSB'),
+      unselectedLabelStyle: const TextStyle(fontFamily: 'Figtree'),
+      elevation: 0,
+    ),
+    navigationRailTheme: NavigationRailThemeData(
+      backgroundColor: surface,
+      indicatorColor: colors.primary.withValues(alpha: .14),
+      selectedIconTheme: IconThemeData(color: colors.primary),
+      unselectedIconTheme: IconThemeData(color: colors.onSurfaceVariant),
+      selectedLabelTextStyle: TextStyle(
+        color: colors.primary,
+        fontFamily: 'FigtreeSB',
+      ),
+      unselectedLabelTextStyle: TextStyle(
+        color: colors.onSurfaceVariant,
+        fontFamily: 'Figtree',
+      ),
+    ),
+    badgeTheme: BadgeThemeData(
+      backgroundColor: colors.primary,
+      textColor: solidButtonForeground,
+    ),
+    expansionTileTheme: ExpansionTileThemeData(
+      iconColor: colors.primary,
+      collapsedIconColor: colors.onSurfaceVariant,
+      textColor: colors.onSurface,
+      collapsedTextColor: colors.onSurface,
     ),
     dialogTheme: DialogThemeData(
       backgroundColor: surface,

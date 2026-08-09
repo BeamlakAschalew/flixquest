@@ -11,6 +11,7 @@ class AppDependencies {
   static const OCCASIONAL_THEME_SELECTION = 'occasionalThemeSelection';
   static const OCCASIONAL_THEME_ENABLED = 'occasionalThemeEnabled';
   static const OCCASIONAL_EFFECTS_ENABLED = 'occasionalEffectsEnabled';
+  static const AMBIENT_MODE_ENABLED = 'ambientModeEnabled';
 
   Future<void> setFlixQuestUrl(String value) async {
     await sharedPrefsSingleton.setString(FLIXQUEST_LOGO_URL, value);
@@ -67,5 +68,13 @@ class AppDependencies {
 
   Future<bool> getOccasionalEffectsEnabled() async {
     return sharedPrefsSingleton.getBool(OCCASIONAL_EFFECTS_ENABLED) ?? true;
+  }
+
+  Future<void> setAmbientModeEnabled(bool value) async {
+    await sharedPrefsSingleton.setBool(AMBIENT_MODE_ENABLED, value);
+  }
+
+  Future<bool> getAmbientModeEnabled() async {
+    return sharedPrefsSingleton.getBool(AMBIENT_MODE_ENABLED) ?? false;
   }
 }

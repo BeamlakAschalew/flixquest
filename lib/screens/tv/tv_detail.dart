@@ -22,6 +22,7 @@ import '../../functions/function.dart';
 import '../../provider/app_dependency_provider.dart';
 import '../../controllers/bookmark_database_controller.dart';
 import '../../provider/bookmark_provider.dart';
+import '../../services/ambient_theme_service.dart';
 import '../../functions/network.dart';
 import '../../models/credits.dart';
 import '../../models/images.dart';
@@ -59,6 +60,8 @@ class TVDetailPageState extends State<TVDetailPage>
   late Future<List<Genres>> _genres;
   bool? _isBookmarked;
   bool _bookmarkBusy = false;
+  final AmbientThemeScopeController _ambientTheme =
+      AmbientThemeScopeController();
 
   @override
   void initState() {
@@ -66,6 +69,10 @@ class TVDetailPageState extends State<TVDetailPage>
     tabController = TabController(length: 3, vsync: this)
       ..addListener(_onTabChanged);
     _loadData();
+    _ambientTheme.attach(
+      context,
+      widget.tvSeries.posterPath ?? widget.tvSeries.backdropPath,
+    );
     _checkBookmark();
     mixpanelUpload(context);
   }
@@ -308,6 +315,7 @@ class TVDetailPageState extends State<TVDetailPage>
 
   @override
   void dispose() {
+    _ambientTheme.dispose();
     tabController
       ..removeListener(_onTabChanged)
       ..dispose();

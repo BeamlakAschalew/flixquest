@@ -15,7 +15,6 @@ import '/provider/app_dependency_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'player_settings.dart';
-import 'provider_choose.dart';
 import '../../ui_components/app_ui_components.dart';
 
 class Settings extends StatefulWidget {
@@ -343,6 +342,18 @@ class _SettingsState extends State<Settings> {
                   onChanged: (value) =>
                       setState(() => settingsValues.appTheme = value),
                 ),
+                SwitchListTile(
+                  value: appDependencies.ambientModeEnabled,
+                  secondary: Icon(
+                    PhosphorIcons.imageSquare(),
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  title: Text(tr('ambient_mode')),
+                  subtitle: Text(tr('ambient_mode_description')),
+                  onChanged: (value) {
+                    appDependencies.ambientModeEnabled = value;
+                  },
+                ),
                 if (occasionalCatalog.enabled)
                   SwitchListTile(
                     value: appDependencies.occasionalThemeEnabled,
@@ -392,22 +403,6 @@ class _SettingsState extends State<Settings> {
                         MaterialPageRoute(builder: ((context) {
                       return const PlayerSettings();
                     })));
-                  },
-                ),
-                ListTile(
-                  leading: Icon(
-                    PhosphorIcons.arrowsDownUp(),
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  title: Text(tr('provider_precedence')),
-                  trailing: Icon(PhosphorIcons.caretRight()),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const ProviderChooseScreen(),
-                      ),
-                    );
                   },
                 ),
                 Visibility(

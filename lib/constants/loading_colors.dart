@@ -15,23 +15,23 @@ class AppLoadingColors extends ThemeExtension<AppLoadingColors> {
 
   /// Soft loading colors for the light theme.
   static const light = AppLoadingColors(
-    shimmerBase: Color(0xFFE5E8EC),
-    shimmerHighlight: Color(0xFFF6F7F9),
-    cachedImagePlaceholder: Color(0xFFE9ECEF),
+    shimmerBase: Color(0xFFE9EBEE),
+    shimmerHighlight: Color(0xFFEFF1F3),
+    cachedImagePlaceholder: Color(0xFFF1F2F4),
   );
 
   /// Raised neutral loading colors for the dark theme.
   static const dark = AppLoadingColors(
-    shimmerBase: Color(0xFF353A40),
-    shimmerHighlight: Color(0xFF484E55),
-    cachedImagePlaceholder: Color(0xFF30353A),
+    shimmerBase: Color(0xFF292D31),
+    shimmerHighlight: Color(0xFF30353A),
+    cachedImagePlaceholder: Color(0xFF23272B),
   );
 
   /// Low-glare loading colors that remain visible on a true-black background.
   static const amoled = AppLoadingColors(
-    shimmerBase: Color(0xFF202429),
-    shimmerHighlight: Color(0xFF343A40),
-    cachedImagePlaceholder: Color(0xFF1A1E22),
+    shimmerBase: Color(0xFF171A1D),
+    shimmerHighlight: Color(0xFF1E2226),
+    cachedImagePlaceholder: Color(0xFF111416),
   );
 
   final Color shimmerBase;

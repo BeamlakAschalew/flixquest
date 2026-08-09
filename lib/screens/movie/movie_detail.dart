@@ -27,6 +27,7 @@ import '../../provider/settings_provider.dart';
 import '../../provider/bookmark_provider.dart';
 import '../../screens/common/photoview.dart';
 import '../../services/globle_method.dart';
+import '../../services/ambient_theme_service.dart';
 import '../../ui_components/app_ui_components.dart';
 import '../person/cast_detail.dart';
 import 'collection_detail.dart';
@@ -61,6 +62,8 @@ class MovieDetailPageState extends State<MovieDetailPage>
   late Future<MovieDetails> _details;
   late Future<ExternalLinks> _socialLinks;
   late Future<BelongsToCollection> _collection;
+  final AmbientThemeScopeController _ambientTheme =
+      AmbientThemeScopeController();
 
   bool? _isBookmarked;
   bool _bookmarkBusy = false;
@@ -71,6 +74,10 @@ class MovieDetailPageState extends State<MovieDetailPage>
     _tabController = TabController(length: 3, vsync: this)
       ..addListener(_onTabChanged);
     _loadPageData();
+    _ambientTheme.attach(
+      context,
+      widget.movie.posterPath ?? widget.movie.backdropPath,
+    );
     _checkBookmark();
     _trackPageView();
   }
@@ -455,6 +462,7 @@ class MovieDetailPageState extends State<MovieDetailPage>
 
   @override
   void dispose() {
+    _ambientTheme.dispose();
     _tabController
       ..removeListener(_onTabChanged)
       ..dispose();
@@ -943,6 +951,7 @@ class _SummaryAction extends StatelessWidget {
       style: IconButton.styleFrom(
         backgroundColor:
             Theme.of(context).colorScheme.onSurface.withValues(alpha: .06),
+        foregroundColor: Theme.of(context).colorScheme.primary,
       ),
       icon: child,
     );

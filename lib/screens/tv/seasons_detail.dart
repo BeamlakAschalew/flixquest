@@ -19,6 +19,7 @@ import '../../functions/network.dart';
 import '../../models/credits.dart';
 import '../../models/images.dart';
 import '../../models/videos.dart';
+import '../../services/ambient_theme_service.dart';
 import 'episode_detail.dart';
 import 'tvseason_castandcrew.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -53,12 +54,18 @@ class SeasonsDetailState extends State<SeasonsDetail>
   late Future<Credits> _credits;
   late Future<Images> _images;
   late Future<Videos> _videos;
+  final AmbientThemeScopeController _ambientTheme =
+      AmbientThemeScopeController();
 
   @override
   void initState() {
     super.initState();
     tabController = TabController(length: 4, vsync: this);
     _loadData();
+    _ambientTheme.attach(
+      context,
+      widget.seasons.posterPath ?? widget.tvDetails.backdropPath,
+    );
     mixpanelUpload(context);
   }
 
@@ -177,6 +184,7 @@ class SeasonsDetailState extends State<SeasonsDetail>
 
   @override
   void dispose() {
+    _ambientTheme.dispose();
     tabController.dispose();
     scrollController.dispose();
     super.dispose();

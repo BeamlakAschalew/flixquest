@@ -22,6 +22,7 @@ import '../person/cast_detail.dart';
 import 'tvepisode_castandcrew.dart';
 import '../../models/tv_stream_metadata.dart';
 import '../../services/globle_method.dart';
+import '../../services/ambient_theme_service.dart';
 import 'tv_video_loader.dart';
 
 class EpisodeDetailPage extends StatefulWidget {
@@ -53,11 +54,17 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
   final scrollController = ScrollController();
   late Future<Credits> _credits;
   late Future<Images> _images;
+  final AmbientThemeScopeController _ambientTheme =
+      AmbientThemeScopeController();
 
   @override
   void initState() {
     super.initState();
     _loadData();
+    _ambientTheme.attach(
+      context,
+      widget.episodeList.stillPath ?? widget.posterPath,
+    );
     mixpanelUpload(context);
   }
 
@@ -256,6 +263,7 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
 
   @override
   void dispose() {
+    _ambientTheme.dispose();
     scrollController.dispose();
     super.dispose();
   }
@@ -430,6 +438,7 @@ class _EpisodeContent extends StatelessWidget {
                     .colorScheme
                     .onSurface
                     .withValues(alpha: .06),
+                foregroundColor: Theme.of(context).colorScheme.primary,
               ),
               icon: Icon(PhosphorIcons.shareNetwork(), size: 18),
             ),

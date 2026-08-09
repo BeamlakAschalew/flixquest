@@ -186,6 +186,8 @@
   "occasional_theme": "Seasonal theme",
   "seasonal_themes": "Seasonal themes",
   "seasonal_themes_description": "Apply occasional colors, logos, and decorations",
+  "ambient_mode": "Ambient mode",
+  "ambient_mode_description": "Match the app colors to the artwork on detail pages",
   "automatic": "Automatic",
   "seasonal_effects": "Seasonal effects",
   "seasonal_effects_description": "Show decorative animations for the active occasion",

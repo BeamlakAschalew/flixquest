@@ -105,6 +105,7 @@ Future<DevicePresentation> appInitialize({
   await bookmarkProvider.fetchBookmarks();
   await appDependencyProvider.getFlixQuestLogo();
   await appDependencyProvider.getOccasionalTheme();
+  await appDependencyProvider.getAmbientMode();
   await appDependencyProvider.getFQUrl();
   await appDependencyProvider.getTmdbProxy();
 

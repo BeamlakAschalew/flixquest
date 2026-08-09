@@ -186,6 +186,8 @@
   "occasional_theme": "Tema de temporada",
   "seasonal_themes": "Temas de temporada",
   "seasonal_themes_description": "Aplicar colores, logotipos y decoraciones de ocasiones",
+  "ambient_mode": "Modo ambiente",
+  "ambient_mode_description": "Adapta los colores de la aplicación a la imagen de las páginas de detalles",
   "automatic": "Automático",
   "seasonal_effects": "Efectos de temporada",
   "seasonal_effects_description": "Mostrar animaciones decorativas para la ocasión activa",

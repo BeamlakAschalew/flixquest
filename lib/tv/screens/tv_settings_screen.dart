@@ -58,6 +58,14 @@ class TvSettingsScreen extends StatelessWidget {
                     icon: PhosphorIcons.moonStars(),
                     onActivate: () => _showThemeModePicker(context, settings),
                   ),
+                  const SizedBox(height: 14),
+                  _TvSettingTile(
+                    label: 'Ambient mode',
+                    value: appDependencies.ambientModeEnabled ? 'On' : 'Off',
+                    icon: PhosphorIcons.imageSquare(),
+                    onActivate: () => appDependencies.ambientModeEnabled =
+                        !appDependencies.ambientModeEnabled,
+                  ),
                   if (occasionalCatalog.enabled) ...<Widget>[
                     const SizedBox(height: 14),
                     _TvSettingTile(

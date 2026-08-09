@@ -27,5 +27,18 @@ void main() {
         isNot(AppLoadingColors.amoled.shimmerBase),
       );
     });
+
+    test('keeps the shimmer sweep low contrast in every theme', () {
+      for (final colors in <AppLoadingColors>[
+        AppLoadingColors.light,
+        AppLoadingColors.dark,
+        AppLoadingColors.amoled,
+      ]) {
+        final contrastDelta = (colors.shimmerHighlight.computeLuminance() -
+                colors.shimmerBase.computeLuminance())
+            .abs();
+        expect(contrastDelta, lessThan(0.08));
+      }
+    });
   });
 }

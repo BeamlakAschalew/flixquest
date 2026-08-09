@@ -8,6 +8,7 @@ import '../../functions/subtitle_style.dart';
 import '/provider/settings_provider.dart';
 import 'package:provider/provider.dart';
 import '../../ui_components/app_ui_components.dart';
+import 'provider_choose.dart';
 
 class PlayerSettings extends StatefulWidget {
   const PlayerSettings({super.key});
@@ -212,6 +213,22 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                 clipBehavior: Clip.antiAlias,
                 child: Column(
                   children: [
+                    ListTile(
+                      leading: Icon(
+                        PhosphorIcons.arrowsDownUp(),
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      title: Text(tr('provider_precedence')),
+                      trailing: Icon(PhosphorIcons.caretRight()),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const ProviderChooseScreen(),
+                          ),
+                        );
+                      },
+                    ),
                     SwitchListTile(
                       value: settingValues.defaultViewMode,
                       inactiveThumbColor: Colors.white,
