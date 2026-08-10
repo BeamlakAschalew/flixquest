@@ -8,6 +8,8 @@ enum OccasionalEffectType {
   confetti,
   fireworks,
   petals,
+  candyEggs,
+  adeyFlowers,
   hearts,
   stars,
   bats,
@@ -41,7 +43,9 @@ class OccasionalEffect {
     }
     final typeName = (value['type'] ?? '').toString().trim().toLowerCase();
     final type = OccasionalEffectType.values.firstWhere(
-      (candidate) => candidate.name == typeName,
+      (candidate) =>
+          candidate.name.toLowerCase() == typeName ||
+          jsonName(candidate) == typeName,
       orElse: () => presetType,
     );
     final rawColors = value['colors'];
@@ -67,12 +71,18 @@ class OccasionalEffect {
 
   Map<String, dynamic> toJson() => <String, dynamic>{
         'enabled': enabled,
-        'type': type.name,
+        'type': jsonName(type),
         'density': density,
         'speed': speed,
         'opacity': opacity,
         if (colors.isNotEmpty)
           'colors': colors.map(OccasionalTheme.colorHex).toList(),
+      };
+
+  static String jsonName(OccasionalEffectType type) => switch (type) {
+        OccasionalEffectType.candyEggs => 'candy_eggs',
+        OccasionalEffectType.adeyFlowers => 'adey_flowers',
+        _ => type.name,
       };
 }
 
@@ -346,7 +356,7 @@ class OccasionalTheme {
             tertiary: Color(0xFFC62828),
             lightBackground: Color(0xFFFFFDF2),
             darkBackground: Color(0xFF141508),
-            effectType: OccasionalEffectType.petals,
+            effectType: OccasionalEffectType.adeyFlowers,
           ),
         'new_year' || 'new-year' => const _OccasionalThemePreset(
             isBuiltIn: true,
@@ -389,7 +399,7 @@ class OccasionalTheme {
             tertiary: Color(0xFFFFCA28),
             lightBackground: Color(0xFFFFFBFF),
             darkBackground: Color(0xFF15101C),
-            effectType: OccasionalEffectType.petals,
+            effectType: OccasionalEffectType.candyEggs,
           ),
         'eid' || 'eid_al_fitr' || 'eid_al_adha' => const _OccasionalThemePreset(
             isBuiltIn: true,

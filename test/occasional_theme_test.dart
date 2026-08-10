@@ -32,7 +32,20 @@ void main() {
       expect(theme.secondaryColor, const Color(0xFF2E7D32));
       expect(theme.tertiaryColor, const Color(0xFFC62828));
       expect(theme.darkBackgroundColor, const Color(0xFF010203));
-      expect(theme.effect.type, OccasionalEffectType.petals);
+      expect(theme.effect.type, OccasionalEffectType.adeyFlowers);
+      expect(theme.effect.toJson()['type'], 'adey_flowers');
+    });
+
+    test('uses the Easter candy and egg effect', () {
+      final theme = OccasionalTheme.fromJson(<String, dynamic>{
+        'enabled': true,
+        'id': 'easter',
+        'effect': <String, dynamic>{'enabled': true},
+      });
+
+      expect(theme.effect.type, OccasionalEffectType.candyEggs);
+      expect(theme.effect.enabled, isTrue);
+      expect(theme.effect.toJson()['type'], 'candy_eggs');
     });
 
     test('honors activation windows and rejects invalid windows', () {

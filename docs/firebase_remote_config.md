@@ -61,7 +61,7 @@ the logo URLs and dates, then publish. Overlapping dates are supported.
       "ends_at": "2026-09-20T23:59:59+03:00",
       "effect": {
         "enabled": true,
-        "type": "petals",
+        "type": "adey_flowers",
         "density": 26,
         "speed": 0.7,
         "opacity": 0.55,
@@ -130,7 +130,7 @@ the logo URLs and dates, then publish. Overlapping dates are supported.
       "ends_at": "2027-03-30T23:59:59Z",
       "effect": {
         "enabled": true,
-        "type": "petals",
+        "type": "candy_eggs",
         "density": 20,
         "speed": 0.6,
         "opacity": 0.5
@@ -209,7 +209,7 @@ theme for later. On TV, the same switch is available under **Settings →
 Seasonal themes**.
 
 When `allow_user_effects_toggle` is true, **Seasonal effects** is a separate
-switch that disables only snow, petals, fireworks, and other decorations while
+switch that disables only snow, flowers, treats, fireworks, and other decorations while
 keeping the seasonal colors and logo.
 
 ## Theme configuration
@@ -247,11 +247,11 @@ breaking the page.
 | ID | Aliases | Default effect | Palette character |
 | --- | --- | --- | --- |
 | `christmas` | `xmas` | `snow` | Red, evergreen, gold |
-| `ethiopian_new_year` | `ethiopian-new-year`, `enkutatash` | `petals` | Adey yellow, green, red |
+| `ethiopian_new_year` | `ethiopian-new-year`, `enkutatash` | `adey_flowers` | Falling leaves with miniature Adey flowers |
 | `new_year` | `new-year` | `fireworks` | Gold, indigo, magenta |
 | `halloween` | — | `bats` | Orange, purple, near-black |
 | `valentines` | `valentines_day`, `valentine` | `hearts` | Rose and pink |
-| `easter` | — | `petals` | Violet, teal, yellow |
+| `easter` | — | `candy_eggs` | Falling wrapped candies and decorated eggs |
 | `eid` | `eid_al_fitr`, `eid_al_adha` | `stars` | Emerald, gold, violet |
 | `diwali` | — | `sparkles` | Saffron, pink, purple |
 
@@ -270,7 +270,7 @@ are automatically hidden when the operating system requests reduced motion.
 | Field | Type | Default | Valid values / limits |
 | --- | --- | --- | --- |
 | `enabled` | Boolean | `false` | Per-theme effect switch. |
-| `type` | String | Theme preset | `none`, `snow`, `confetti`, `fireworks`, `petals`, `hearts`, `stars`, `bats`, `sparkles` |
+| `type` | String | Theme preset | `none`, `snow`, `confetti`, `fireworks`, `petals`, `candy_eggs`, `adey_flowers`, `hearts`, `stars`, `bats`, `sparkles` |
 | `density` | Integer | `28` | Clamped to `4`–`80`; use `8`–`36` for TVs and phones. |
 | `speed` | Number | `1.0` | Clamped to `0.2`–`3.0`. |
 | `opacity` | Number | `0.65` | Clamped to `0.1`–`1.0`. |

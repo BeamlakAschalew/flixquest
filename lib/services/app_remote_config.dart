@@ -20,6 +20,10 @@ class AppRemoteConfig {
       occasionalThemeKey: '{"enabled":false}',
       appLogoKey: '',
       legacyAppLogoKey: 'default',
+      'forced_update': false,
+      'latest_version': '',
+      'latest_build_number': 0,
+      'min_build_number': 0,
     });
   }
 
@@ -47,7 +51,12 @@ class AppRemoteConfig {
     provider.displayWatchNowButton = remoteConfig.getBool('enable_stream');
     provider.displayOTTDrawer = remoteConfig.getBool('enable_ott');
     provider.flixquestAPIURL = remoteConfig.getString('flixquest_api_url_v2');
-    provider.isForcedUpdate = remoteConfig.getBool('forced_update');
+    provider.setUpdateConfiguration(
+      forced: remoteConfig.getBool('forced_update'),
+      latestVersion: remoteConfig.getString('latest_version'),
+      latestBuild: remoteConfig.getInt('latest_build_number'),
+      minimumBuild: remoteConfig.getInt('min_build_number'),
+    );
     provider.tmdbProxy = remoteConfig.getString('tmdb_proxy');
   }
 }

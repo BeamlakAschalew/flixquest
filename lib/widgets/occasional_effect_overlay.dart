@@ -188,6 +188,20 @@ class _OccasionalEffectPainter extends CustomPainter {
               tertiary,
               const Color(0xFFFFD740),
             ],
+          OccasionalEffectType.candyEggs => <Color>[
+              primary,
+              secondary,
+              tertiary,
+              const Color(0xFFFFF3E0),
+              const Color(0xFFFFD54F),
+            ],
+          OccasionalEffectType.adeyFlowers => <Color>[
+              primary,
+              secondary,
+              tertiary,
+              const Color(0xFFFFF8E1),
+              const Color(0xFFF9A825),
+            ],
           OccasionalEffectType.hearts => <Color>[
               primary,
               secondary,
@@ -220,6 +234,10 @@ class _OccasionalEffectPainter extends CustomPainter {
         _paintFireworks(canvas, size);
       case OccasionalEffectType.petals:
         _paintPetals(canvas, size);
+      case OccasionalEffectType.candyEggs:
+        _paintCandyEggs(canvas, size);
+      case OccasionalEffectType.adeyFlowers:
+        _paintAdeyFlowers(canvas, size);
       case OccasionalEffectType.hearts:
         _paintHearts(canvas, size);
       case OccasionalEffectType.stars:
@@ -323,6 +341,103 @@ class _OccasionalEffectPainter extends CustomPainter {
       canvas.translate(x, y * size.height);
       canvas.rotate((_time * 2 + i) * math.pi);
       canvas.drawPath(path, Paint()..color = _color(i, effect.opacity * .55));
+      canvas.restore();
+    }
+  }
+
+  void _paintCandyEggs(Canvas canvas, Size size) {
+    for (var i = 0; i < effect.density; i++) {
+      final progress =
+          _wrap(_unit(i * 41 + 1) + _time * (.14 + _unit(i) * .14));
+      final y = progress * size.height;
+      final x = _unit(i * 17 + 7) * size.width +
+          math.sin((_time + i * .3) * math.pi * 2) * 22;
+      final scale = .55 + _unit(i * 5) * .55;
+      canvas.save();
+      canvas.translate(x, y);
+      canvas.rotate((_time * 1.4 + i) * math.pi);
+      canvas.scale(scale);
+      if (i.isEven) {
+        final egg = Path()
+          ..moveTo(0, -8)
+          ..cubicTo(6, -5, 7, 2, 0, 9)
+          ..cubicTo(-7, 2, -6, -5, 0, -8)
+          ..close();
+        canvas.drawPath(egg, Paint()..color = _color(i, effect.opacity * .76));
+        canvas.drawLine(
+          const Offset(-5, 1),
+          const Offset(5, -1),
+          Paint()
+            ..color = _color(i + 1, effect.opacity * .8)
+            ..strokeWidth = 2.2
+            ..style = PaintingStyle.stroke,
+        );
+      } else {
+        canvas.drawRRect(
+          RRect.fromRectAndRadius(
+            const Rect.fromLTRB(-5, -3.5, 5, 3.5),
+            const Radius.circular(2),
+          ),
+          Paint()..color = _color(i, effect.opacity * .76),
+        );
+        final wrapper = Path()
+          ..moveTo(-5, -3.5)
+          ..lineTo(-8, -6)
+          ..lineTo(-7, 0)
+          ..lineTo(-8, 6)
+          ..lineTo(-5, 3.5)
+          ..close();
+        final wrapperPaint = Paint()
+          ..color = _color(i + 1, effect.opacity * .7);
+        canvas.drawPath(wrapper, wrapperPaint);
+        canvas.save();
+        canvas.scale(-1, 1);
+        canvas.drawPath(wrapper, wrapperPaint);
+        canvas.restore();
+        final stripePaint = Paint()
+          ..color = _color(i + 2, effect.opacity * .7)
+          ..strokeWidth = 1.2;
+        canvas.drawLine(const Offset(-2, -3), const Offset(-2, 3), stripePaint);
+        canvas.drawLine(const Offset(2, -3), const Offset(2, 3), stripePaint);
+      }
+      canvas.restore();
+    }
+  }
+
+  void _paintAdeyFlowers(Canvas canvas, Size size) {
+    _paintPetals(canvas, size);
+    final flowerCount = math.max(4, (effect.density / 2).round());
+    for (var i = 0; i < flowerCount; i++) {
+      final progress = _wrap(
+        _unit(i * 37 + 13) + _time * (.12 + _unit(i + 3) * .1),
+      );
+      final x = _unit(i * 23 + 11) * size.width +
+          math.sin((_time + i) * math.pi * 2) * 16;
+      final y = progress * size.height;
+      final scale = .48 + _unit(i * 7) * .38;
+      canvas.save();
+      canvas.translate(x, y);
+      canvas.scale(scale);
+      final petalPaint = Paint()..color = _color(i + 1, effect.opacity * .72);
+      for (var petal = 0; petal < 5; petal++) {
+        final angle = petal * math.pi * 2 / 5;
+        canvas.save();
+        canvas.rotate(angle);
+        canvas.drawOval(
+          Rect.fromCenter(
+            center: const Offset(0, -4.3),
+            width: 4.6,
+            height: 7.2,
+          ),
+          petalPaint,
+        );
+        canvas.restore();
+      }
+      canvas.drawCircle(
+        Offset.zero,
+        2.2,
+        Paint()..color = _color(i + 2, effect.opacity * .9),
+      );
       canvas.restore();
     }
   }

@@ -52,6 +52,34 @@ void main() {
     expect(find.byKey(const Key('occasional-effect-canvas')), findsNothing);
   });
 
+  testWidgets('renders Easter treats and Ethiopian Adey flowers',
+      (tester) async {
+    for (final id in <String>['easter', 'ethiopian_new_year']) {
+      final occasionalTheme = OccasionalTheme.fromJson(<String, dynamic>{
+        'id': id,
+        'enabled': true,
+        'effect': <String, dynamic>{'enabled': true},
+      });
+      await tester.pumpWidget(
+        MediaQuery(
+          data: const MediaQueryData(size: Size(800, 600)),
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: SizedBox.expand(
+              child: OccasionalEffectOverlay(
+                theme: occasionalTheme,
+                enabled: true,
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(find.byKey(const Key('occasional-effect-canvas')), findsOneWidget);
+    }
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
   testWidgets('animation clock stays continuous across controller repeats',
       (tester) async {
     final controller = AnimationController(

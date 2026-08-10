@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_download_manager/flutter_download_manager.dart';
@@ -15,8 +14,10 @@ import '../../constants/api_constants.dart';
 import '../../constants/app_constants.dart';
 import '../../functions/network.dart';
 import '../../models/update.dart';
+import '../../provider/app_dependency_provider.dart';
 import '../../provider/settings_provider.dart';
 import '../../services/globle_method.dart';
+import '../../services/app_update_service.dart';
 import '../../ui_components/app_ui_components.dart';
 
 class UpdateScreen extends StatefulWidget {
@@ -333,71 +334,137 @@ class UpdateBottom extends StatefulWidget {
 }
 
 class _UpdateBottomState extends State<UpdateBottom> {
-  final String _appVersion =
-      FirebaseRemoteConfig.instance.getString('latest_version');
+  late final Future<PackageInfo> _packageInfo;
   bool _visible = false;
+  String _notificationId = '';
 
   @override
   void initState() {
     super.initState();
-    _checkVisibility();
+    _packageInfo = PackageInfo.fromPlatform();
   }
 
   Future<void> _checkVisibility() async {
-    final ignored = sharedPrefsSingleton.getString('ignore_version') ?? '';
-    final packageInfo = await PackageInfo.fromPlatform();
-    final currentBuildNumber = int.tryParse(packageInfo.buildNumber) ?? 0;
-    int remoteBuildNumber =
-        FirebaseRemoteConfig.instance.getInt('latest_build_number');
-    if (remoteBuildNumber == 0) {
-      remoteBuildNumber =
-          FirebaseRemoteConfig.instance.getInt('min_build_number');
-    }
-
+    final packageInfo = await _packageInfo;
     if (!mounted) return;
+    final config = context.read<AppDependencyProvider>();
+    final notificationId = AppUpdateService.notificationId(
+      remoteVersion: config.latestAppVersion,
+      latestBuildNumber: config.latestBuildNumber,
+      minimumBuildNumber: config.minimumBuildNumber,
+    );
+    final ignored = sharedPrefsSingleton.getString('ignore_version') ?? '';
+
     setState(() {
-      if (remoteBuildNumber > 0) {
-        _visible = ignored != remoteBuildNumber.toString() &&
-            currentBuildNumber < remoteBuildNumber;
-      } else {
-        _visible = ignored != _appVersion &&
-            _appVersion.isNotEmpty &&
-            _appVersion != packageInfo.version;
-      }
+      _notificationId = notificationId;
+      _visible = notificationId.isNotEmpty &&
+          ignored != notificationId &&
+          AppUpdateService.isAvailable(
+            packageInfo: packageInfo,
+            remoteVersion: config.latestAppVersion,
+            latestBuildNumber: config.latestBuildNumber,
+            minimumBuildNumber: config.minimumBuildNumber,
+          );
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    context.watch<AppDependencyProvider>();
+    _checkVisibility();
+  }
+
+  Future<void> _dismiss() async {
+    if (_notificationId.isNotEmpty) {
+      await sharedPrefsSingleton.setString('ignore_version', _notificationId);
+    }
+    if (mounted) setState(() => _visible = false);
   }
 
   @override
   Widget build(BuildContext context) {
     if (!_visible) return const SizedBox.shrink();
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 20),
-      child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Column(
-          children: [
-            Icon(
-              PhosphorIcons.rocketLaunch(),
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              tr('update_available'),
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 4),
-            Text(tr('new_version', namedArgs: {'v': _appVersion})),
-            const SizedBox(height: 12),
-            FilledButton(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const UpdateScreen(isForced: false),
+    final config = context.watch<AppDependencyProvider>();
+    final remoteBuild = AppUpdateService.effectiveBuildNumber(
+      latestBuildNumber: config.latestBuildNumber,
+      minimumBuildNumber: config.minimumBuildNumber,
+    );
+    final version = AppUpdateService.displayVersion(
+      config.latestAppVersion,
+      remoteBuild,
+    );
+    final colors = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          gradient: LinearGradient(
+            colors: [
+              colors.primary.withValues(alpha: .20),
+              colors.secondary.withValues(alpha: .10),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          border: Border.all(color: colors.primary.withValues(alpha: .28)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 14, 10, 14),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: colors.primary,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(
+                  PhosphorIcons.rocketLaunch(PhosphorIconsStyle.fill),
+                  color: colors.onPrimary,
                 ),
               ),
-              child: Text(tr('goto_update')),
-            ),
-          ],
+              const SizedBox(width: 13),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      tr('update_available'),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w800,
+                          ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      tr('new_version', namedArgs: {'v': version}),
+                      style: TextStyle(color: colors.onSurfaceVariant),
+                    ),
+                    const SizedBox(height: 11),
+                    FilledButton.icon(
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const UpdateScreen(isForced: false),
+                        ),
+                      ),
+                      icon: Icon(PhosphorIcons.arrowUpRight()),
+                      label: Text(tr('update')),
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                onPressed: _dismiss,
+                tooltip: tr('disable_notification_version'),
+                icon: Icon(PhosphorIcons.x(), size: 19),
+                visualDensity: VisualDensity.compact,
+              ),
+            ],
+          ),
         ),
       ),
     );

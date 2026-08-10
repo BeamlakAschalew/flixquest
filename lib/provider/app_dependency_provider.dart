@@ -24,6 +24,15 @@ class AppDependencyProvider extends ChangeNotifier {
   bool _isForcedUpdate = false;
   bool get isForcedUpdate => _isForcedUpdate;
 
+  String _latestAppVersion = '';
+  String get latestAppVersion => _latestAppVersion;
+
+  int _latestBuildNumber = 0;
+  int get latestBuildNumber => _latestBuildNumber;
+
+  int _minimumBuildNumber = 0;
+  int get minimumBuildNumber => _minimumBuildNumber;
+
   String _tmdbProxy = '';
   String get tmdbProxy => _tmdbProxy;
 
@@ -111,6 +120,26 @@ class AppDependencyProvider extends ChangeNotifier {
 
   set isForcedUpdate(bool value) {
     _isForcedUpdate = value;
+    notifyListeners();
+  }
+
+  void setUpdateConfiguration({
+    required bool forced,
+    required String latestVersion,
+    required int latestBuild,
+    required int minimumBuild,
+  }) {
+    final normalizedVersion = latestVersion.trim();
+    if (_isForcedUpdate == forced &&
+        _latestAppVersion == normalizedVersion &&
+        _latestBuildNumber == latestBuild &&
+        _minimumBuildNumber == minimumBuild) {
+      return;
+    }
+    _isForcedUpdate = forced;
+    _latestAppVersion = normalizedVersion;
+    _latestBuildNumber = latestBuild;
+    _minimumBuildNumber = minimumBuild;
     notifyListeners();
   }
 
