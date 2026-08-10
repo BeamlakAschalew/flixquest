@@ -154,6 +154,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   DateTime? _lastAnalyticsErrorAt;
   late final AppDependencyProvider _appDependencies;
   int? _occasionalEffectsSuppressionId;
+  bool _isContentMenuOpen = false;
 
   @override
   void initState() {
@@ -193,6 +194,10 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           : _mobileBackBufferDurationMs,
       retainBackBufferFromKeyframe: !widget.useTvControls,
     );
+    final hasEpisodeSelection = widget.mediaType == MediaType.tvShow &&
+        widget.tvMetadata?.seasonEpisodes?.isNotEmpty == true;
+    final hasMovieRecommendations = widget.mediaType == MediaType.movie &&
+        widget.movieMetadata?.recommendations?.isNotEmpty == true;
     betterPlayerControlsConfiguration = BetterPlayerControlsConfiguration(
         // Gesture controls configuration
         gestureConfiguration: BetterPlayerGestureConfiguration(
@@ -209,38 +214,11 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
               : insertRecentEpisodeData();
         },
         enableFullscreen: true,
-        enableEpisodeSelection: widget.mediaType == MediaType.tvShow &&
-            widget.tvMetadata?.seasonEpisodes != null &&
-            widget.tvMetadata!.seasonEpisodes!.isNotEmpty,
-        onEpisodeListTap: () {
-          if (widget.useTvControls) {
-            _showTvEpisodeMenu();
-          } else {
-            _episodeSelection.showEpisodeSelectionBottomSheet(
-              context: context,
-              colors: widget.colors,
-              tvMetadata: widget.tvMetadata!,
-              onSaveProgress: _handleContentSwitch,
-              closePlayer: () => Navigator.pop(context),
-            );
-          }
-        },
-        enableMovieRecommendations: widget.mediaType == MediaType.movie &&
-            widget.movieMetadata?.recommendations != null &&
-            widget.movieMetadata!.recommendations!.isNotEmpty,
-        onMovieRecommendationsTap: () {
-          if (widget.useTvControls) {
-            _showTvMovieRecommendationsMenu();
-          } else {
-            _movieRecommendations.showMovieRecommendationsBottomSheet(
-              context: context,
-              colors: widget.colors,
-              movieMetadata: widget.movieMetadata!,
-              onSaveProgress: _handleContentSwitch,
-              closePlayer: () => Navigator.pop(context),
-            );
-          }
-        },
+        enableEpisodeSelection: hasEpisodeSelection,
+        onEpisodeListTap: () => _scheduleContentMenu(_openEpisodeList),
+        enableMovieRecommendations: hasMovieRecommendations,
+        onMovieRecommendationsTap: () =>
+            _scheduleContentMenu(_openMovieRecommendations),
         enableNextEpisodeButton: widget.mediaType == MediaType.tvShow &&
             widget.settings.enableNextEpisodeButton,
         enableCast: !widget.useTvControls,
@@ -878,6 +856,78 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     Navigator.pop(context);
   }
 
+  BuildContext get _playerModalContext {
+    // Fullscreen Better Player controls live on a separate root route. Use
+    // the active navigator overlay so sheets are pushed above that route.
+    final navigator = Navigator.of(context, rootNavigator: true);
+    return navigator.overlay?.context ?? context;
+  }
+
+  void _scheduleContentMenu(Future<void> Function() openMenu) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) unawaited(openMenu());
+    });
+  }
+
+  Future<void> _openEpisodeList() async {
+    if (!mounted || _isContentMenuOpen) return;
+    if (widget.useTvControls) {
+      _showTvEpisodeMenu();
+      return;
+    }
+
+    final metadata = widget.tvMetadata;
+    if (metadata?.seasonEpisodes?.isNotEmpty != true) return;
+    _isContentMenuOpen = true;
+    try {
+      await _episodeSelection.showEpisodeSelectionBottomSheet(
+        context: _playerModalContext,
+        colors: widget.colors,
+        tvMetadata: metadata!,
+        onSaveProgress: _handleContentSwitch,
+        closePlayer: _closePlayer,
+      );
+    } catch (error, stackTrace) {
+      _reportContentMenuError(error, stackTrace);
+    } finally {
+      _isContentMenuOpen = false;
+    }
+  }
+
+  Future<void> _openMovieRecommendations() async {
+    if (!mounted || _isContentMenuOpen) return;
+    if (widget.useTvControls) {
+      _showTvMovieRecommendationsMenu();
+      return;
+    }
+
+    final metadata = widget.movieMetadata;
+    if (metadata?.recommendations?.isNotEmpty != true) return;
+    _isContentMenuOpen = true;
+    try {
+      await _movieRecommendations.showMovieRecommendationsBottomSheet(
+        context: _playerModalContext,
+        colors: widget.colors,
+        movieMetadata: metadata!,
+        onSaveProgress: _handleContentSwitch,
+        closePlayer: _closePlayer,
+      );
+    } catch (error, stackTrace) {
+      _reportContentMenuError(error, stackTrace);
+    } finally {
+      _isContentMenuOpen = false;
+    }
+  }
+
+  void _reportContentMenuError(Object error, StackTrace stackTrace) {
+    debugPrint('[Player] Unable to open content menu: $error');
+    debugPrintStack(stackTrace: stackTrace);
+    if (!mounted) return;
+    ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+      SnackBar(content: Text(tr('error_occured'))),
+    );
+  }
+
   /// Handles saving progress and analytics before switching to a new episode/movie
   Future<void> _handleContentSwitch() async {
     await _dataManagement.handleContentSwitch(
@@ -995,13 +1045,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         if (widget.useTvControls) {
           _showTvEpisodeMenu();
         } else {
-          _episodeSelection.showEpisodeSelectionBottomSheet(
-            context: context,
-            colors: widget.colors,
-            tvMetadata: widget.tvMetadata!,
-            onSaveProgress: _handleContentSwitch,
-            closePlayer: _closePlayer,
-          );
+          unawaited(_openEpisodeList());
         }
       }
     } else if (widget.mediaType == MediaType.movie) {

@@ -25,6 +25,15 @@ class _LocalSubtitleEntry {
 
 /// Allows users to upload local .srt/.vtt subtitle files from their device.
 class PlayerLocalSubtitles {
+  static const double _minimumSheetSize = .48;
+  static const double _initialSheetSize = .70;
+  static const double _maximumSheetSize = .96;
+  static const List<double> _sheetSnapSizes = [
+    _minimumSheetSize,
+    _initialSheetSize,
+    _maximumSheetSize,
+  ];
+
   final List<_LocalSubtitleEntry> _uploadedSubtitles = [];
   final Set<String> _addedFilePaths = {};
 
@@ -38,89 +47,95 @@ class PlayerLocalSubtitles {
     required List<Color> colors,
     required BetterPlayerController betterPlayerController,
   }) {
+    final sheetController = DraggableScrollableController();
     showModalBottomSheet<void>(
       context: context,
       useSafeArea: true,
       backgroundColor: Theme.of(context).colorScheme.surface,
       isScrollControlled: true,
+      showDragHandle: true,
       builder: (bottomSheetContext) => DraggableScrollableSheet(
-        initialChildSize: .65,
-        minChildSize: .40,
-        maxChildSize: .90,
+        controller: sheetController,
+        initialChildSize: _initialSheetSize,
+        minChildSize: _minimumSheetSize,
+        maxChildSize: _maximumSheetSize,
         expand: false,
         snap: true,
-        snapSizes: const [.40, .65, .90],
+        snapSizes: _sheetSnapSizes,
         builder: (context, scrollController) => StatefulBuilder(
           builder: (context, setBottomSheetState) {
             final Widget content;
 
             if (_uploadedSubtitles.isEmpty) {
-              content = AppEmptyState(
-                icon: PhosphorIcons.fileArrowUp(),
-                title: tr('no_file_selected'),
-                message: tr('supported_formats_srt_vtt'),
-                action: FilledButton.icon(
-                  onPressed: () => _pickFiles(setBottomSheetState, context),
-                  icon: Icon(PhosphorIcons.fileArrowUp()),
-                  label: Text(tr('upload_subtitle_file')),
-                ),
-              );
-            } else {
-              content = Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+              content = ListView(
+                controller: scrollController,
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
                 children: [
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                    child: OutlinedButton.icon(
-                      onPressed: () => _pickFiles(setBottomSheetState, context),
-                      icon: Icon(PhosphorIcons.plus()),
-                      label: Text(tr('add_more')),
-                    ),
-                  ),
-                  Expanded(
-                    child: ListView.separated(
-                      controller: scrollController,
-                      padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
-                      itemCount: _uploadedSubtitles.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 4),
-                      itemBuilder: (context, index) {
-                        final subtitle = _uploadedSubtitles[index];
-                        return PlayerChoiceCard(
-                          title: subtitle.fileName,
-                          subtitle:
-                              '.${subtitle.extension} · ${tr('local_file')}',
-                          selected: subtitle.isSelected,
-                          onTap: () {
-                            setBottomSheetState(() {
-                              subtitle.isSelected = !subtitle.isSelected;
-                            });
-                          },
-                          thumbnail: PlayerThumbnail(
-                            width: 48,
-                            height: 34,
-                            child: Icon(PhosphorIcons.fileText()),
-                          ),
-                          trailing: IconButton(
-                            icon: Icon(
-                              PhosphorIcons.trash(),
-                              color: Theme.of(context).colorScheme.error,
-                            ),
-                            onPressed: () {
-                              setBottomSheetState(() {
-                                _uploadedSubtitles.removeAt(index);
-                                _removeAppliedSubtitle(
-                                  subtitle.filePath,
-                                  betterPlayerController,
-                                );
-                              });
-                            },
-                          ),
-                        );
-                      },
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: 340),
+                    child: AppEmptyState(
+                      icon: PhosphorIcons.fileArrowUp(),
+                      title: tr('no_file_selected'),
+                      message: tr('supported_formats_srt_vtt'),
+                      action: FilledButton.icon(
+                        onPressed: () =>
+                            _pickFiles(setBottomSheetState, context),
+                        icon: Icon(PhosphorIcons.fileArrowUp()),
+                        label: Text(tr('upload_subtitle_file')),
+                      ),
                     ),
                   ),
                 ],
+              );
+            } else {
+              content = ListView.separated(
+                controller: scrollController,
+                padding: const EdgeInsets.fromLTRB(20, 4, 20, 28),
+                itemCount: _uploadedSubtitles.length + 1,
+                separatorBuilder: (_, __) => const SizedBox(height: 4),
+                itemBuilder: (context, index) {
+                  if (index == 0) {
+                    return OutlinedButton.icon(
+                      onPressed: () => _pickFiles(setBottomSheetState, context),
+                      icon: Icon(PhosphorIcons.plus()),
+                      label: Text(tr('add_more')),
+                    );
+                  }
+
+                  final subtitle = _uploadedSubtitles[index - 1];
+                  return PlayerChoiceCard(
+                    title: subtitle.fileName,
+                    subtitle: '.${subtitle.extension} · ${tr('local_file')}',
+                    selected: subtitle.isSelected,
+                    onTap: () {
+                      setBottomSheetState(() {
+                        subtitle.isSelected = !subtitle.isSelected;
+                      });
+                    },
+                    thumbnail: PlayerThumbnail(
+                      width: 48,
+                      height: 34,
+                      child: Icon(PhosphorIcons.fileText()),
+                    ),
+                    trailing: IconButton(
+                      tooltip:
+                          MaterialLocalizations.of(context).deleteButtonTooltip,
+                      icon: Icon(
+                        PhosphorIcons.trash(),
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                      onPressed: () {
+                        setBottomSheetState(() {
+                          _uploadedSubtitles.removeAt(index - 1);
+                          _removeAppliedSubtitle(
+                            subtitle.filePath,
+                            betterPlayerController,
+                          );
+                        });
+                      },
+                    ),
+                  );
+                },
               );
             }
 
@@ -158,10 +173,70 @@ class PlayerLocalSubtitles {
                         Navigator.pop(bottomSheetContext);
                       },
                     ),
+              onHeaderVerticalDragUpdate: (details) => _dragSheetHeader(
+                sheetController,
+                context,
+                details,
+              ),
+              onHeaderVerticalDragEnd: (details) => _settleSheetHeader(
+                sheetController,
+                details,
+              ),
               child: content,
             );
           },
         ),
+      ),
+    ).whenComplete(sheetController.dispose);
+  }
+
+  void _dragSheetHeader(
+    DraggableScrollableController controller,
+    BuildContext context,
+    DragUpdateDetails details,
+  ) {
+    if (!controller.isAttached) return;
+    final delta = details.primaryDelta;
+    if (delta == null) return;
+    final viewportHeight = MediaQuery.sizeOf(context).height;
+    if (viewportHeight <= 0) return;
+    final nextSize = (controller.size - (delta / viewportHeight))
+        .clamp(_minimumSheetSize, _maximumSheetSize)
+        .toDouble();
+    controller.jumpTo(nextSize);
+  }
+
+  void _settleSheetHeader(
+    DraggableScrollableController controller,
+    DragEndDetails details,
+  ) {
+    if (!controller.isAttached) return;
+    final currentSize = controller.size;
+    final velocity = details.primaryVelocity ?? 0;
+    double targetSize;
+
+    if (velocity < -300) {
+      final larger = _sheetSnapSizes.where((size) => size > currentSize + .01);
+      targetSize = larger.isEmpty ? _maximumSheetSize : larger.first;
+    } else if (velocity > 300) {
+      final smaller = _sheetSnapSizes
+          .where((size) => size < currentSize - .01)
+          .toList(growable: false);
+      targetSize = smaller.isEmpty ? _minimumSheetSize : smaller.last;
+    } else {
+      targetSize = _sheetSnapSizes.reduce(
+        (closest, size) =>
+            (size - currentSize).abs() < (closest - currentSize).abs()
+                ? size
+                : closest,
+      );
+    }
+
+    unawaited(
+      controller.animateTo(
+        targetSize,
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
       ),
     );
   }

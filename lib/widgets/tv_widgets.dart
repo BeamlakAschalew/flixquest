@@ -369,6 +369,19 @@ class DiscoverTVState extends State<DiscoverTV>
               ? Center(child: Text(tr('wow_odd'), style: kTextSmallBodyStyle))
               : AppCrossfadeCarousel(
                   itemCount: tvList!.take(10).length,
+                  onItemTap: (index) {
+                    final selected = tvList![index];
+                    if (selected.id == null) return;
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => TVDetailPage(
+                          tvSeries: selected,
+                          heroId: 'home_tv_${selected.id}',
+                        ),
+                      ),
+                    );
+                  },
                   itemBuilder: (context, index) {
                     final item = tvList![index];
                     final path = item.backdropPath ?? item.posterPath;

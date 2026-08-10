@@ -10,10 +10,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 
-import '../../constants/api_constants.dart';
 import '../../constants/app_constants.dart';
-import '../../functions/network.dart';
-import '../../models/update.dart';
 import '../../provider/app_dependency_provider.dart';
 import '../../provider/settings_provider.dart';
 import '../../services/globle_method.dart';
@@ -31,29 +28,29 @@ class UpdateScreen extends StatefulWidget {
 
 class _UpdateScreenState extends State<UpdateScreen> {
   final DownloadManager _downloadManager = DownloadManager();
-  UpdateChecker? _update;
+  PackageInfo? _packageInfo;
   String _savedDir = '';
   Object? _error;
 
   @override
   void initState() {
     super.initState();
-    _checkUpdate();
+    _prepare();
   }
 
-  Future<void> _checkUpdate() async {
+  Future<void> _prepare() async {
     setState(() {
       _error = null;
-      _update = null;
+      _packageInfo = null;
     });
     try {
       final values = await Future.wait([
-        checkForUpdate(FLIXQUEST_UPDATE_URL),
+        PackageInfo.fromPlatform(),
         getTemporaryDirectory(),
       ]);
       if (!mounted) return;
       setState(() {
-        _update = values[0] as UpdateChecker;
+        _packageInfo = values[0] as PackageInfo;
         _savedDir = (values[1] as Directory).path;
       });
     } on Exception catch (error) {
@@ -110,13 +107,13 @@ class _UpdateScreenState extends State<UpdateScreen> {
         title: tr('internet_problem'),
         message: tr('check_connection'),
         action: FilledButton.icon(
-          onPressed: _checkUpdate,
+          onPressed: _prepare,
           icon: Icon(PhosphorIcons.arrowsClockwise()),
           label: Text(tr('retry')),
         ),
       );
     }
-    if (_update == null) {
+    if (_packageInfo == null) {
       return AppEmptyState(
         icon: PhosphorIcons.downloadSimple(),
         title: tr('check_for_update'),
@@ -124,13 +121,29 @@ class _UpdateScreenState extends State<UpdateScreen> {
         action: const CircularProgressIndicator(),
       );
     }
-    if (_update!.versionNumber == currentAppVersion) {
+    final config = context.watch<AppDependencyProvider>();
+    if (!AppUpdateService.isAvailable(
+      packageInfo: _packageInfo!,
+      remoteVersion: config.latestAppVersion,
+      latestBuildNumber: config.latestBuildNumber,
+      minimumBuildNumber: config.minimumBuildNumber,
+    )) {
       return AppEmptyState(
         icon: PhosphorIcons.checkCircle(),
         title: tr('no_update'),
-        message: 'FlixQuest v$currentAppVersion',
+        message: 'FlixQuest v${_packageInfo!.version}',
       );
     }
+    final remoteBuild = AppUpdateService.effectiveBuildNumber(
+      latestBuildNumber: config.latestBuildNumber,
+      minimumBuildNumber: config.minimumBuildNumber,
+    );
+    final version = AppUpdateService.displayVersion(
+      config.latestAppVersion,
+      remoteBuild,
+    );
+    final downloadUrl = config.appDownloadUrl;
+    final changeLog = config.changeLog;
 
     return Center(
       child: SingleChildScrollView(
@@ -149,40 +162,42 @@ class _UpdateScreenState extends State<UpdateScreen> {
             ),
             const SizedBox(height: 6),
             Text(
-              tr('new_version', namedArgs: {
-                'v': _update!.versionNumber!,
-              }),
+              tr('new_version', namedArgs: {'v': version}),
               style: TextStyle(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
-            const SizedBox(height: 18),
-            OutlinedButton.icon(
-              onPressed: _showChangelog,
-              icon: Icon(PhosphorIcons.listBullets()),
-              label: Text(tr('see_changelogs')),
-            ),
-            const SizedBox(height: 14),
-            _DownloadCard(
-              appVersion: _update!.versionNumber!,
-              url: _update!.downloadLink!,
-              task: _downloadManager.getDownload(_update!.downloadLink!),
-              onToggle: _toggleDownload,
-              onOpen: _openDownload,
-              onDelete: _deleteDownload,
-            ),
+            if (changeLog.isNotEmpty) ...[
+              const SizedBox(height: 18),
+              OutlinedButton.icon(
+                onPressed: () => _showChangelog(changeLog),
+                icon: Icon(PhosphorIcons.listBullets()),
+                label: Text(tr('see_changelogs')),
+              ),
+            ],
+            if (downloadUrl.isNotEmpty) ...[
+              const SizedBox(height: 14),
+              _DownloadCard(
+                appVersion: version,
+                url: downloadUrl,
+                task: _downloadManager.getDownload(downloadUrl),
+                onToggle: _toggleDownload,
+                onOpen: _openDownload,
+                onDelete: _deleteDownload,
+              ),
+            ],
           ],
         ),
       ),
     );
   }
 
-  void _showChangelog() {
+  void _showChangelog(String changeLog) {
     showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(tr('changelogs')),
-        content: SingleChildScrollView(child: Text(_update!.changeLog!)),
+        content: SingleChildScrollView(child: Text(changeLog)),
         actions: [
           FilledButton(
             onPressed: () => Navigator.pop(context),

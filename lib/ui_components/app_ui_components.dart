@@ -56,12 +56,14 @@ class AppCrossfadeCarousel extends StatefulWidget {
   const AppCrossfadeCarousel({
     required this.itemCount,
     required this.itemBuilder,
+    this.onItemTap,
     this.interval = const Duration(seconds: 7),
     super.key,
   });
 
   final int itemCount;
   final IndexedWidgetBuilder itemBuilder;
+  final ValueChanged<int>? onItemTap;
   final Duration interval;
 
   @override
@@ -320,6 +322,7 @@ class _AppCrossfadeCarouselState extends State<AppCrossfadeCarousel> {
   Widget build(BuildContext context) {
     if (widget.itemCount == 0) return const SizedBox.shrink();
     return GestureDetector(
+      onTap: widget.onItemTap == null ? null : () => widget.onItemTap!(_index),
       onHorizontalDragEnd: (details) {
         final velocity = details.primaryVelocity ?? 0;
         if (velocity.abs() < 120) return;

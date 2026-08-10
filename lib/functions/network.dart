@@ -2,9 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flixquest/models/custom_exceptions.dart';
-import 'package:retry/retry.dart';
 import '../constants/app_constants.dart';
-import '/models/update.dart';
 import '/models/images.dart';
 import '/models/person.dart';
 import '/models/tv.dart';
@@ -364,26 +362,6 @@ Future<List<TV>> fetchPersonTV(
     client.close();
   }
   return personTVList.tv ?? [];
-}
-
-Future checkForUpdate(String api) async {
-  UpdateChecker updateChecker;
-  try {
-    var res = await const RetryOptions(
-            maxDelay: Duration(milliseconds: 300),
-            delayFactor: Duration(seconds: 0),
-            maxAttempts: 3)
-        .retry(
-      (() => http.get(Uri.parse(api)).timeout(timeOut)),
-      retryIf: (e) => e is SocketException || e is TimeoutException,
-    );
-    var decodeRes = jsonDecode(res.body);
-    updateChecker = UpdateChecker.fromJson(decodeRes);
-    client.close();
-  } catch (e) {
-    rethrow;
-  }
-  return updateChecker;
 }
 
 Future<Movie> getMovie(String api, bool isProxyEnabled, String proxyUrl) async {

@@ -24,6 +24,8 @@ class AppRemoteConfig {
       'latest_version': '',
       'latest_build_number': 0,
       'min_build_number': 0,
+      'app_download_url': '',
+      'change_log': '',
     });
   }
 
@@ -56,6 +58,8 @@ class AppRemoteConfig {
       latestVersion: remoteConfig.getString('latest_version'),
       latestBuild: remoteConfig.getInt('latest_build_number'),
       minimumBuild: remoteConfig.getInt('min_build_number'),
+      downloadUrl: remoteConfig.getString('app_download_url'),
+      changeLog: remoteConfig.getString('change_log'),
     );
     provider.tmdbProxy = remoteConfig.getString('tmdb_proxy');
   }

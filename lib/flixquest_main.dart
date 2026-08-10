@@ -28,6 +28,7 @@ import 'provider/bookmark_provider.dart';
 import 'provider/offline_download_provider.dart';
 import 'services/in_app_messaging_service.dart';
 import 'services/app_session_state_store.dart';
+import 'services/app_update_service.dart';
 import 'services/app_remote_config.dart';
 import 'screens/common/downloads_screen.dart';
 import 'tv/platform/device_presentation.dart';
@@ -300,27 +301,18 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
   }
 
   void checkForcedUpdate() async {
-    await FirebaseRemoteConfig.instance.ensureInitialized();
-    bool isForcedUpdate =
-        FirebaseRemoteConfig.instance.getBool('forced_update');
-    if (!isForcedUpdate) return;
+    final provider =
+        Provider.of<AppDependencyProvider>(context, listen: false);
+    if (!provider.isForcedUpdate) return;
 
     final packageInfo = await PackageInfo.fromPlatform();
-    final currentBuildNumber = int.tryParse(packageInfo.buildNumber) ?? 0;
-
-    int remoteBuildNumber =
-        FirebaseRemoteConfig.instance.getInt('latest_build_number');
-    if (remoteBuildNumber == 0) {
-      remoteBuildNumber =
-          FirebaseRemoteConfig.instance.getInt('min_build_number');
-    }
-    if (remoteBuildNumber == 0) {
-      remoteBuildNumber = int.tryParse(
-              FirebaseRemoteConfig.instance.getString('latest_version')) ??
-          0;
-    }
-
-    if (currentBuildNumber < remoteBuildNumber) {
+    final updateAvailable = AppUpdateService.isAvailable(
+      packageInfo: packageInfo,
+      remoteVersion: provider.latestAppVersion,
+      latestBuildNumber: provider.latestBuildNumber,
+      minimumBuildNumber: provider.minimumBuildNumber,
+    );
+    if (updateAvailable) {
       if (mounted) {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return const UpdateScreen(

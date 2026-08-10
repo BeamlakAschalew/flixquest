@@ -20,7 +20,7 @@ class PlayerEpisodeSelection {
 
   PlayerEpisodeSelection(this._browsedSeasonNumber);
 
-  void showEpisodeSelectionBottomSheet({
+  Future<void> showEpisodeSelectionBottomSheet({
     required BuildContext context,
     required List<Color> colors,
     required TVStreamMetadata tvMetadata,
@@ -29,115 +29,120 @@ class PlayerEpisodeSelection {
     bool useTvPlayer = false,
   }) {
     final episodes = tvMetadata.seasonEpisodes;
-    if (episodes == null || episodes.isEmpty) return;
+    if (episodes == null || episodes.isEmpty) return Future.value();
     final playerContext = context;
     final seasonNumber = _browsedSeasonNumber ?? tvMetadata.seasonNumber ?? 0;
 
-    showModalBottomSheet<void>(
+    return showModalBottomSheet<void>(
       context: context,
       useRootNavigator: true,
       useSafeArea: true,
       backgroundColor: Theme.of(context).colorScheme.surface,
       isScrollControlled: true,
-      builder: (sheetContext) => DraggableScrollableSheet(
-        initialChildSize: .82,
-        minChildSize: .55,
-        maxChildSize: .95,
-        expand: false,
-        snap: true,
-        snapSizes: const [.55, .82, .95],
-        builder: (context, scrollController) => PlayerSheetScaffold(
-          icon: PhosphorIcons.playlist(),
-          title: tr(
-            'season_episodes',
-            namedArgs: {'season': '$seasonNumber'},
-          ),
-          subtitle: tr(
-            'episodes_count',
-            namedArgs: {'count': '${episodes.length}'},
-          ),
-          actions: [
-            if ((tvMetadata.allSeasons?.length ?? 0) > 1)
-              IconButton(
-                tooltip: tr('select_season'),
-                onPressed: () {
-                  Navigator.pop(sheetContext);
-                  showSeasonSelectionBottomSheet(
-                    context: playerContext,
-                    colors: colors,
-                    tvMetadata: tvMetadata,
-                    onSaveProgress: onSaveProgress,
-                    closePlayer: closePlayer,
-                    useTvPlayer: useTvPlayer,
-                  );
-                },
-                icon: Icon(PhosphorIcons.stack()),
-              ),
-            IconButton(
-              onPressed: () => Navigator.pop(sheetContext),
-              icon: Icon(PhosphorIcons.x()),
+      builder: (sheetContext) => Listener(
+        behavior: HitTestBehavior.opaque,
+        onPointerDown: (_) {},
+        child: DraggableScrollableSheet(
+          initialChildSize: .82,
+          minChildSize: .55,
+          maxChildSize: .95,
+          expand: false,
+          snap: true,
+          snapSizes: const [.55, .82, .95],
+          builder: (context, scrollController) => PlayerSheetScaffold(
+            icon: PhosphorIcons.playlist(),
+            title: tr(
+              'season_episodes',
+              namedArgs: {'season': '$seasonNumber'},
             ),
-          ],
-          child: Consumer<RecentProvider>(
-            builder: (context, recentProvider, _) => ListView.separated(
-              controller: scrollController,
-              padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
-              itemCount: episodes.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 4),
-              itemBuilder: (context, index) {
-                final episode = episodes[index];
-                final current =
-                    episode.episodeNumber == tvMetadata.episodeNumber &&
-                        episode.seasonNumber == tvMetadata.seasonNumber;
-                final recent =
-                    recentProvider.episodes.cast<RecentEpisode?>().firstWhere(
-                          (item) => item?.id == episode.episodeId,
-                          orElse: () => null,
-                        );
-                final total = (recent?.elapsed ?? 0) + (recent?.remaining ?? 0);
-                final progress = total <= 0
-                    ? null
-                    : (recent!.elapsed! / total).clamp(0.0, 1.0);
-                return _buildEpisodeListItem(
-                  context,
-                  episode,
-                  current,
-                  progress != null,
-                  (progress ?? 0) * 100,
-                  colors,
-                  current
+            subtitle: tr(
+              'episodes_count',
+              namedArgs: {'count': '${episodes.length}'},
+            ),
+            actions: [
+              if ((tvMetadata.allSeasons?.length ?? 0) > 1)
+                IconButton(
+                  tooltip: tr('select_season'),
+                  onPressed: () {
+                    Navigator.pop(sheetContext);
+                    showSeasonSelectionBottomSheet(
+                      context: playerContext,
+                      colors: colors,
+                      tvMetadata: tvMetadata,
+                      onSaveProgress: onSaveProgress,
+                      closePlayer: closePlayer,
+                      useTvPlayer: useTvPlayer,
+                    );
+                  },
+                  icon: Icon(PhosphorIcons.stack()),
+                ),
+              IconButton(
+                onPressed: () => Navigator.pop(sheetContext),
+                icon: Icon(PhosphorIcons.x()),
+              ),
+            ],
+            child: Consumer<RecentProvider>(
+              builder: (context, recentProvider, _) => ListView.separated(
+                controller: scrollController,
+                padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+                itemCount: episodes.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 4),
+                itemBuilder: (context, index) {
+                  final episode = episodes[index];
+                  final current =
+                      episode.episodeNumber == tvMetadata.episodeNumber &&
+                          episode.seasonNumber == tvMetadata.seasonNumber;
+                  final recent =
+                      recentProvider.episodes.cast<RecentEpisode?>().firstWhere(
+                            (item) => item?.id == episode.episodeId,
+                            orElse: () => null,
+                          );
+                  final total =
+                      (recent?.elapsed ?? 0) + (recent?.remaining ?? 0);
+                  final progress = total <= 0
                       ? null
-                      : () {
-                          onSaveProgress();
-                          Navigator.pop(sheetContext);
-                          closePlayer();
-                          Navigator.pushReplacement(
-                            playerContext,
-                            MaterialPageRoute(
-                              builder: (_) => TVVideoLoader(
-                                download: false,
-                                useTvPlayer: useTvPlayer,
-                                metadata: TVStreamMetadata(
-                                  elapsed: null,
-                                  episodeId: episode.episodeId,
-                                  episodeName: episode.episodeName,
-                                  episodeNumber: episode.episodeNumber,
-                                  posterPath: tvMetadata.posterPath,
-                                  backdropPath: episode.stillPath ??
-                                      tvMetadata.backdropPath,
-                                  seasonNumber: episode.seasonNumber,
-                                  seriesName: tvMetadata.seriesName,
-                                  tvId: tvMetadata.tvId,
-                                  airDate: episode.airDate,
-                                  seasonEpisodes: episodes,
-                                  allSeasons: tvMetadata.allSeasons,
+                      : (recent!.elapsed! / total).clamp(0.0, 1.0);
+                  return _buildEpisodeListItem(
+                    context,
+                    episode,
+                    current,
+                    progress != null,
+                    (progress ?? 0) * 100,
+                    colors,
+                    current
+                        ? null
+                        : () {
+                            onSaveProgress();
+                            Navigator.pop(sheetContext);
+                            closePlayer();
+                            Navigator.pushReplacement(
+                              playerContext,
+                              MaterialPageRoute(
+                                builder: (_) => TVVideoLoader(
+                                  download: false,
+                                  useTvPlayer: useTvPlayer,
+                                  metadata: TVStreamMetadata(
+                                    elapsed: null,
+                                    episodeId: episode.episodeId,
+                                    episodeName: episode.episodeName,
+                                    episodeNumber: episode.episodeNumber,
+                                    posterPath: tvMetadata.posterPath,
+                                    backdropPath: episode.stillPath ??
+                                        tvMetadata.backdropPath,
+                                    seasonNumber: episode.seasonNumber,
+                                    seriesName: tvMetadata.seriesName,
+                                    tvId: tvMetadata.tvId,
+                                    airDate: episode.airDate,
+                                    seasonEpisodes: episodes,
+                                    allSeasons: tvMetadata.allSeasons,
+                                  ),
                                 ),
                               ),
-                            ),
-                          );
-                        },
-                );
-              },
+                            );
+                          },
+                  );
+                },
+              ),
             ),
           ),
         ),
@@ -264,7 +269,7 @@ class PlayerEpisodeSelection {
                   );
                   if (navigator.canPop()) navigator.pop();
                   if (!playerContext.mounted) return;
-                  showEpisodeSelectionBottomSheet(
+                  await showEpisodeSelectionBottomSheet(
                     context: playerContext,
                     colors: colors,
                     tvMetadata: tvMetadata,

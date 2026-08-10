@@ -76,4 +76,20 @@ abstract final class VideoProviderOrder {
     ordered.addAll(remaining.values);
     return ordered;
   }
+
+  /// Keeps scraper-backed sources in their chosen order while using the
+  /// independent direct VixSrc integration only as the final fallback.
+  static List<VideoProvider> directVixSrcLast(
+    Iterable<VideoProvider> providers,
+  ) {
+    final ordered = providers.toList(growable: false);
+    return [
+      ...ordered.where(
+        (provider) => provider.type != VideoProviderType.directVixSrc,
+      ),
+      ...ordered.where(
+        (provider) => provider.type == VideoProviderType.directVixSrc,
+      ),
+    ];
+  }
 }

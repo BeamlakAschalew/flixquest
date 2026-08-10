@@ -33,6 +33,12 @@ class AppDependencyProvider extends ChangeNotifier {
   int _minimumBuildNumber = 0;
   int get minimumBuildNumber => _minimumBuildNumber;
 
+  String _appDownloadUrl = '';
+  String get appDownloadUrl => _appDownloadUrl;
+
+  String _changeLog = '';
+  String get changeLog => _changeLog;
+
   String _tmdbProxy = '';
   String get tmdbProxy => _tmdbProxy;
 
@@ -128,18 +134,25 @@ class AppDependencyProvider extends ChangeNotifier {
     required String latestVersion,
     required int latestBuild,
     required int minimumBuild,
+    required String downloadUrl,
+    required String changeLog,
   }) {
     final normalizedVersion = latestVersion.trim();
+    final normalizedDownloadUrl = downloadUrl.trim();
     if (_isForcedUpdate == forced &&
         _latestAppVersion == normalizedVersion &&
         _latestBuildNumber == latestBuild &&
-        _minimumBuildNumber == minimumBuild) {
+        _minimumBuildNumber == minimumBuild &&
+        _appDownloadUrl == normalizedDownloadUrl &&
+        _changeLog == changeLog) {
       return;
     }
     _isForcedUpdate = forced;
     _latestAppVersion = normalizedVersion;
     _latestBuildNumber = latestBuild;
     _minimumBuildNumber = minimumBuild;
+    _appDownloadUrl = normalizedDownloadUrl;
+    _changeLog = changeLog;
     notifyListeners();
   }
 

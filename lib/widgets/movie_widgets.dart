@@ -363,6 +363,19 @@ class DiscoverMoviesState extends State<DiscoverMovies>
               ? Center(child: Text(tr('wow_odd'), style: kTextSmallBodyStyle))
               : AppCrossfadeCarousel(
                   itemCount: moviesList!.take(10).length,
+                  onItemTap: (index) {
+                    final selected = moviesList![index];
+                    if (selected.id == null) return;
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => MovieDetailPage(
+                          movie: selected,
+                          heroId: 'home_movie_${selected.id}',
+                        ),
+                      ),
+                    );
+                  },
                   itemBuilder: (context, index) {
                     final movie = moviesList![index];
                     final imagePath = movie.backdropPath ?? movie.posterPath;

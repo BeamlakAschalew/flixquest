@@ -72,7 +72,7 @@ class PlayerMovieRecommendations {
     }
   }
 
-  void showMovieRecommendationsBottomSheet({
+  Future<void> showMovieRecommendationsBottomSheet({
     required BuildContext context,
     required List<Color> colors,
     required MovieStreamMetadata movieMetadata,
@@ -81,61 +81,67 @@ class PlayerMovieRecommendations {
     bool useTvPlayer = false,
   }) {
     final recommendations = movieMetadata.recommendations;
-    if (recommendations == null || recommendations.isEmpty) return;
+    if (recommendations == null || recommendations.isEmpty) {
+      return Future.value();
+    }
     final playerContext = context;
 
-    showModalBottomSheet<void>(
+    return showModalBottomSheet<void>(
       context: context,
       useRootNavigator: true,
       useSafeArea: true,
       backgroundColor: Theme.of(context).colorScheme.surface,
       isScrollControlled: true,
-      builder: (sheetContext) => DraggableScrollableSheet(
-        initialChildSize: .8,
-        minChildSize: .55,
-        maxChildSize: .95,
-        expand: false,
-        snap: true,
-        snapSizes: const [.55, .8, .95],
-        builder: (context, scrollController) => PlayerSheetScaffold(
-          icon: PhosphorIcons.sparkle(),
-          title: tr('recommended_movies'),
-          subtitle: tr('more_recommendations'),
-          actions: [
-            IconButton(
-              onPressed: () => Navigator.pop(sheetContext),
-              icon: Icon(PhosphorIcons.x()),
+      builder: (sheetContext) => Listener(
+        behavior: HitTestBehavior.opaque,
+        onPointerDown: (_) {},
+        child: DraggableScrollableSheet(
+          initialChildSize: .8,
+          minChildSize: .55,
+          maxChildSize: .95,
+          expand: false,
+          snap: true,
+          snapSizes: const [.55, .8, .95],
+          builder: (context, scrollController) => PlayerSheetScaffold(
+            icon: PhosphorIcons.sparkle(),
+            title: tr('recommended_movies'),
+            subtitle: tr('more_recommendations'),
+            actions: [
+              IconButton(
+                onPressed: () => Navigator.pop(sheetContext),
+                icon: Icon(PhosphorIcons.x()),
+              ),
+            ],
+            child: ListView.separated(
+              controller: scrollController,
+              padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+              itemCount: recommendations.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 4),
+              itemBuilder: (context, index) {
+                final movie = recommendations[index];
+                return PlayerChoiceCard(
+                  title: movie.title,
+                  subtitle: _movieSubtitle(movie),
+                  description: movie.overview,
+                  thumbnail: _RecommendationThumbnail(
+                    path: movie.backdropPath ?? movie.posterPath,
+                    width: 112,
+                    height: 68,
+                  ),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    loadRecommendedMovie(
+                      context: playerContext,
+                      movieId: movie.movieId,
+                      movieMetadata: movieMetadata,
+                      onSaveProgress: onSaveProgress,
+                      closePlayer: closePlayer,
+                      useTvPlayer: useTvPlayer,
+                    );
+                  },
+                );
+              },
             ),
-          ],
-          child: ListView.separated(
-            controller: scrollController,
-            padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
-            itemCount: recommendations.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 4),
-            itemBuilder: (context, index) {
-              final movie = recommendations[index];
-              return PlayerChoiceCard(
-                title: movie.title,
-                subtitle: _movieSubtitle(movie),
-                description: movie.overview,
-                thumbnail: _RecommendationThumbnail(
-                  path: movie.backdropPath ?? movie.posterPath,
-                  width: 112,
-                  height: 68,
-                ),
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  loadRecommendedMovie(
-                    context: playerContext,
-                    movieId: movie.movieId,
-                    movieMetadata: movieMetadata,
-                    onSaveProgress: onSaveProgress,
-                    closePlayer: closePlayer,
-                    useTvPlayer: useTvPlayer,
-                  );
-                },
-              );
-            },
           ),
         ),
       ),

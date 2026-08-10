@@ -212,23 +212,21 @@ class _TVEpisodePickerSheetState extends State<_TVEpisodePickerSheet> {
               : Column(
                   children: [
                     SizedBox(
-                      height: 50,
+                      height: 66,
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.fromLTRB(20, 2, 20, 8),
+                        padding: const EdgeInsets.fromLTRB(20, 4, 20, 10),
                         itemCount: _seasons.length,
                         separatorBuilder: (_, __) => const SizedBox(width: 8),
                         itemBuilder: (context, index) {
                           final season = _seasons[index];
                           final selected = season.seasonNumber ==
                               _selectedSeason?.seasonNumber;
-                          return ChoiceChip(
+                          return _SeasonSelector(
+                            season: season,
                             selected: selected,
-                            label: Text(season.name ??
-                                '${tr('seasons')} ${season.seasonNumber}'),
-                            onSelected: selected || _loadingEpisodes
-                                ? null
-                                : (_) => _loadSeason(season),
+                            enabled: !_loadingEpisodes,
+                            onTap: () => _loadSeason(season),
                           );
                         },
                       ),
@@ -329,6 +327,112 @@ class _EpisodeImage extends StatelessWidget {
       fit: BoxFit.cover,
       placeholder: (_, __) => const AppCachedImagePlaceholder(),
       errorWidget: (_, __, ___) => Icon(PhosphorIcons.filmStrip()),
+    );
+  }
+}
+
+class _SeasonSelector extends StatelessWidget {
+  const _SeasonSelector({
+    required this.season,
+    required this.selected,
+    required this.enabled,
+    required this.onTap,
+  });
+
+  final Seasons season;
+  final bool selected;
+  final bool enabled;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final seasonNumber = season.seasonNumber ?? 0;
+    final title = season.name?.trim().isNotEmpty == true
+        ? season.name!.trim()
+        : '${tr('seasons')} $seasonNumber';
+    final background = selected
+        ? colors.primary
+        : colors.surfaceContainerHighest.withValues(alpha: .7);
+    final foreground = selected ? colors.onPrimary : colors.onSurface;
+
+    return Material(
+      color: background,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+        side: BorderSide(
+          color: selected
+              ? colors.primary
+              : colors.outlineVariant.withValues(alpha: .7),
+        ),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: enabled && !selected ? onTap : null,
+        child: SizedBox(
+          width: 142,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 8),
+            child: Row(
+              children: [
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: (selected ? colors.onPrimary : colors.primary)
+                        .withValues(alpha: selected ? .18 : .12),
+                    shape: BoxShape.circle,
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    '$seasonNumber',
+                    style: TextStyle(
+                      color: selected ? colors.onPrimary : colors.primary,
+                      fontFamily: 'FigtreeSB',
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 9),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: foreground,
+                          fontFamily: 'FigtreeSB',
+                          fontSize: 12,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${season.episodeCount ?? 0} ${tr('episodes')}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: foreground.withValues(alpha: .72),
+                          fontSize: 10,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (selected)
+                  Icon(
+                    PhosphorIcons.checkCircle(PhosphorIconsStyle.fill),
+                    color: colors.onPrimary,
+                    size: 17,
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

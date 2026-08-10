@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import '../../functions/function.dart';
 import '../../models/live_tv.dart';
 import '../../provider/app_dependency_provider.dart';
+import '../../provider/settings_provider.dart';
 import '../../services/analytics_service.dart';
 import '../../services/daddylive_service.dart';
 import '../../services/stream_intro_service.dart';
@@ -77,6 +78,10 @@ class _LivePlayerState extends State<LivePlayer> {
   int _channelSwitchCount = 0;
   bool _hasInitialized = false;
   bool _wasPlayingBeforeBuffering = false;
+  late String _currentVideoUrl;
+  late Map<String, String> _currentVideoHeaders;
+  final ValueNotifier<_LivePlaybackFailure?> _playbackFailure =
+      ValueNotifier<_LivePlaybackFailure?>(null);
   late final AppDependencyProvider _appDependencies;
   int? _occasionalEffectsSuppressionId;
 
@@ -93,6 +98,10 @@ class _LivePlayerState extends State<LivePlayer> {
     _currentChannelId =
         widget.initialChannelId ?? widget.channels.firstOrNull?.id;
     _currentChannelName = widget.channelName;
+    _currentVideoUrl = widget.videoUrl;
+    _currentVideoHeaders = Map<String, String>.of(widget.headers);
+    final seekDuration = Provider.of<SettingsProvider>(context, listen: false)
+        .defaultSeekDuration;
 
     betterPlayerBufferingConfiguration =
         const BetterPlayerBufferingConfiguration(
@@ -120,10 +129,14 @@ class _LivePlayerState extends State<LivePlayer> {
       showControlsOnInitialize: false,
       loadingColor: widget.colors.first,
       iconsColor: widget.colors.first,
+      backwardSkipTimeInMilliseconds:
+          Duration(seconds: seekDuration).inMilliseconds,
+      forwardSkipTimeInMilliseconds:
+          Duration(seconds: seekDuration).inMilliseconds,
       progressBarPlayedColor: widget.colors.first,
       progressBarBufferedColor: Colors.black45,
-      skipForwardIcon: PhosphorIcons.arrowsClockwise(),
-      skipBackIcon: PhosphorIcons.arrowsCounterClockwise(),
+      skipForwardIcon: PhosphorIcons.fastForward(),
+      skipBackIcon: PhosphorIcons.rewind(),
       fullscreenEnableIcon: PhosphorIcons.cornersOut(),
       fullscreenDisableIcon: PhosphorIcons.cornersIn(),
       overflowMenuIcon: PhosphorIcons.list(),
@@ -147,12 +160,27 @@ class _LivePlayerState extends State<LivePlayer> {
     BetterPlayerConfiguration betterPlayerConfiguration =
         BetterPlayerConfiguration(
       autoDetectFullscreenDeviceOrientation: true,
-      looping: true,
+      looping: false,
       autoPlay: true,
       allowedScreenSleep: false,
       fit: BoxFit.contain,
       autoDispose: true,
       controlsConfiguration: betterPlayerControlsConfiguration,
+      errorBuilder: (_, __) => const SizedBox.expand(),
+      overlay: ValueListenableBuilder<_LivePlaybackFailure?>(
+        valueListenable: _playbackFailure,
+        builder: (context, failure, _) {
+          if (failure == null) return const SizedBox.expand();
+          return _LivePlayerErrorOverlay(
+            message: failure.message,
+            retrying: failure.retrying,
+            onRetry: _retryStream,
+            onChannels: canSwitchChannels
+                ? () => unawaited(_showChannelSwitcher())
+                : null,
+          );
+        },
+      ),
       showPlaceholderUntilPlay: true,
       subtitlesConfiguration: const BetterPlayerSubtitlesConfiguration(
         backgroundColor: Colors.black45,
@@ -179,20 +207,7 @@ class _LivePlayerState extends State<LivePlayer> {
       }
     } catch (error) {
       _trackPlayerEvent('setup_error', error: error.toString());
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error loading stream: ${error.toString()}'),
-            duration: const Duration(seconds: 5),
-            action: SnackBarAction(
-              label: 'Retry',
-              onPressed: () {
-                _retryStream();
-              },
-            ),
-          ),
-        );
-      }
+      _setPlaybackError(error.toString());
     }
   }
 
@@ -265,9 +280,60 @@ class _LivePlayerState extends State<LivePlayer> {
     );
   }
 
-  void _retryStream() {
+  Future<void> _retryStream() async {
+    final failure = _playbackFailure.value;
+    if (failure?.retrying == true || !mounted) return;
+    _playbackFailure.value = _LivePlaybackFailure(
+      message: failure?.message ?? 'This channel is temporarily unavailable.',
+      retrying: true,
+    );
     _trackPlayerEvent('retry');
-    _betterPlayerController.retryDataSource();
+    try {
+      final service = widget.service;
+      final channelId = _currentChannelId;
+      final stream = service != null && channelId != null
+          ? await service.getStream(channelId)
+          : null;
+      final url = stream?.url ?? _currentVideoUrl;
+      final headers = stream?.headers ?? _currentVideoHeaders;
+      if (url.trim().isEmpty) {
+        throw StateError('The channel returned no playable stream.');
+      }
+
+      await _setupStreamWithIntro(_buildDataSource(url, headers));
+      if (!mounted) return;
+      _currentVideoUrl = url;
+      _currentVideoHeaders = Map<String, String>.of(headers);
+      _playbackFailure.value = null;
+      if (_betterPlayerController.isPlaying() != true) {
+        await _betterPlayerController.play();
+      }
+      _trackPlayerEvent('retry_success');
+    } catch (error) {
+      _trackPlayerEvent('retry_error', error: error.toString());
+      _setPlaybackError(error.toString());
+    }
+  }
+
+  void _setPlaybackError(String error) {
+    _stopWatchClock();
+    _wasPlayingBeforeBuffering = false;
+    _playbackFailure.value = _LivePlaybackFailure(
+      message: error.trim().isEmpty
+          ? 'This channel is temporarily unavailable.'
+          : error.trim(),
+    );
+    unawaited(_pauseAfterPlaybackError());
+  }
+
+  Future<void> _pauseAfterPlaybackError() async {
+    try {
+      if (_betterPlayerController.isPlaying() == true) {
+        await _betterPlayerController.pause();
+      }
+    } catch (_) {
+      // The native controller may already have been torn down after an error.
+    }
   }
 
   void _onPlayerEvent(BetterPlayerEvent event) {
@@ -282,6 +348,10 @@ class _LivePlayerState extends State<LivePlayer> {
         }
         break;
       case BetterPlayerEventType.play:
+        if (_playbackFailure.value case final failure? when !failure.retrying) {
+          unawaited(_pauseAfterPlaybackError());
+          break;
+        }
         _startWatchClock();
         _trackPlayerEvent('play');
         break;
@@ -309,12 +379,11 @@ class _LivePlayerState extends State<LivePlayer> {
         _trackPlayerEvent('buffering_ended', bufferingMs: durationMs);
         break;
       case BetterPlayerEventType.exception:
-        _trackPlayerEvent(
-          'error',
-          error: event.parameters?['exception']?.toString() ??
-              event.parameters?.toString() ??
-              'Unknown player error',
-        );
+        final error = event.parameters?['exception']?.toString() ??
+            event.parameters?.toString() ??
+            'Unknown player error';
+        _trackPlayerEvent('error', error: error);
+        _setPlaybackError(error);
         break;
       case BetterPlayerEventType.openFullscreen:
         _trackPlayerEvent('fullscreen_opened');
@@ -396,6 +465,13 @@ class _LivePlayerState extends State<LivePlayer> {
     if (_isSwitching || service == null || channel.id == _currentChannelId) {
       return;
     }
+    final failure = _playbackFailure.value;
+    if (failure != null) {
+      _playbackFailure.value = _LivePlaybackFailure(
+        message: failure.message,
+        retrying: true,
+      );
+    }
     setState(() => _isSwitching = true);
     _showBanner('Switching to ${channel.name}…');
     final stopwatch = Stopwatch()..start();
@@ -415,11 +491,14 @@ class _LivePlayerState extends State<LivePlayer> {
 
       await prepareStream();
       if (!mounted) return;
+      _currentVideoUrl = stream.url;
+      _currentVideoHeaders = Map<String, String>.of(stream.headers);
       setState(() {
         _currentChannelId = channel.id;
         _currentChannelName = channel.name;
         _isSwitching = false;
       });
+      _playbackFailure.value = null;
       _channelSwitchCount++;
       widget.analytics.trackLiveTVChannelView(
         channelName: channel.name,
@@ -447,10 +526,7 @@ class _LivePlayerState extends State<LivePlayer> {
       );
       if (!mounted) return;
       setState(() => _isSwitching = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text('Unable to switch channel: ${error.toString()}')),
-      );
+      _setPlaybackError('Unable to switch channel: ${error.toString()}');
     }
   }
 
@@ -471,6 +547,7 @@ class _LivePlayerState extends State<LivePlayer> {
     }
     _bannerTimer?.cancel();
     _betterPlayerController.removeEventsListener(_onPlayerEvent);
+    _playbackFailure.dispose();
     _stopWatchClock();
     final bufferingStartedAt = _bufferingStartedAt;
     if (bufferingStartedAt != null) {
@@ -676,7 +753,6 @@ class _ChannelSwitcherSheetState extends State<_ChannelSwitcherSheet> {
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
             child: TextField(
               controller: _searchController,
-              autofocus: true,
               onChanged: (value) => setState(() => _query = value),
               decoration: InputDecoration(
                 hintText: 'Search channels',
@@ -781,6 +857,117 @@ class _ChannelSwitcherSheetState extends State<_ChannelSwitcherSheet> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _LivePlaybackFailure {
+  const _LivePlaybackFailure({required this.message, this.retrying = false});
+
+  final String message;
+  final bool retrying;
+}
+
+class _LivePlayerErrorOverlay extends StatelessWidget {
+  const _LivePlayerErrorOverlay({
+    required this.message,
+    required this.retrying,
+    required this.onRetry,
+    this.onChannels,
+  });
+
+  final String message;
+  final bool retrying;
+  final VoidCallback onRetry;
+  final VoidCallback? onChannels;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return ColoredBox(
+      color: Colors.black.withValues(alpha: .86),
+      child: SafeArea(
+        minimum: const EdgeInsets.all(24),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 460),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 58,
+                  height: 58,
+                  decoration: BoxDecoration(
+                    color: colors.error.withValues(alpha: .16),
+                    shape: BoxShape.circle,
+                  ),
+                  alignment: Alignment.center,
+                  child: retrying
+                      ? SizedBox.square(
+                          dimension: 26,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 3,
+                            color: colors.primary,
+                          ),
+                        )
+                      : Icon(
+                          PhosphorIcons.warningCircle(),
+                          color: colors.error,
+                          size: 30,
+                        ),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  retrying ? 'Reconnecting…' : 'Channel unavailable',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'FigtreeSB',
+                    fontSize: 22,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  retrying
+                      ? 'Resolving a fresh stream for this channel.'
+                      : message,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 14,
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 22),
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: [
+                    FilledButton.icon(
+                      onPressed: retrying ? null : onRetry,
+                      icon: Icon(PhosphorIcons.arrowClockwise()),
+                      label: const Text('Retry'),
+                    ),
+                    if (onChannels != null)
+                      OutlinedButton.icon(
+                        onPressed: retrying ? null : onChannels,
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          side: const BorderSide(color: Colors.white38),
+                        ),
+                        icon: Icon(PhosphorIcons.televisionSimple()),
+                        label: const Text('Choose channel'),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
