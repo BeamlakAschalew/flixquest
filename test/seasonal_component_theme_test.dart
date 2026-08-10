@@ -9,8 +9,9 @@ void main() {
       (tester) async {
     late ThemeData seasonalTheme;
     final occasionalTheme = OccasionalTheme.fromJson(<String, dynamic>{
-      'id': 'ethiopian_new_year',
+      'id': 'custom_launch',
       'enabled': true,
+      'colors': <String>['#7B1FA2', '#00897B'],
     });
 
     await tester.pumpWidget(

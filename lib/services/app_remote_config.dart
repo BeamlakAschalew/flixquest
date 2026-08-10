@@ -1,6 +1,5 @@
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 
-import '../models/occasional_theme.dart';
 import '../provider/app_dependency_provider.dart';
 
 class AppRemoteConfig {
@@ -43,9 +42,7 @@ class AppRemoteConfig {
 
     final occasionalThemeValue = remoteConfig.getValue(occasionalThemeKey);
     if (occasionalThemeValue.source == ValueSource.valueRemote) {
-      provider.occasionalThemeCatalog = OccasionalThemeCatalog.fromJsonString(
-        occasionalThemeValue.asString(),
-      );
+      provider.applyRemoteOccasionalTheme(occasionalThemeValue.asString());
     }
     provider.displayWatchNowButton = remoteConfig.getBool('enable_stream');
     provider.displayOTTDrawer = remoteConfig.getBool('enable_ott');

@@ -223,19 +223,24 @@ keeping the seasonal colors and logo.
 | `user_selectable` | Boolean | `true` | Whether this active theme appears as a manual choice. |
 | `priority` | Integer | `0` | Automatic overlap priority, clamped from `-1000` to `1000`. |
 | `logo_url` | String | Empty | Theme logo; HTTPS PNG/WebP/JPEG/GIF/SVG recommended. |
+| `colors` | Array of two hex colors | Required for custom IDs | Primary and complementary secondary colors. `#RRGGBB` or `#AARRGGBB`. |
 | `primary_color` | Hex color | Preset | `#RRGGBB` or `#AARRGGBB`. |
 | `secondary_color` | Hex color | Preset | Secondary palette color. |
-| `tertiary_color` | Hex color | Preset | Tertiary palette color. |
-| `light_background_color` | Hex color | Preset | Page surface in Light mode. |
-| `dark_background_color` | Hex color | Preset | Page surface in Dark/AMOLED mode. |
+| `tertiary_color` | Hex color | Preset/derived | Optional third accent; custom themes derive it from `colors`. |
+| `light_background_color` | Hex color | Preset/derived | Optional page surface in Light mode. |
+| `dark_background_color` | Hex color | Preset/derived | Optional page surface in Dark/AMOLED mode. |
 | `starts_at` | ISO-8601 string | No lower bound | UTC or an explicit offset such as `+03:00`. |
 | `ends_at` | ISO-8601 string | No upper bound | Inclusive activation endpoint. |
 | `effect` | Object | Disabled preset effect | Optional vector effect configuration. |
 
-Invalid JSON disables the catalog. An invalid date or reversed date range
-disables that theme. Invalid colors fall back to the theme preset. Unknown
-effect names use the preset type. An unreachable/invalid logo URL falls back to
-the next logo source without breaking the page.
+Malformed or structurally invalid JSON is not persisted and leaves the last
+known-good catalog active. An invalid date or reversed date range removes that
+theme from the catalog. Invalid colors on a built-in ID fall back to its
+hardcoded preset. An enabled custom ID requires two distinct valid colors; an
+invalid custom entry is ignored, allowing another valid built-in entry in the
+same catalog to act as the fallback. Unknown effect names use the preset type.
+An unreachable/invalid logo URL falls back to the next logo source without
+breaking the page.
 
 ## Built-in theme IDs and defaults
 
@@ -250,9 +255,11 @@ the next logo source without breaking the page.
 | `eid` | `eid_al_fitr`, `eid_al_adha` | `stars` | Emerald, gold, violet |
 | `diwali` | — | `sparkles` | Saffron, pink, purple |
 
-Any other ID is a custom theme. Its fallback palette is FlixQuest orange,
-amber, and red, and its default effect type is `confetti`. Override all palette
-fields for a fully branded custom theme.
+Any other ID is a custom theme. Supply two distinct complementary colors using
+`colors`, or the equivalent `primary_color` and `secondary_color` fields. The
+app derives a tertiary accent and readable Light/Dark surfaces from that pair;
+you can still override those derived values explicitly. The default custom
+effect type is `confetti`.
 
 ## Effect configuration
 
@@ -290,11 +297,7 @@ To disable every effect immediately while preserving all seasonal themes:
   "enabled": true,
   "user_selectable": true,
   "priority": 500,
-  "primary_color": "#7B1FA2",
-  "secondary_color": "#00897B",
-  "tertiary_color": "#F9A825",
-  "light_background_color": "#FFFBFE",
-  "dark_background_color": "#151018",
+  "colors": ["#7B1FA2", "#00897B"],
   "logo_url": "https://example.com/logos/anniversary.svg",
   "starts_at": "2026-10-01T00:00:00Z",
   "ends_at": "2026-10-15T23:59:59Z",
@@ -310,6 +313,12 @@ To disable every effect immediately while preserving all seasonal themes:
 ```
 
 Add that object inside the catalog's `themes` array.
+
+For a safe custom-event rollout, keep a built-in definition (for example
+`halloween`) in the same catalog with a lower priority and the same activation
+window. If the custom entry is invalid, the parser drops it and automatic mode
+resolves the built-in preset. If the entire new value is malformed, the app
+keeps the previously persisted catalog instead.
 
 ## Safe rollout and rollback
 

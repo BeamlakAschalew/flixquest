@@ -49,4 +49,54 @@ void main() {
     provider.dispose();
     restoredProvider.dispose();
   });
+
+  test('invalid remote JSON preserves the last hardcoded occasion', () {
+    final provider = AppDependencyProvider();
+    provider.occasionalThemeCatalog = OccasionalThemeCatalog.fromJsonString('''
+      {
+        "schema_version": 2,
+        "enabled": true,
+        "themes": [
+          {"id": "halloween", "enabled": true}
+        ]
+      }
+    ''');
+
+    expect(provider.activeOccasionalTheme?.id, 'halloween');
+    expect(provider.applyRemoteOccasionalTheme('not-json'), isFalse);
+    expect(provider.activeOccasionalTheme?.id, 'halloween');
+    expect(
+      provider.applyRemoteOccasionalTheme('''
+        {
+          "schema_version": 2,
+          "enabled": true,
+          "themes": [
+            {"id": "unknown_event", "enabled": true, "colors": ["#123456"]}
+          ]
+        }
+      '''),
+      isFalse,
+    );
+    expect(provider.activeOccasionalTheme?.id, 'halloween');
+
+    expect(
+      provider.applyRemoteOccasionalTheme('''
+        {
+          "schema_version": 2,
+          "enabled": true,
+          "themes": [
+            {
+              "id": "unknown_event",
+              "enabled": true,
+              "colors": ["#123456", "#FEDCBA"]
+            }
+          ]
+        }
+      '''),
+      isTrue,
+    );
+    expect(provider.activeOccasionalTheme?.id, 'unknown_event');
+
+    provider.dispose();
+  });
 }

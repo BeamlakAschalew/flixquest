@@ -191,6 +191,16 @@ class AppDependencyProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Applies a remotely supplied catalog only when it is structurally valid.
+  /// Invalid updates leave the persisted/active catalog untouched so built-in
+  /// occasion presets continue to provide the fallback experience.
+  bool applyRemoteOccasionalTheme(String json) {
+    final catalog = OccasionalThemeCatalog.tryFromJsonString(json);
+    if (catalog == null) return false;
+    occasionalThemeCatalog = catalog;
+    return true;
+  }
+
   void selectOccasionalTheme(String id) {
     final normalized = id.trim().toLowerCase();
     if (normalized != 'automatic' &&

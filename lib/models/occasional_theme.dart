@@ -89,6 +89,7 @@ class OccasionalTheme {
     required this.secondaryColor,
     required this.tertiaryColor,
     required this.effect,
+    this.isValidConfiguration = true,
     this.description = '',
     this.logoUrl = '',
     this.lightBackgroundColor,
@@ -112,6 +113,7 @@ class OccasionalTheme {
         darkBackgroundColor = null,
         startsAt = null,
         endsAt = null,
+        isValidConfiguration = false,
         effect = const OccasionalEffect();
 
   final String id;
@@ -129,6 +131,7 @@ class OccasionalTheme {
   final DateTime? startsAt;
   final DateTime? endsAt;
   final OccasionalEffect effect;
+  final bool isValidConfiguration;
 
   bool isActiveAt(DateTime now) {
     if (!enabled || id.isEmpty) return false;
@@ -147,6 +150,22 @@ class OccasionalTheme {
   factory OccasionalTheme.fromJson(Map<String, dynamic> json) {
     final id = stringValue(json, const ['id', 'name']).toLowerCase();
     final preset = _presetFor(id);
+    final palette = valueFor(json, const ['colors', 'palette']);
+    final palettePrimary = palette is List && palette.isNotEmpty
+        ? parseColor(palette.first)
+        : null;
+    final paletteSecondary =
+        palette is List && palette.length >= 2 ? parseColor(palette[1]) : null;
+    final primaryOverride =
+        parseColor(valueFor(json, const ['primary_color', 'primaryColor'])) ??
+            palettePrimary;
+    final secondaryOverride = parseColor(
+          valueFor(json, const ['secondary_color', 'secondaryColor']),
+        ) ??
+        paletteSecondary;
+    final customPaletteIsValid = primaryOverride != null &&
+        secondaryOverride != null &&
+        primaryOverride.toARGB32() != secondaryOverride.toARGB32();
     final startsAtValue =
         valueFor(json, const ['starts_at', 'start_at', 'startsAt']);
     final endsAtValue = valueFor(json, const ['ends_at', 'end_at', 'endsAt']);
@@ -160,6 +179,24 @@ class OccasionalTheme {
       json,
       const ['display_name', 'displayName', 'title'],
     );
+    final requestedEnabled = parseBool(json['enabled']);
+    final isValidConfiguration = id.isNotEmpty &&
+        !invalidDate &&
+        !invalidWindow &&
+        (!requestedEnabled || preset.isBuiltIn || customPaletteIsValid);
+    final primary = primaryOverride ?? preset.primary;
+    final secondary = secondaryOverride ?? preset.secondary;
+    final tertiaryOverride = parseColor(
+      valueFor(json, const ['tertiary_color', 'tertiaryColor']),
+    );
+    final lightBackgroundOverride = parseColor(valueFor(json, const [
+      'light_background_color',
+      'lightBackgroundColor',
+    ]));
+    final darkBackgroundOverride = parseColor(valueFor(json, const [
+      'dark_background_color',
+      'darkBackgroundColor',
+    ]));
 
     return OccasionalTheme(
       id: id,
@@ -167,38 +204,31 @@ class OccasionalTheme {
           ? (preset.displayName.isEmpty ? _titleFromId(id) : preset.displayName)
           : rawName,
       description: stringValue(json, const ['description', 'subtitle']),
-      enabled: parseBool(json['enabled']) &&
-          id.isNotEmpty &&
-          !invalidDate &&
-          !invalidWindow,
+      enabled: requestedEnabled && isValidConfiguration,
       userSelectable: json.containsKey('user_selectable')
           ? parseBool(json['user_selectable'])
           : true,
       priority: parseInt(json['priority']).clamp(-1000, 1000),
-      primaryColor:
-          parseColor(valueFor(json, const ['primary_color', 'primaryColor'])) ??
-              preset.primary,
-      secondaryColor: parseColor(
-            valueFor(json, const ['secondary_color', 'secondaryColor']),
-          ) ??
-          preset.secondary,
-      tertiaryColor: parseColor(
-            valueFor(json, const ['tertiary_color', 'tertiaryColor']),
-          ) ??
-          preset.tertiary,
+      primaryColor: primary,
+      secondaryColor: secondary,
+      tertiaryColor: tertiaryOverride ??
+          (preset.isBuiltIn
+              ? preset.tertiary
+              : _derivedTertiary(primary, secondary)),
       logoUrl: stringValue(json, const ['logo_url', 'logoUrl']),
-      lightBackgroundColor: parseColor(valueFor(json, const [
-            'light_background_color',
-            'lightBackgroundColor',
-          ])) ??
-          preset.lightBackground,
-      darkBackgroundColor: parseColor(valueFor(json, const [
-            'dark_background_color',
-            'darkBackgroundColor',
-          ])) ??
-          preset.darkBackground,
+      lightBackgroundColor: lightBackgroundOverride ??
+          preset.lightBackground ??
+          (customPaletteIsValid
+              ? _derivedBackground(primary, secondary, Brightness.light)
+              : null),
+      darkBackgroundColor: darkBackgroundOverride ??
+          preset.darkBackground ??
+          (customPaletteIsValid
+              ? _derivedBackground(primary, secondary, Brightness.dark)
+              : null),
       startsAt: startsAt,
       endsAt: endsAt,
+      isValidConfiguration: isValidConfiguration,
       effect: OccasionalEffect.fromJson(
         json['effect'],
         presetType: preset.effectType,
@@ -271,6 +301,23 @@ class OccasionalTheme {
   static String colorHex(Color color) =>
       '#${color.toARGB32().toRadixString(16).padLeft(8, '0').toUpperCase()}';
 
+  static Color _derivedTertiary(Color primary, Color secondary) =>
+      Color.alphaBlend(secondary.withValues(alpha: .45), primary);
+
+  static Color _derivedBackground(
+    Color primary,
+    Color secondary,
+    Brightness brightness,
+  ) {
+    final blended = Color.lerp(primary, secondary, .35) ?? primary;
+    final base =
+        brightness == Brightness.dark ? const Color(0xFF101014) : Colors.white;
+    return Color.alphaBlend(
+      blended.withValues(alpha: brightness == Brightness.dark ? .16 : .07),
+      base,
+    );
+  }
+
   static String _titleFromId(String id) => id
       .split(RegExp('[_-]+'))
       .where((part) => part.isNotEmpty)
@@ -279,6 +326,7 @@ class OccasionalTheme {
 
   static _OccasionalThemePreset _presetFor(String id) => switch (id) {
         'christmas' || 'xmas' => const _OccasionalThemePreset(
+            isBuiltIn: true,
             displayName: 'Christmas',
             primary: Color(0xFFC62828),
             secondary: Color(0xFF2E7D32),
@@ -291,6 +339,7 @@ class OccasionalTheme {
         'ethiopian-new-year' ||
         'enkutatash' =>
           const _OccasionalThemePreset(
+            isBuiltIn: true,
             displayName: 'Ethiopian New Year',
             primary: Color(0xFFF9A825),
             secondary: Color(0xFF2E7D32),
@@ -300,6 +349,7 @@ class OccasionalTheme {
             effectType: OccasionalEffectType.petals,
           ),
         'new_year' || 'new-year' => const _OccasionalThemePreset(
+            isBuiltIn: true,
             displayName: 'New Year',
             primary: Color(0xFFD4AF37),
             secondary: Color(0xFF3949AB),
@@ -309,6 +359,7 @@ class OccasionalTheme {
             effectType: OccasionalEffectType.fireworks,
           ),
         'halloween' => const _OccasionalThemePreset(
+            isBuiltIn: true,
             displayName: 'Halloween',
             primary: Color(0xFFFF6D00),
             secondary: Color(0xFF6A1B9A),
@@ -321,6 +372,7 @@ class OccasionalTheme {
         'valentines_day' ||
         'valentine' =>
           const _OccasionalThemePreset(
+            isBuiltIn: true,
             displayName: "Valentine's Day",
             primary: Color(0xFFD81B60),
             secondary: Color(0xFFAD1457),
@@ -330,6 +382,7 @@ class OccasionalTheme {
             effectType: OccasionalEffectType.hearts,
           ),
         'easter' => const _OccasionalThemePreset(
+            isBuiltIn: true,
             displayName: 'Easter',
             primary: Color(0xFF7E57C2),
             secondary: Color(0xFF26A69A),
@@ -339,6 +392,7 @@ class OccasionalTheme {
             effectType: OccasionalEffectType.petals,
           ),
         'eid' || 'eid_al_fitr' || 'eid_al_adha' => const _OccasionalThemePreset(
+            isBuiltIn: true,
             displayName: 'Eid',
             primary: Color(0xFF00897B),
             secondary: Color(0xFFD4AF37),
@@ -348,6 +402,7 @@ class OccasionalTheme {
             effectType: OccasionalEffectType.stars,
           ),
         'diwali' => const _OccasionalThemePreset(
+            isBuiltIn: true,
             displayName: 'Diwali',
             primary: Color(0xFFFF8F00),
             secondary: Color(0xFFD81B60),
@@ -396,23 +451,36 @@ class OccasionalThemeCatalog {
   final List<OccasionalTheme> themes;
 
   factory OccasionalThemeCatalog.fromJsonString(String value) {
-    if (value.trim().isEmpty) return const OccasionalThemeCatalog.disabled();
+    return tryFromJsonString(value) ?? const OccasionalThemeCatalog.disabled();
+  }
+
+  /// Parses a Remote Config payload. A null result means callers should keep
+  /// their last known-good catalog rather than replacing it.
+  static OccasionalThemeCatalog? tryFromJsonString(String value) {
+    if (value.trim().isEmpty) return null;
     try {
       final decoded = jsonDecode(value);
-      if (decoded is! Map<String, dynamic>) {
-        return const OccasionalThemeCatalog.disabled();
-      }
-      return OccasionalThemeCatalog.fromJson(decoded);
+      if (decoded is! Map<String, dynamic>) return null;
+      return _tryFromJson(decoded);
     } on FormatException {
-      return const OccasionalThemeCatalog.disabled();
+      return null;
     }
   }
 
   factory OccasionalThemeCatalog.fromJson(Map<String, dynamic> json) {
+    return _tryFromJson(json) ?? const OccasionalThemeCatalog.disabled();
+  }
+
+  static OccasionalThemeCatalog? _tryFromJson(Map<String, dynamic> json) {
     final rawThemes = json['themes'];
     if (rawThemes is! List) {
       // Backward-compatible migration for the original single-theme schema.
       final legacy = OccasionalTheme.fromJson(json);
+      if (!legacy.isValidConfiguration) {
+        return OccasionalTheme.parseBool(json['enabled'])
+            ? null
+            : const OccasionalThemeCatalog.disabled();
+      }
       return OccasionalThemeCatalog(
         enabled: legacy.enabled,
         allowUserSelection: false,
@@ -433,10 +501,12 @@ class OccasionalThemeCatalog {
         }
       }
       final theme = OccasionalTheme.fromJson(normalized);
-      if (theme.id.isNotEmpty) byId[theme.id] = theme;
+      if (theme.isValidConfiguration) byId[theme.id] = theme;
     }
+    final enabled = OccasionalTheme.parseBool(json['enabled']);
+    if (enabled && byId.isEmpty) return null;
     return OccasionalThemeCatalog(
-      enabled: OccasionalTheme.parseBool(json['enabled']),
+      enabled: enabled,
       allowUserSelection:
           OccasionalTheme.parseBool(json['allow_user_selection']),
       effectsEnabled: json.containsKey('effects_enabled')
@@ -500,6 +570,7 @@ class OccasionalThemeCatalog {
 
 class _OccasionalThemePreset {
   const _OccasionalThemePreset({
+    this.isBuiltIn = false,
     required this.displayName,
     required this.primary,
     required this.secondary,
@@ -509,6 +580,7 @@ class _OccasionalThemePreset {
     this.darkBackground,
   });
 
+  final bool isBuiltIn;
   final String displayName;
   final Color primary;
   final Color secondary;
