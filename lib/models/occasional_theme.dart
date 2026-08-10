@@ -42,12 +42,19 @@ class OccasionalEffect {
       return OccasionalEffect(type: presetType);
     }
     final typeName = (value['type'] ?? '').toString().trim().toLowerCase();
-    final type = OccasionalEffectType.values.firstWhere(
+    final parsedType = OccasionalEffectType.values.firstWhere(
       (candidate) =>
           candidate.name.toLowerCase() == typeName ||
           jsonName(candidate) == typeName,
       orElse: () => presetType,
     );
+    // Older catalogs used `petals` for these built-in occasions. Preserve
+    // those payloads while upgrading them to their richer combined effects.
+    final type = parsedType == OccasionalEffectType.petals &&
+            (presetType == OccasionalEffectType.adeyFlowers ||
+                presetType == OccasionalEffectType.candyEggs)
+        ? presetType
+        : parsedType;
     final rawColors = value['colors'];
     final colors = rawColors is List
         ? rawColors

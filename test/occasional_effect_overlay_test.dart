@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('Adey flowers use seven petals', () {
+    expect(OccasionalEffectOverlay.adeyFlowerPetalCount, 7);
+  });
+
   final theme = OccasionalTheme.fromJson(<String, dynamic>{
     'id': 'christmas',
     'enabled': true,
@@ -52,7 +56,7 @@ void main() {
     expect(find.byKey(const Key('occasional-effect-canvas')), findsNothing);
   });
 
-  testWidgets('renders Easter treats and Ethiopian Adey flowers',
+  testWidgets('renders leaves with Easter treats and Ethiopian Adey flowers',
       (tester) async {
     for (final id in <String>['easter', 'ethiopian_new_year']) {
       final occasionalTheme = OccasionalTheme.fromJson(<String, dynamic>{

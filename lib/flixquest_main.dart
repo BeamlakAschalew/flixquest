@@ -127,7 +127,7 @@ class _FlixQuestState extends State<FlixQuest>
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const MaterialApp(
               restorationScopeId: 'flixquest',
-              debugShowCheckedModeBanner: true,
+              debugShowCheckedModeBanner: false,
               home: Scaffold(
                 body: Center(
                   child: CircularProgressIndicator(),
@@ -182,7 +182,7 @@ class _FlixQuestState extends State<FlixQuest>
                       localizationsDelegates: context.localizationDelegates,
                       supportedLocales: context.supportedLocales,
                       locale: context.locale,
-                      debugShowCheckedModeBanner: true,
+                      debugShowCheckedModeBanner: false,
                       builder: (context, child) => Stack(
                         fit: StackFit.expand,
                         children: [

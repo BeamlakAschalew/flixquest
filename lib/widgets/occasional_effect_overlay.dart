@@ -17,6 +17,9 @@ class OccasionalEffectOverlay extends StatefulWidget {
   final OccasionalTheme? theme;
   final bool enabled;
 
+  @visibleForTesting
+  static const int adeyFlowerPetalCount = 7;
+
   @override
   State<OccasionalEffectOverlay> createState() =>
       _OccasionalEffectOverlayState();
@@ -346,6 +349,9 @@ class _OccasionalEffectPainter extends CustomPainter {
   }
 
   void _paintCandyEggs(Canvas canvas, Size size) {
+    // A light layer of drifting leaves keeps the effect organic without
+    // competing with the wrapped candies and decorated eggs.
+    _paintPetals(canvas, size);
     for (var i = 0; i < effect.density; i++) {
       final progress =
           _wrap(_unit(i * 41 + 1) + _time * (.14 + _unit(i) * .14));
@@ -414,29 +420,48 @@ class _OccasionalEffectPainter extends CustomPainter {
       final x = _unit(i * 23 + 11) * size.width +
           math.sin((_time + i) * math.pi * 2) * 16;
       final y = progress * size.height;
-      final scale = .48 + _unit(i * 7) * .38;
+      final scale = .62 + _unit(i * 7) * .34;
       canvas.save();
       canvas.translate(x, y);
+      canvas.rotate(math.sin((_time + i) * math.pi * 2) * .12);
       canvas.scale(scale);
-      final petalPaint = Paint()..color = _color(i + 1, effect.opacity * .72);
-      for (var petal = 0; petal < 5; petal++) {
-        final angle = petal * math.pi * 2 / 5;
+      final petalBase =
+          effect.colors.isNotEmpty ? effect.colors.first : primary;
+      final petalColor = Color.lerp(
+            petalBase,
+            const Color(0xFFFFF1A8),
+            .16 + _unit(i * 17) * .16,
+          ) ??
+          petalBase;
+      final petalPaint = Paint()
+        ..color = petalColor.withValues(alpha: effect.opacity * .82);
+      final petalPath = Path()
+        ..moveTo(-1.7, -.8)
+        ..quadraticBezierTo(-3.1, -5.2, 0, -9)
+        ..quadraticBezierTo(3.1, -5.2, 1.7, -.8)
+        ..close();
+      for (var petal = 0;
+          petal < OccasionalEffectOverlay.adeyFlowerPetalCount;
+          petal++) {
+        final angle =
+            petal * math.pi * 2 / OccasionalEffectOverlay.adeyFlowerPetalCount;
         canvas.save();
         canvas.rotate(angle);
-        canvas.drawOval(
-          Rect.fromCenter(
-            center: const Offset(0, -4.3),
-            width: 4.6,
-            height: 7.2,
-          ),
-          petalPaint,
-        );
+        canvas.drawPath(petalPath, petalPaint);
         canvas.restore();
       }
       canvas.drawCircle(
         Offset.zero,
-        2.2,
-        Paint()..color = _color(i + 2, effect.opacity * .9),
+        2.45,
+        Paint()
+          ..color =
+              const Color(0xFF7A4B00).withValues(alpha: effect.opacity * .92),
+      );
+      canvas.drawCircle(
+        Offset.zero,
+        1.35,
+        Paint()
+          ..color = const Color(0xFFE0A11A).withValues(alpha: effect.opacity),
       );
       canvas.restore();
     }

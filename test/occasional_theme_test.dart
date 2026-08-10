@@ -48,6 +48,24 @@ void main() {
       expect(theme.effect.toJson()['type'], 'candy_eggs');
     });
 
+    test('upgrades legacy petals to combined built-in effects', () {
+      for (final entry in <(String, OccasionalEffectType)>[
+        ('ethiopian_new_year', OccasionalEffectType.adeyFlowers),
+        ('easter', OccasionalEffectType.candyEggs),
+      ]) {
+        final theme = OccasionalTheme.fromJson(<String, dynamic>{
+          'enabled': true,
+          'id': entry.$1,
+          'effect': <String, dynamic>{
+            'enabled': true,
+            'type': 'petals',
+          },
+        });
+
+        expect(theme.effect.type, entry.$2, reason: entry.$1);
+      }
+    });
+
     test('honors activation windows and rejects invalid windows', () {
       final theme = OccasionalTheme.fromJson(<String, dynamic>{
         'enabled': true,

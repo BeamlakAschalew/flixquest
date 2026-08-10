@@ -251,7 +251,7 @@ breaking the page.
 | `new_year` | `new-year` | `fireworks` | Gold, indigo, magenta |
 | `halloween` | — | `bats` | Orange, purple, near-black |
 | `valentines` | `valentines_day`, `valentine` | `hearts` | Rose and pink |
-| `easter` | — | `candy_eggs` | Falling wrapped candies and decorated eggs |
+| `easter` | — | `candy_eggs` | Falling leaves, wrapped candies, and decorated eggs |
 | `eid` | `eid_al_fitr`, `eid_al_adha` | `stars` | Emerald, gold, violet |
 | `diwali` | — | `sparkles` | Saffron, pink, purple |
 

@@ -1,0 +1,9 @@
+{
+  "name": "flixquest-landing",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "rm -rf dist && mkdir -p dist/server dist/client && cp worker/index.js dist/server/index.js && cp index.html dist/client/index.html && cp -R css js assets dist/client/"
+  }
+}
