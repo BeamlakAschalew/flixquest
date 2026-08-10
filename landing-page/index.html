@@ -72,55 +72,7 @@
           <div class="phone">
             <div class="phone-bezel">
               <div class="phone-screen">
-                <div class="phone-status"><span>9:41</span><span>▮▮▮  ●</span></div>
-                <div class="app-topbar">
-                  <span class="mini-brand"><img src="assets/logo.png" alt="">FlixQuest</span>
-                  <span class="search-dot" aria-hidden="true">⌕</span>
-                </div>
-                <div class="app-tabs" role="tablist" aria-label="App preview category">
-                  <button class="active" type="button" data-demo="movies">Movies</button>
-                  <button type="button" data-demo="series">Series</button>
-                  <button type="button" data-demo="live">Live</button>
-                </div>
-                <div class="featured-card demo-panel" data-panel="movies">
-                  <div class="feature-art art-movie"></div>
-                  <div class="feature-shade"></div>
-                  <div class="feature-copy">
-                    <span>THE NIGHT IS YOURS</span>
-                    <p>2025 &nbsp;•&nbsp; Mystery &nbsp;•&nbsp; 2h 14m</p>
-                    <button type="button"><i>▶</i> Watch now</button>
-                  </div>
-                </div>
-                <div class="featured-card demo-panel hidden" data-panel="series">
-                  <div class="feature-art art-series"></div>
-                  <div class="feature-shade"></div>
-                  <div class="feature-copy">
-                    <span>ONE MORE EPISODE</span>
-                    <p>Season 3 &nbsp;•&nbsp; Drama</p>
-                    <button type="button"><i>▶</i> Continue</button>
-                  </div>
-                </div>
-                <div class="featured-card demo-panel hidden" data-panel="live">
-                  <div class="feature-art art-live"></div>
-                  <div class="feature-shade"></div>
-                  <div class="feature-copy">
-                    <span>LIVE, RIGHT NOW</span>
-                    <p><b class="live-dot"></b> 142 channels</p>
-                    <button type="button"><i>▶</i> Tune in</button>
-                  </div>
-                </div>
-                <div class="content-row-title"><b>Trending this week</b><span>See all</span></div>
-                <div class="poster-row" aria-hidden="true">
-                  <i class="crop crop-one"></i>
-                  <i class="crop crop-two"></i>
-                  <i class="crop crop-three"></i>
-                </div>
-                <div class="phone-nav" aria-hidden="true">
-                  <span class="active">⌂<small>Movies</small></span>
-                  <span>▣<small>Series</small></span>
-                  <span>◉<small>Discover</small></span>
-                  <span>▰<small>Saved</small></span>
-                </div>
+                <img class="phone-capture" src="assets/screens/movies-home.jpg" alt="FlixQuest movies home screen showing a featured movie, popular titles, and navigation" width="415" height="900" fetchpriority="high">
               </div>
             </div>
           </div>
@@ -210,40 +162,48 @@
 
     <section class="experience section" id="experience">
       <div class="ambient-glow" aria-hidden="true"></div>
-      <div class="shell experience-grid">
-        <div class="experience-copy reveal">
-          <span class="kicker">Make it unmistakably yours</span>
-          <h2>The interface follows <em>the mood.</em></h2>
-          <p>Switch between light, dark, and AMOLED modes. Let artwork tint detail pages with Ambient Mode, choose a custom color, or celebrate with seasonal themes and subtle effects.</p>
-          <div class="palette-picker" aria-label="Preview a FlixQuest accent color">
-            <button class="swatch orange active" type="button" data-accent="#f97316" aria-label="Orange accent"></button>
-            <button class="swatch violet" type="button" data-accent="#8b5cf6" aria-label="Violet accent"></button>
-            <button class="swatch cyan" type="button" data-accent="#06b6d4" aria-label="Cyan accent"></button>
-            <button class="swatch emerald" type="button" data-accent="#10b981" aria-label="Emerald accent"></button>
-            <span>Tap a color to change the mood</span>
+      <div class="shell">
+        <div class="experience-heading reveal">
+          <div>
+            <span class="kicker">The real app experience</span>
+            <h2>From discovery to <em>play.</em></h2>
           </div>
-          <ul class="experience-list">
-            <li><span>01</span><b>Ambient artwork colors</b></li>
-            <li><span>02</span><b>Seasonal themes & effects</b></li>
-            <li><span>03</span><b>Material 3 dynamic color</b></li>
-          </ul>
+          <p>Browse the actual FlixQuest interface—from rich movie and series details to episodes, playback, downloads, and live TV.</p>
         </div>
 
-        <div class="theme-showcase reveal delay-one" aria-label="FlixQuest theme preview">
-          <div class="theme-panel panel-back">
-            <div class="panel-header"><span>Appearance</span><i></i></div>
-            <div class="setting-row"><b>Dark mode</b><span class="toggle on"></span></div>
-            <div class="setting-row"><b>Ambient mode</b><span class="toggle on"></span></div>
-            <div class="setting-row"><b>Seasonal themes</b><span class="toggle on"></span></div>
-          </div>
-          <div class="theme-panel panel-front">
-            <div class="art-detail">
-              <div class="art-backdrop"></div>
-              <div class="art-overlay"></div>
-              <div class="art-meta"><small>Now discovering</small><h3>CHASING<br>THE HORIZON</h3><p>Adventure • Drama • 2025</p><button type="button">▶ Watch</button></div>
-            </div>
-          </div>
-          <div class="theme-label"><i></i> Ambient color active</div>
+        <div class="screen-gallery reveal delay-one" aria-label="FlixQuest app screenshots">
+          <figure class="screen-card portrait">
+            <img src="assets/screens/movie-detail.jpg" alt="Spider-Man: Brand New Day movie detail screen with rating, overview, cast, and Watch Now button" width="415" height="900" loading="lazy">
+            <figcaption><span>01</span> Movie details</figcaption>
+          </figure>
+          <figure class="screen-card portrait">
+            <img src="assets/screens/series-detail.jpg" alt="House of the Dragon series detail screen with artwork, ratings, overview, and cast" width="415" height="900" loading="lazy">
+            <figcaption><span>02</span> Series details</figcaption>
+          </figure>
+          <figure class="screen-card portrait">
+            <img src="assets/screens/season-detail.jpg" alt="Season detail screen showing season information, cast, and episodes" width="415" height="900" loading="lazy">
+            <figcaption><span>03</span> Seasons & episodes</figcaption>
+          </figure>
+          <figure class="screen-card portrait">
+            <img src="assets/screens/episodes.jpg" alt="Episode browser with artwork, ratings, dates, and play buttons" width="415" height="900" loading="lazy">
+            <figcaption><span>04</span> Episode browser</figcaption>
+          </figure>
+          <figure class="screen-card landscape">
+            <img src="assets/screens/player.jpg" alt="FlixQuest video player with playback controls and timeline visible" width="1600" height="738" loading="lazy">
+            <figcaption><span>05</span> Immersive player</figcaption>
+          </figure>
+          <figure class="screen-card portrait">
+            <img src="assets/screens/episode-detail.jpg" alt="Episode detail screen with Watch Now and Download actions" width="415" height="900" loading="lazy">
+            <figcaption><span>06</span> Watch or download</figcaption>
+          </figure>
+          <figure class="screen-card portrait">
+            <img src="assets/screens/downloads.jpg" alt="Downloads screen showing paused and active downloads with progress" width="415" height="900" loading="lazy">
+            <figcaption><span>07</span> Offline downloads</figcaption>
+          </figure>
+          <figure class="screen-card portrait">
+            <img src="assets/screens/live-tv.jpg" alt="Live TV screen showing events, start times, and available channels" width="415" height="900" loading="lazy">
+            <figcaption><span>08</span> Live TV</figcaption>
+          </figure>
         </div>
       </div>
     </section>

@@ -601,5 +601,6 @@
   "subtitle_already_added": "Este archivo de subtítulos ya fue agregado.",
   "failed_upload_subtitle": "Error al cargar subtítulo: {error}",
   "no_file_selected": "Ningún archivo seleccionado",
-  "finding_best_source": "Por favor espere mientras encontramos la mejor fuente"
+  "finding_best_source": "Por favor espere mientras encontramos la mejor fuente",
+  "playback_failed": "No se pudo iniciar la reproducción"
 }

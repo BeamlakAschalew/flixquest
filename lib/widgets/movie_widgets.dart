@@ -471,7 +471,7 @@ class DiscoverMoviesState extends State<DiscoverMovies>
                               Row(
                                 children: [
                                   FilledButton.icon(
-                                    onPressed: () => _openMovie(movie),
+                                    onPressed: () => _watchMovie(movie),
                                     icon: Icon(PhosphorIcons.play()),
                                     label: Text(tr('watch_now')),
                                     style: FilledButton.styleFrom(
@@ -506,13 +506,33 @@ class DiscoverMoviesState extends State<DiscoverMovies>
     );
   }
 
-  void _openMovie(Movie movie) {
-    Navigator.push(
+  Future<void> _watchMovie(Movie movie) async {
+    final movieId = movie.id;
+    if (movieId == null) return;
+    if (!await checkConnection()) {
+      if (!mounted) return;
+      GlobalMethods.showCustomScaffoldMessage(
+        SnackBar(content: Text(tr('check_connection'), maxLines: 3)),
+        context,
+      );
+      return;
+    }
+    if (!mounted) return;
+    await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => MovieDetailPage(
-          movie: movie,
-          heroId: '${movie.id}-${widget.discoverType}',
+        builder: (_) => MovieVideoLoader(
+          download: false,
+          metadata: MovieStreamMetadata(
+            backdropPath: movie.backdropPath,
+            elapsed: null,
+            movieId: movieId,
+            movieName: movie.title,
+            posterPath: movie.posterPath,
+            releaseYear: DateTime.tryParse(movie.releaseDate ?? '')?.year,
+            isAdult: movie.adult,
+            releaseDate: movie.releaseDate,
+          ),
         ),
       ),
     );

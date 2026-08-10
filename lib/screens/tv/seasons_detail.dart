@@ -348,27 +348,13 @@ class _SeasonContent extends StatelessWidget {
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                   ),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      if (year != null)
-                        _SeasonMetadataPill(
-                          icon: PhosphorIcons.calendar(),
-                          label: '$year',
-                        ),
-                      _SeasonMetadataPill(
-                        icon: PhosphorIcons.playlist(),
-                        label: tr(
-                          'episodes_count',
-                          namedArgs: {
-                            'count': (season.episodeCount ?? 0).toString(),
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
+                  if (year != null) ...[
+                    const SizedBox(height: 12),
+                    _SeasonMetadataPill(
+                      icon: PhosphorIcons.calendar(),
+                      label: '$year',
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -394,8 +380,21 @@ class _SeasonContent extends StatelessWidget {
           seasonNumber: season.seasonNumber ?? 0,
         ),
         const SizedBox(height: 28),
-        _SeasonHeading(title: tr('episodes')),
-        const SizedBox(height: 14),
+        _SeasonHeading(
+          title: tr('episodes'),
+          trailing: (season.episodeCount ?? 0) > 0
+              ? Text(
+                  tr(
+                    'episodes_count',
+                    namedArgs: {'count': season.episodeCount.toString()},
+                  ),
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                )
+              : null,
+        ),
+        const SizedBox(height: 4),
         FutureBuilder<TVDetails>(
           future: details,
           builder: (context, snapshot) {
@@ -410,17 +409,27 @@ class _SeasonContent extends StatelessWidget {
             if (episodes.isEmpty) {
               return Center(child: Text(tr('not_available')));
             }
+            // One shared slot width keeps every title left-aligned once the
+            // season crosses episode 9.
+            var digits = 1;
+            for (final item in episodes) {
+              final width = (item.episodeNumber ?? 0).toString().length;
+              if (width > digits) digits = width;
+            }
+            final numberSlot = 18.0 + ((digits - 1) * 10);
             return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 for (var index = 0; index < episodes.length; index++) ...[
-                  _EpisodeRailCard(
+                  _EpisodeRow(
                     episode: episodes[index],
                     episodes: episodes,
                     tvId: tvId,
                     seriesName: seriesName,
                     posterPath: season.posterPath,
+                    numberSlot: numberSlot,
                   ),
-                  if (index != episodes.length - 1) const SizedBox(height: 12),
+                  if (index != episodes.length - 1) const _EpisodeDivider(),
                 ],
               ],
             );
@@ -466,13 +475,20 @@ class _SeasonMetadataPill extends StatelessWidget {
   }
 }
 
-class _EpisodeRailCard extends StatelessWidget {
-  const _EpisodeRailCard({
+/// A single episode, rendered as a flat list row.
+///
+/// Deliberately carries no card chrome — no fill, no border, no shadow, no
+/// outer radius. The still is the only rounded element; rows are separated by
+/// an [_EpisodeDivider] hairline so a long season reads as one continuous list
+/// instead of a stack of floating panels.
+class _EpisodeRow extends StatelessWidget {
+  const _EpisodeRow({
     required this.episode,
     required this.episodes,
     required this.tvId,
     required this.seriesName,
     required this.posterPath,
+    this.numberSlot = 18,
   });
 
   final EpisodeList episode;
@@ -480,181 +496,212 @@ class _EpisodeRailCard extends StatelessWidget {
   final int tvId;
   final String? seriesName;
   final String? posterPath;
+  final double numberSlot;
 
   @override
   Widget build(BuildContext context) {
     final settings = Provider.of<SettingsProvider>(context);
     final proxy = Provider.of<AppDependencyProvider>(context).tmdbProxy;
     final date = DateTime.tryParse(episode.airDate ?? '');
-    final colors = Theme.of(context).colorScheme;
-    return Material(
-      color: colors.surfaceContainerHighest.withValues(alpha: .48),
-      borderRadius: BorderRadius.circular(16),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppUI.cardRadius),
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => EpisodeDetailPage(
-              episodeList: episode,
-              episodes: episodes,
-              tvId: tvId,
-              seriesName: seriesName,
-              posterPath: posterPath,
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final rating = episode.voteAverage ?? 0;
+    final metaStyle = theme.textTheme.labelMedium?.copyWith(
+      color: colors.onSurfaceVariant,
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWide = constraints.maxWidth >= 720;
+        final thumbWidth = isWide
+            ? (constraints.maxWidth * .26).clamp(210.0, 272.0)
+            : (constraints.maxWidth * .38).clamp(128.0, 176.0);
+
+        return InkWell(
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => EpisodeDetailPage(
+                episodeList: episode,
+                episodes: episodes,
+                tvId: tvId,
+                seriesName: seriesName,
+                posterPath: posterPath,
+              ),
             ),
           ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(
-                width:
-                    (MediaQuery.sizeOf(context).width * .4).clamp(136.0, 210.0),
-                child: AspectRatio(
-                  aspectRatio: 16 / 9,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        if ((episode.stillPath ?? '').isEmpty)
-                          Image.asset('assets/images/na_rect.png',
-                              fit: BoxFit.cover)
-                        else
-                          CachedNetworkImage(
-                            cacheManager: cacheProp(),
-                            imageUrl:
-                                '${buildImageUrl(TMDB_BASE_IMAGE_URL, proxy, settings.enableProxy, context)}${settings.imageQuality}${episode.stillPath}',
-                            fit: BoxFit.cover,
-                            placeholder: (_, __) => const AppShimmerBlock(),
-                            errorWidget: (_, __, ___) => Image.asset(
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: isWide ? 16 : 13),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: thumbWidth,
+                  child: AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          if ((episode.stillPath ?? '').isEmpty)
+                            Image.asset(
                               'assets/images/na_rect.png',
                               fit: BoxFit.cover,
+                            )
+                          else
+                            CachedNetworkImage(
+                              cacheManager: cacheProp(),
+                              imageUrl:
+                                  '${buildImageUrl(TMDB_BASE_IMAGE_URL, proxy, settings.enableProxy, context)}${settings.imageQuality}${episode.stillPath}',
+                              fit: BoxFit.cover,
+                              placeholder: (_, __) =>
+                                  const AppShimmerBlock(radius: 12),
+                              errorWidget: (_, __, ___) => Image.asset(
+                                'assets/images/na_rect.png',
+                                fit: BoxFit.cover,
+                              ),
                             ),
-                          ),
-                        const DecoratedBox(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [Colors.transparent, Color(0x70000000)],
-                            ),
-                          ),
-                        ),
-                        PositionedDirectional(
-                          start: 8,
-                          top: 8,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 7,
-                              vertical: 4,
-                            ),
+                          const DecoratedBox(
                             decoration: BoxDecoration(
-                              color: Colors.black.withValues(alpha: .62),
-                              borderRadius: BorderRadius.circular(7),
-                            ),
-                            child: Text(
-                              'E${episode.episodeNumber ?? ''}',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'FigtreeSB',
-                                fontSize: 11,
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.transparent,
+                                  Color(0x4D000000),
+                                ],
                               ),
                             ),
                           ),
-                        ),
-                        PositionedDirectional(
-                          end: 8,
-                          bottom: 8,
-                          child: Container(
-                            width: 34,
-                            height: 34,
-                            decoration: BoxDecoration(
-                              color: colors.primary,
-                              shape: BoxShape.circle,
-                              boxShadow: const [
-                                BoxShadow(color: Colors.black26, blurRadius: 8),
-                              ],
-                            ),
-                            child: Icon(
-                              PhosphorIcons.play(),
-                              color: colors.onPrimary,
+                          Center(
+                            child: Container(
+                              width: isWide ? 38 : 32,
+                              height: isWide ? 38 : 32,
+                              decoration: BoxDecoration(
+                                color: Colors.black.withValues(alpha: .42),
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white.withValues(alpha: .55),
+                                  width: 1.2,
+                                ),
+                              ),
+                              child: Icon(
+                                PhosphorIcons.play(PhosphorIconsStyle.fill),
+                                color: Colors.white,
+                                size: isWide ? 17 : 14,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 13),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${episode.episodeNumber ?? ''}. ${episode.name ?? tr('episodes')}',
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            fontFamily: 'FigtreeSB',
-                          ),
-                    ),
-                    const SizedBox(height: 5),
-                    Wrap(
-                      spacing: 8,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        if ((episode.voteAverage ?? 0) > 0)
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(PhosphorIcons.star(PhosphorIconsStyle.fill),
-                                  size: 15, color: colors.primary),
-                              const SizedBox(width: 3),
-                              Text(
-                                (episode.voteAverage ?? 0).toStringAsFixed(1),
-                                style: Theme.of(context).textTheme.labelMedium,
+                SizedBox(width: isWide ? 18 : 13),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: numberSlot,
+                            child: Text(
+                              episode.episodeNumber?.toString() ?? '',
+                              maxLines: 1,
+                              softWrap: false,
+                              overflow: TextOverflow.visible,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontFamily: 'FigtreeSB',
+                                height: 1.16,
+                                color: colors.onSurfaceVariant
+                                    .withValues(alpha: .55),
                               ),
-                            ],
-                          ),
-                        if (date != null)
-                          Text(
-                            DateFormat.yMMMd(context.locale.toString())
-                                .format(date),
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelMedium
-                                ?.copyWith(
-                                  color: colors.onSurfaceVariant,
-                                ),
-                          ),
-                      ],
-                    ),
-                    if ((episode.overview ?? '').isNotEmpty) ...[
-                      const SizedBox(height: 5),
-                      Text(
-                        episode.overview!,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: colors.onSurfaceVariant,
-                              height: 1.25,
                             ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              episode.name ?? tr('episodes'),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontFamily: 'FigtreeSB',
+                                height: 1.16,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
+                      if (rating > 0 || date != null) ...[
+                        const SizedBox(height: 7),
+                        Row(
+                          children: [
+                            if (rating > 0) ...[
+                              Icon(
+                                PhosphorIcons.star(PhosphorIconsStyle.fill),
+                                size: 13,
+                                color: colors.primary,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(rating.toStringAsFixed(1), style: metaStyle),
+                            ],
+                            if (rating > 0 && date != null)
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 7),
+                                child: Text('·', style: metaStyle),
+                              ),
+                            if (date != null)
+                              Flexible(
+                                child: Text(
+                                  DateFormat.yMMMd(context.locale.toString())
+                                      .format(date),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: metaStyle,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ],
+                      if ((episode.overview ?? '').isNotEmpty) ...[
+                        const SizedBox(height: 7),
+                        Text(
+                          episode.overview!,
+                          maxLines: isWide ? 3 : 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colors.onSurfaceVariant,
+                            height: 1.4,
+                          ),
+                        ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
+}
+
+class _EpisodeDivider extends StatelessWidget {
+  const _EpisodeDivider();
+
+  @override
+  Widget build(BuildContext context) => Container(
+        height: 1,
+        color: Theme.of(context)
+            .colorScheme
+            .outlineVariant
+            .withValues(alpha: .45),
+      );
 }
 
 class _SeasonCastRail extends StatelessWidget {
@@ -1072,11 +1119,13 @@ class _SeasonHeading extends StatelessWidget {
     required this.title,
     this.actionLabel,
     this.onAction,
+    this.trailing,
   });
 
   final String title;
   final String? actionLabel;
   final VoidCallback? onAction;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) => Row(
@@ -1091,6 +1140,7 @@ class _SeasonHeading extends StatelessWidget {
           ),
           if (actionLabel != null)
             TextButton(onPressed: onAction, child: Text(actionLabel!)),
+          if (trailing != null) trailing!,
         ],
       );
 }
@@ -1161,85 +1211,90 @@ class _EpisodeListShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         for (var index = 0; index < itemCount; index++) ...[
-          const _EpisodeListCardShimmer(),
-          if (index != itemCount - 1) const SizedBox(height: 12),
+          const _EpisodeRowShimmer(),
+          if (index != itemCount - 1) const _EpisodeDivider(),
         ],
       ],
     );
   }
 }
 
-class _EpisodeListCardShimmer extends StatelessWidget {
-  const _EpisodeListCardShimmer();
+class _EpisodeRowShimmer extends StatelessWidget {
+  const _EpisodeRowShimmer();
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest.withValues(alpha: .48),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: (MediaQuery.sizeOf(context).width * .4).clamp(136.0, 210.0),
-            child: const AspectRatio(
-              aspectRatio: 16 / 9,
-              child: AppShimmerBlock(radius: 10),
-            ),
-          ),
-          const SizedBox(width: 13),
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(
-                  width: double.infinity,
-                  height: 15,
-                  child: AppShimmerBlock(radius: 4),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWide = constraints.maxWidth >= 720;
+        final thumbWidth = isWide
+            ? (constraints.maxWidth * .26).clamp(210.0, 272.0)
+            : (constraints.maxWidth * .38).clamp(128.0, 176.0);
+        return Padding(
+          padding: EdgeInsets.symmetric(vertical: isWide ? 16 : 13),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: thumbWidth,
+                child: const AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: AppShimmerBlock(radius: 12),
                 ),
-                SizedBox(height: 8),
-                Row(
+              ),
+              SizedBox(width: isWide ? 18 : 13),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
+                    FractionallySizedBox(
+                      widthFactor: .74,
+                      child: SizedBox(
+                        height: 16,
+                        child: AppShimmerBlock(radius: 5),
+                      ),
+                    ),
+                    SizedBox(height: 11),
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: 46,
+                          height: 12,
+                          child: AppShimmerBlock(radius: 4),
+                        ),
+                        SizedBox(width: 11),
+                        SizedBox(
+                          width: 86,
+                          height: 12,
+                          child: AppShimmerBlock(radius: 4),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 11),
                     SizedBox(
-                      width: 48,
-                      height: 12,
+                      width: double.infinity,
+                      height: 11,
                       child: AppShimmerBlock(radius: 4),
                     ),
-                    SizedBox(width: 8),
-                    Expanded(
+                    SizedBox(height: 6),
+                    FractionallySizedBox(
+                      widthFactor: .62,
                       child: SizedBox(
-                        height: 12,
+                        height: 11,
                         child: AppShimmerBlock(radius: 4),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 8),
-                SizedBox(
-                  width: double.infinity,
-                  height: 11,
-                  child: AppShimmerBlock(radius: 4),
-                ),
-                SizedBox(height: 5),
-                FractionallySizedBox(
-                  widthFactor: .72,
-                  child: SizedBox(
-                    height: 11,
-                    child: AppShimmerBlock(radius: 4),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

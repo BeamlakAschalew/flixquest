@@ -13,7 +13,7 @@ class SettingsProvider with ChangeNotifier {
   bool _isMaterial3Enabled = false;
   bool get isMaterial3Enabled => _isMaterial3Enabled;
 
-  String _appTheme = 'dark';
+  String _appTheme = 'amoled';
   String get appTheme => _appTheme;
 
   int _defaultValue = 0;

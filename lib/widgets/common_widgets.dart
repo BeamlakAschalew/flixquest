@@ -1553,70 +1553,142 @@ class ShimmerBase extends StatelessWidget {
 }
 
 class ReportErrorWidget extends StatelessWidget {
-  const ReportErrorWidget(
-      {super.key, required this.error, required this.hideButton});
+  const ReportErrorWidget({
+    super.key,
+    required this.error,
+    required this.hideButton,
+    this.title,
+    this.icon,
+    this.onRetry,
+  });
 
   final String error;
   final bool hideButton;
+  final String? title;
+  final IconData? icon;
+
+  /// Shown as the primary action when the caller can re-attempt the load.
+  final VoidCallback? onRetry;
+
+  /// Opens the sheet with the chrome the app's other bottom sheets use.
+  static Future<void> show(
+    BuildContext context, {
+    required String error,
+    String? title,
+    IconData? icon,
+    bool hideButton = false,
+    VoidCallback? onRetry,
+  }) {
+    return showModalBottomSheet<void>(
+      context: context,
+      useSafeArea: true,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (_) => ReportErrorWidget(
+        error: error,
+        hideButton: hideButton,
+        title: title,
+        icon: icon,
+        onRetry: onRetry,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    // String meta = "";
-    // for (int i = 0; i < metadata.length; i++) {
-    //   meta += metadata[i].toString();
-    // }
-    // String url =
-    //     "https://t.me/share/url?url=FlixQuest error&text=${error}\n${meta}";
-    return Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: SizedBox(
-        height: 200,
-        child: Stack(
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.sizeOf(context).height * .82,
+      ),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(20, 2, 20, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
+            Row(
               children: [
-                Text(
-                  error,
-                  maxLines: 6,
-                  textAlign: TextAlign.center,
-                ),
-                Visibility(
-                  visible: !hideButton,
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.9,
-                    child: ElevatedButton(
-                        onPressed: () async {
-                          await launchUrl(
-                              Uri.parse('https://t.me/flixquestgroup'),
-                              mode: LaunchMode.externalApplication);
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(PhosphorIcons.telegramLogo()),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            Text(
-                              tr('report_telegram'),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            )
-                          ],
-                        )),
+                Container(
+                  width: 46,
+                  height: 46,
+                  decoration: BoxDecoration(
+                    color: colors.error.withValues(alpha: .12),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(
+                    icon ?? PhosphorIcons.warningCircle(),
+                    color: colors.error,
                   ),
                 ),
-                const Align(
-                  alignment: Alignment.bottomLeft,
+                const SizedBox(width: 13),
+                Expanded(
                   child: Text(
-                    currentAppVersion,
-                    style: TextStyle(fontSize: 10),
+                    title ?? tr('playback_failed'),
+                    style: theme.textTheme.titleLarge,
                   ),
-                )
+                ),
               ],
+            ),
+            const SizedBox(height: 18),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: colors.surfaceContainerHighest.withValues(alpha: .55),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: colors.outline.withValues(alpha: .16)),
+              ),
+              child: Text(
+                error,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colors.onSurfaceVariant,
+                  height: 1.45,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            if (onRetry != null) ...[
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    onRetry!();
+                  },
+                  icon: Icon(PhosphorIcons.arrowClockwise()),
+                  label: Text(tr('retry')),
+                ),
+              ),
+              const SizedBox(height: 10),
+            ],
+            if (!hideButton)
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () async {
+                    await launchUrl(
+                      Uri.parse('https://t.me/flixquestgroup'),
+                      mode: LaunchMode.externalApplication,
+                    );
+                  },
+                  icon: Icon(PhosphorIcons.telegramLogo()),
+                  label: Text(
+                    tr('report_telegram'),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ),
+            const SizedBox(height: 16),
+            Center(
+              child: Text(
+                'v$currentAppVersion',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: colors.onSurfaceVariant.withValues(alpha: .7),
+                ),
+              ),
             ),
           ],
         ),

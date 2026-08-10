@@ -15,6 +15,7 @@ import '../models/tv_stream_metadata.dart';
 import '../provider/app_dependency_provider.dart';
 import '../provider/recently_watched_provider.dart';
 import '../screens/tv/tv_video_loader.dart';
+import '../screens/tv/tv_episode_picker_sheet.dart';
 import '../screens/tv/tvdetail_castandcrew.dart';
 import '../screens/tv/tvepisode_castandcrew.dart';
 import '../screens/tv/tvseason_castandcrew.dart';
@@ -474,7 +475,7 @@ class DiscoverTVState extends State<DiscoverTV>
                               Row(
                                 children: [
                                   FilledButton.icon(
-                                    onPressed: () => _openTV(item),
+                                    onPressed: () => _watchTV(item),
                                     icon: Icon(PhosphorIcons.play()),
                                     label: Text(tr('watch_now')),
                                   ),
@@ -503,13 +504,25 @@ class DiscoverTVState extends State<DiscoverTV>
     );
   }
 
-  void _openTV(TV item) {
-    Navigator.push(
+  Future<void> _watchTV(TV item) async {
+    if (item.id == null) return;
+    if (!await checkConnection()) {
+      if (!mounted) return;
+      GlobalMethods.showCustomScaffoldMessage(
+        SnackBar(content: Text(tr('check_connection'), maxLines: 3)),
+        context,
+      );
+      return;
+    }
+    if (!mounted) return;
+    final metadata = await showTVEpisodePickerSheet(context, series: item);
+    if (!mounted || metadata == null) return;
+    await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => TVDetailPage(
-          tvSeries: item,
-          heroId: '${item.id}-${widget.discoverType}',
+        builder: (_) => TVVideoLoader(
+          download: false,
+          metadata: metadata,
         ),
       ),
     );

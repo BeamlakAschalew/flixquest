@@ -57,7 +57,7 @@ class SettingsPreferences {
   }
 
   Future<String> getThemeMode() async {
-    return sharedPrefsSingleton.getString(THEME_MODE_STATUS) ?? 'dark';
+    return sharedPrefsSingleton.getString(THEME_MODE_STATUS) ?? 'amoled';
   }
 
   static const VIEW_PREFERENCE_STATUS = 'list';

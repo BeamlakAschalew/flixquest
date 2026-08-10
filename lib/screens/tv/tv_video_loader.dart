@@ -243,15 +243,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
 
       // Check if we found a working provider
       if (firstWorkingProviderCode == null && mounted) {
-        Navigator.pop(context);
-        showModalBottomSheet(
-            builder: (context) {
-              return ReportErrorWidget(
-                error: tr('tv_vid_404'),
-                hideButton: false,
-              );
-            },
-            context: context);
+        _showErrorSheet(tr('tv_vid_404'));
         return;
       }
 
@@ -331,31 +323,40 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
         });
       } else {
         if (mounted) {
-          Navigator.pop(context);
-          showModalBottomSheet(
-              builder: (context) {
-                return ReportErrorWidget(
-                  error: tr('tv_vid_404'),
-                  hideButton: false,
-                );
-              },
-              context: context);
+          _showErrorSheet(tr('tv_vid_404'));
         }
       }
     } on Exception catch (e) {
       debugPrint('[TVVideoLoader] Exception loading video: $e');
       if (mounted) {
-        Navigator.pop(context);
-        showModalBottomSheet(
-            builder: (context) {
-              return ReportErrorWidget(
-                error: tr('tv_vid_404'),
-                hideButton: false,
-              );
-            },
-            context: context);
+        _showErrorSheet(tr('tv_vid_404'));
       }
     }
+  }
+
+  /// Leaves the loader screen and reports the failure in a bottom sheet that
+  /// can push a fresh loader when the user retries.
+  void _showErrorSheet(String message) {
+    final navigator = Navigator.of(context);
+    final metadata = widget.metadata;
+    final download = widget.download;
+    final useTvPlayer = widget.useTvPlayer;
+    final onTvPlayerExit = widget.onTvPlayerExit;
+    navigator.pop();
+    ReportErrorWidget.show(
+      navigator.context,
+      error: message,
+      onRetry: () => navigator.push(
+        MaterialPageRoute<void>(
+          builder: (_) => TVVideoLoader(
+            metadata: metadata,
+            download: download,
+            useTvPlayer: useTvPlayer,
+            onTvPlayerExit: onTvPlayerExit,
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> _enqueueDownload({
@@ -544,52 +545,52 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             Provider.of<AppDependencyProvider>(context, listen: false)
                 .tmdbProxy;
 
-        // First, fetch TV details to get all seasons
-        await fetchTVDetails(
-          Endpoints.tvDetailsUrl(widget.metadata.tvId!, settings.appLanguage),
-          isProxyEnabled,
-          proxyUrl,
-        ).then((tvDetails) {
-          if (tvDetails.seasons != null && tvDetails.seasons!.isNotEmpty) {
-            setState(() {
-              widget.metadata.allSeasons = tvDetails.seasons!
-                  .map((season) => SeasonMetadata.fromSeason(season))
-                  .toList();
-            });
+        if (widget.metadata.allSeasons?.isNotEmpty != true) {
+          final tvDetails = await fetchTVDetails(
+            Endpoints.tvDetailsUrl(widget.metadata.tvId!, settings.appLanguage),
+            isProxyEnabled,
+            proxyUrl,
+          );
+          if (tvDetails.seasons?.isNotEmpty == true) {
+            widget.metadata.allSeasons = tvDetails.seasons!
+                .map((season) => SeasonMetadata.fromSeason(season))
+                .toList();
           }
-        });
+        }
 
-        // Then fetch current season's episodes
-        await fetchTVDetails(
-          Endpoints.getSeasonDetails(
-            widget.metadata.tvId!,
-            widget.metadata.seasonNumber!,
-            settings.appLanguage,
-          ),
-          isProxyEnabled,
-          proxyUrl,
-        ).then((value) {
-          if (value.episodes != null && value.episodes!.isNotEmpty) {
-            setState(() {
-              // Explicitly pass seasonNumber to ensure it's correct
-              widget.metadata.seasonEpisodes = value.episodes!
-                  .map((episode) => EpisodeMetadata(
-                        episodeId: episode.episodeId ?? 0,
-                        episodeName:
-                            episode.name ?? 'Episode ${episode.episodeNumber}',
-                        episodeNumber: episode.episodeNumber ?? 0,
-                        seasonNumber: widget.metadata
-                            .seasonNumber!, // Use the current season number
-                        stillPath: episode.stillPath,
-                        airDate: episode.airDate,
-                        runtime: null,
-                        overview: episode.overview,
-                        voteAverage: episode.voteAverage,
-                      ))
-                  .toList();
-            });
+        final selectedSeason = widget.metadata.seasonNumber!;
+        final hasSelectedSeasonEpisodes =
+            widget.metadata.seasonEpisodes?.isNotEmpty == true &&
+                widget.metadata.seasonEpisodes!.every(
+                  (episode) => episode.seasonNumber == selectedSeason,
+                );
+        if (!hasSelectedSeasonEpisodes) {
+          final seasonDetails = await fetchTVDetails(
+            Endpoints.getSeasonDetails(
+              widget.metadata.tvId!,
+              selectedSeason,
+              settings.appLanguage,
+            ),
+            isProxyEnabled,
+            proxyUrl,
+          );
+          if (seasonDetails.episodes?.isNotEmpty == true) {
+            widget.metadata.seasonEpisodes = seasonDetails.episodes!
+                .map((episode) => EpisodeMetadata(
+                      episodeId: episode.episodeId ?? 0,
+                      episodeName:
+                          episode.name ?? 'Episode ${episode.episodeNumber}',
+                      episodeNumber: episode.episodeNumber ?? 0,
+                      seasonNumber: selectedSeason,
+                      stillPath: episode.stillPath,
+                      airDate: episode.airDate,
+                      runtime: null,
+                      overview: episode.overview,
+                      voteAverage: episode.voteAverage,
+                    ))
+                .toList();
           }
-        });
+        }
 
         // Set the season change callback
         widget.metadata.onSeasonChange = (int seasonNumber) async {

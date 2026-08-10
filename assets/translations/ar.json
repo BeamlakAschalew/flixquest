@@ -601,5 +601,6 @@
   "subtitle_already_added": "تم إضافة ملف الترجمة هذا بالفعل.",
   "failed_upload_subtitle": "فشل في تحميل الترجمة: {error}",
   "no_file_selected": "لم يتم اختيار ملف",
-  "finding_best_source": "يرجى الانتظار بينما نبحث عن أفضل مصدر"
+  "finding_best_source": "يرجى الانتظار بينما نبحث عن أفضل مصدر",
+  "playback_failed": "تعذر بدء التشغيل"
 }

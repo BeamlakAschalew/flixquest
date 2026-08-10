@@ -239,15 +239,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
 
       // Check if we found a working provider
       if (firstWorkingProviderCode == null && mounted) {
-        Navigator.pop(context);
-        showModalBottomSheet(
-            builder: (context) {
-              return ReportErrorWidget(
-                error: tr('movie_vid_404'),
-                hideButton: false,
-              );
-            },
-            context: context);
+        _showErrorSheet(tr('movie_vid_404'));
         return;
       }
 
@@ -320,31 +312,40 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         });
       } else {
         if (mounted) {
-          Navigator.pop(context);
-          showModalBottomSheet(
-              builder: (context) {
-                return ReportErrorWidget(
-                  error: tr('movie_vid_404'),
-                  hideButton: false,
-                );
-              },
-              context: context);
+          _showErrorSheet(tr('movie_vid_404'));
         }
       }
     } on Exception catch (e) {
       debugPrint('[MovieVideoLoader] Exception loading video: $e');
       if (mounted) {
-        Navigator.pop(context);
-        showModalBottomSheet(
-            builder: (context) {
-              return ReportErrorWidget(
-                error: tr('movie_vid_404'),
-                hideButton: false,
-              );
-            },
-            context: context);
+        _showErrorSheet(tr('movie_vid_404'));
       }
     }
+  }
+
+  /// Leaves the loader screen and reports the failure in a bottom sheet that
+  /// can push a fresh loader when the user retries.
+  void _showErrorSheet(String message) {
+    final navigator = Navigator.of(context);
+    final metadata = widget.metadata;
+    final download = widget.download;
+    final useTvPlayer = widget.useTvPlayer;
+    final onTvPlayerExit = widget.onTvPlayerExit;
+    navigator.pop();
+    ReportErrorWidget.show(
+      navigator.context,
+      error: message,
+      onRetry: () => navigator.push(
+        MaterialPageRoute<void>(
+          builder: (_) => MovieVideoLoader(
+            metadata: metadata,
+            download: download,
+            useTvPlayer: useTvPlayer,
+            onTvPlayerExit: onTvPlayerExit,
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> _enqueueDownload({

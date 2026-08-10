@@ -431,16 +431,7 @@ h2 em {
 }
 
 .phone::before {
-  position: absolute;
-  z-index: 5;
-  top: 13px;
-  left: 50%;
-  width: 90px;
-  height: 23px;
-  transform: translateX(-50%);
-  border-radius: 999px;
-  background: #050505;
-  content: "";
+  display: none;
 }
 
 .phone-bezel {
@@ -449,10 +440,17 @@ h2 em {
 
 .phone-screen {
   position: relative;
-  height: 620px;
+  height: auto;
+  aspect-ratio: 1440 / 3120;
   overflow: hidden;
   border-radius: 39px;
   background: #121312;
+}
+
+.phone-capture {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .phone-status {
@@ -1211,6 +1209,84 @@ h2 em {
   align-items: center;
 }
 
+.experience-heading {
+  position: relative;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 60px;
+  margin-bottom: 52px;
+}
+
+.experience-heading h2 {
+  max-width: 720px;
+  margin-bottom: 0;
+}
+
+.experience-heading > p {
+  max-width: 460px;
+  margin: 0 0 8px;
+  color: var(--muted);
+}
+
+.screen-gallery {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 22px;
+  margin-right: calc((100vw - var(--shell)) / -2);
+  padding: 10px max(48px, calc((100vw - var(--shell)) / 2)) 34px 0;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-color: var(--accent) rgba(255, 255, 255, 0.08);
+  scrollbar-width: thin;
+  scroll-snap-type: x proximity;
+}
+
+.screen-gallery::after {
+  flex: 0 0 1px;
+  content: "";
+}
+
+.screen-card {
+  flex: 0 0 292px;
+  margin: 0;
+  scroll-snap-align: start;
+}
+
+.screen-card.landscape {
+  flex-basis: 650px;
+}
+
+.screen-card img {
+  width: 100%;
+  height: auto;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 28px;
+  background: #000;
+  box-shadow: 0 32px 70px rgba(0, 0, 0, 0.45);
+}
+
+.screen-card.landscape img {
+  border-radius: 22px;
+}
+
+.screen-card figcaption {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 4px 0;
+  color: #ddd8d1;
+  font-size: 13px;
+  font-weight: 720;
+}
+
+.screen-card figcaption span {
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 850;
+}
+
 .experience-copy h2 {
   max-width: 540px;
 }
@@ -1961,6 +2037,8 @@ h2 em {
   .experience-grid { gap: 65px; }
   .experience-copy { max-width: 600px; }
   .theme-showcase { width: min(100%, 620px); margin-inline: auto; }
+  .experience-heading { display: block; }
+  .experience-heading > p { max-width: 620px; margin-top: 24px; }
 
   .providers { gap: 45px; }
   .provider-copy > p { max-width: 600px; }
@@ -1991,7 +2069,7 @@ h2 em {
 
   .device-stage { min-height: 610px; }
   .phone { width: 264px; }
-  .phone-screen { height: 535px; }
+  .phone-screen { height: auto; }
   .featured-card { height: 215px; }
   .poster-row i { height: 87px; }
   .pill-rating { top: 13%; left: -2%; }
@@ -2016,6 +2094,16 @@ h2 em {
   .panel-front { width: 82%; height: 425px; }
   .panel-back { width: 52%; min-width: 210px; height: 350px; }
   .theme-label { left: 5%; }
+
+  .experience-heading { margin-bottom: 38px; }
+  .screen-gallery {
+    gap: 15px;
+    margin-right: -14px;
+    padding-right: 28px;
+  }
+  .screen-card { flex-basis: min(78vw, 292px); }
+  .screen-card.landscape { flex-basis: min(88vw, 650px); }
+  .screen-card img { border-radius: 22px; }
 
   .provider-rail { grid-template-columns: repeat(2, 1fr); }
   .provider-logo:last-child { grid-column: 1 / -1; }

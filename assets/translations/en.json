@@ -601,5 +601,6 @@
   "subtitle_already_added": "This subtitle file was already added.",
   "failed_upload_subtitle": "Failed to load subtitle: {error}",
   "no_file_selected": "No file selected",
-  "finding_best_source": "Please grab a popcorn while while we find the best source"
+  "finding_best_source": "Please grab a popcorn while while we find the best source",
+  "playback_failed": "Couldn't start playback"
 }
