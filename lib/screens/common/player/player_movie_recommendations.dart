@@ -86,6 +86,7 @@ class PlayerMovieRecommendations {
 
     showModalBottomSheet<void>(
       context: context,
+      useRootNavigator: true,
       useSafeArea: true,
       backgroundColor: Theme.of(context).colorScheme.surface,
       isScrollControlled: true,
@@ -155,6 +156,7 @@ class PlayerMovieRecommendations {
 
     showDialog<void>(
       context: context,
+      useRootNavigator: true,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setDialogState) {
           final selected = recommendations[selectedIndex];

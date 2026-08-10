@@ -584,6 +584,18 @@ class CodegenLoader extends AssetLoader{
   "switched_to": "Cambiado a",
   "switch_provider_error": "Error al cambiar proveedor",
   "loading_video_sources": "Cargando fuentes de video",
+  "upload_subtitles": "Subir Subtítulos",
+  "select_subtitle_file": "Selecciona un archivo de subtítulos de tu dispositivo",
+  "upload_subtitle_file": "Subir Archivo",
+  "supported_formats_srt_vtt": "Formatos compatibles: .srt, .vtt",
+  "add_more": "Agregar Más",
+  "local_file": "Archivo local",
+  "subtitle_file_count": "{count} archivo",
+  "subtitle_files_count": "{count} archivos",
+  "subtitle_added": "Subtítulo agregado. Revise el menú de subtítulos para seleccionar.",
+  "subtitle_already_added": "Este archivo de subtítulos ya fue agregado.",
+  "failed_upload_subtitle": "Error al cargar subtítulo: {error}",
+  "no_file_selected": "Ningún archivo seleccionado",
   "finding_best_source": "Por favor espere mientras encontramos la mejor fuente"
 };
 static const Map<String,dynamic> _ar = {
@@ -1156,6 +1168,18 @@ static const Map<String,dynamic> _ar = {
   "switched_to": "تم التبديل إلى",
   "switch_provider_error": "فشل تبديل المزود",
   "loading_video_sources": "جاري تحميل مصادر الفيديو",
+  "upload_subtitles": "رفع ترجمات",
+  "select_subtitle_file": "اختر ملف ترجمة من جهازك",
+  "upload_subtitle_file": "رفع ملف",
+  "supported_formats_srt_vtt": "الصيغ المدعومة: .srt، .vtt",
+  "add_more": "إضافة المزيد",
+  "local_file": "ملف محلي",
+  "subtitle_file_count": "{count} ملف",
+  "subtitle_files_count": "{count} ملفات",
+  "subtitle_added": "تمت إضافة الترجمة. تحقق من قائمة الترجمات للاختيار.",
+  "subtitle_already_added": "تم إضافة ملف الترجمة هذا بالفعل.",
+  "failed_upload_subtitle": "فشل في تحميل الترجمة: {error}",
+  "no_file_selected": "لم يتم اختيار ملف",
   "finding_best_source": "يرجى الانتظار بينما نبحث عن أفضل مصدر"
 };
 static const Map<String,dynamic> _en = {
@@ -1728,6 +1752,18 @@ static const Map<String,dynamic> _en = {
   "switched_to": "Switched to",
   "switch_provider_error": "Failed to switch provider",
   "loading_video_sources": "Loading Video Sources",
+  "upload_subtitles": "Upload Subtitles",
+  "select_subtitle_file": "Select a subtitle file from your device",
+  "upload_subtitle_file": "Upload File",
+  "supported_formats_srt_vtt": "Supported formats: .srt, .vtt",
+  "add_more": "Add More",
+  "local_file": "Local file",
+  "subtitle_file_count": "{count} file",
+  "subtitle_files_count": "{count} files",
+  "subtitle_added": "Subtitle added. Check subtitles menu to select.",
+  "subtitle_already_added": "This subtitle file was already added.",
+  "failed_upload_subtitle": "Failed to load subtitle: {error}",
+  "no_file_selected": "No file selected",
   "finding_best_source": "Please wait while we find the best source"
 };
 static const Map<String,dynamic> _hi = {
@@ -2300,6 +2336,18 @@ static const Map<String,dynamic> _hi = {
   "switched_to": "में स्विच किया गया",
   "switch_provider_error": "प्रदाता बदलने में विफल",
   "loading_video_sources": "वीडियो स्रोत लोड हो रहे हैं",
+  "upload_subtitles": "उपशीर्षक अपलोड करें",
+  "select_subtitle_file": "अपने डिवाइस से उपशीर्षक फ़ाइल चुनें",
+  "upload_subtitle_file": "फ़ाइल अपलोड करें",
+  "supported_formats_srt_vtt": "समर्थित प्रारूप: .srt, .vtt",
+  "add_more": "और जोड़ें",
+  "local_file": "स्थानीय फ़ाइल",
+  "subtitle_file_count": "{count} फ़ाइल",
+  "subtitle_files_count": "{count} फ़ाइलें",
+  "subtitle_added": "उपशीर्षक जोड़ा गया। चयन करने के लिए उपशीर्षक मेनू देखें।",
+  "subtitle_already_added": "यह उपशीर्षक फ़ाइल पहले से जोड़ी गई है।",
+  "failed_upload_subtitle": "उपशीर्षक लोड करने में विफल: {error}",
+  "no_file_selected": "कोई फ़ाइल नहीं चुनी गई",
   "finding_best_source": "कृपया प्रतीक्षा करें जब हम सर्वोत्तम स्रोत खोज रहे हैं"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"es": _es, "ar": _ar, "en": _en, "hi": _hi};

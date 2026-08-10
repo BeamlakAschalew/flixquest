@@ -571,5 +571,17 @@ abstract class  LocaleKeys {
   static const currently_playing = 'currently_playing';
   static const switched_to = 'switched_to';
   static const switch_provider_error = 'switch_provider_error';
+  static const upload_subtitles = 'upload_subtitles';
+  static const select_subtitle_file = 'select_subtitle_file';
+  static const upload_subtitle_file = 'upload_subtitle_file';
+  static const supported_formats_srt_vtt = 'supported_formats_srt_vtt';
+  static const add_more = 'add_more';
+  static const local_file = 'local_file';
+  static const subtitle_file_count = 'subtitle_file_count';
+  static const subtitle_files_count = 'subtitle_files_count';
+  static const subtitle_added = 'subtitle_added';
+  static const subtitle_already_added = 'subtitle_already_added';
+  static const failed_upload_subtitle = 'failed_upload_subtitle';
+  static const no_file_selected = 'no_file_selected';
 
 }

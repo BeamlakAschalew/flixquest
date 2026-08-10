@@ -29,6 +29,7 @@ import '../movie/movie_video_loader.dart';
 import '../tv/tv_video_loader.dart';
 import 'player/player_data_management.dart';
 import 'player/player_external_subtitles.dart';
+import 'player/player_local_subtitles.dart';
 import 'player/player_episode_selection.dart';
 import 'player/player_movie_recommendations.dart';
 import 'player/player_sheet_ui.dart';
@@ -96,6 +97,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   late BetterPlayerBufferingConfiguration betterPlayerBufferingConfiguration;
   final PlayerDataManagement _dataManagement = PlayerDataManagement();
   final PlayerExternalSubtitles _externalSubtitles = PlayerExternalSubtitles();
+  final PlayerLocalSubtitles _localSubtitles = PlayerLocalSubtitles();
   late final PlayerEpisodeSelection _episodeSelection;
   final PlayerMovieRecommendations _movieRecommendations =
       PlayerMovieRecommendations();
@@ -115,6 +117,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   // For next episode button
   bool _showNextEpisodeButton = false;
   bool _nextEpisodeButtonDismissed = false;
+  bool _preRollActive = false;
   Timer? _progressCheckTimer;
   OverlayEntry? _nextEpisodeOverlay;
   Timer? _tvNextEpisodeTimer;
@@ -306,6 +309,17 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         // Add custom overflow menu item for external subtitles
         overflowMenuCustomItems: widget.useTvControls
             ? [
+                BetterPlayerOverflowMenuItem(
+                  PhosphorIcons.fileArrowUp(),
+                  tr('upload_subtitles'),
+                  () {
+                    _localSubtitles.showLocalSubtitlesUpload(
+                      context: context,
+                      colors: widget.colors,
+                      betterPlayerController: _betterPlayerController,
+                    );
+                  },
+                ),
                 if (widget.availableProviders?.isNotEmpty == true)
                   BetterPlayerOverflowMenuItem(
                     PhosphorIcons.arrowsLeftRight(),
@@ -329,6 +343,17 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                       mediaType: widget.mediaType,
                       movieMetadata: widget.movieMetadata,
                       tvMetadata: widget.tvMetadata,
+                      betterPlayerController: _betterPlayerController,
+                    );
+                  },
+                ),
+                BetterPlayerOverflowMenuItem(
+                  PhosphorIcons.fileArrowUp(),
+                  tr('upload_subtitles'),
+                  () {
+                    _localSubtitles.showLocalSubtitlesUpload(
+                      context: context,
+                      colors: widget.colors,
                       betterPlayerController: _betterPlayerController,
                     );
                   },
@@ -374,12 +399,14 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       videoHeaders: _activeVideoHeaders,
     );
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
-    unawaited(_setupInitialDataSource(dataSource));
     _betterPlayerController.setBetterPlayerGlobalKey(_betterPlayerKey);
-
     _betterPlayerController.addEventsListener(_onAnalyticsPlayerEvent);
+    // Attach listeners before setup so native initialization and pre-roll
+    // transition events cannot race the first platform callback.
+    unawaited(_setupInitialDataSource(dataSource));
 
-    // Start checking progress for next episode button
+    // Preserve the original TV-only next-episode progress check. Movies and
+    // completion handling continue to use Better Player's native events.
     if (widget.mediaType == MediaType.tvShow) {
       _startProgressCheck();
     }
@@ -415,12 +442,14 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       }
 
       if (intro.enabled && intro.url != null) {
+        _preRollActive = true;
         await _betterPlayerController.setupDataSourceWithPreRoll(
           preRollDataSource: _buildIntroDataSource(intro.url!),
           betterPlayerDataSource: dataSource,
           contentStartPosition: initialPosition,
         );
       } else {
+        _preRollActive = false;
         await _betterPlayerController.setupDataSource(dataSource);
         await _betterPlayerController.seekTo(initialPosition);
       }
@@ -430,6 +459,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
               .videoPlayerController?.value.duration?.inSeconds ??
           0;
     } catch (error) {
+      _preRollActive = false;
       debugPrint('[Player] Initial stream setup failed: $error');
     }
   }
@@ -474,6 +504,13 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           startupMs:
               _analyticsInitializationCount == 1 ? _analyticsElapsedMs : null,
         );
+        break;
+      case BetterPlayerEventType.preRollEnded:
+        _preRollActive = false;
+        duration = _betterPlayerController
+                .videoPlayerController?.value.duration?.inSeconds ??
+            duration;
+        _trackPlaybackEvent('pre_roll_ended');
         break;
       case BetterPlayerEventType.play:
         _analyticsPlayingStartedAt ??= DateTime.now();
@@ -578,8 +615,8 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   }
 
   void _startProgressCheck() {
-    _progressCheckTimer = Timer.periodic(Duration(seconds: 1), (timer) {
-      if (_betterPlayerController.isVideoInitialized()! &&
+    _progressCheckTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_betterPlayerController.isVideoInitialized() == true &&
           _betterPlayerController.videoPlayerController != null) {
         final position =
             _betterPlayerController.videoPlayerController!.value.position;
@@ -589,6 +626,11 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
 
         if (duration != null && duration.inSeconds > 0) {
           final progress = position.inSeconds / duration.inSeconds;
+
+          // Native Android/iOS players emit preRollEnded only after advancing
+          // to the main content item. When no pre-roll is configured this flag
+          // is false, leaving the original TV progress behavior untouched.
+          if (_preRollActive) return;
 
           // Surface the next episode near the end. TV playback already owns the
           // full screen route, so Better Player's internal fullscreen flag is
@@ -649,7 +691,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       ),
     );
 
-    Overlay.of(context).insert(_nextEpisodeOverlay!);
+    Overlay.of(context, rootOverlay: true).insert(_nextEpisodeOverlay!);
   }
 
   void _hideNextEpisodeOverlay() {
@@ -723,7 +765,11 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                   'episodeNumber': widget.tvMetadata!.episodeNumber,
               },
             ),
-      subtitles: subtitles,
+      subtitles: [
+        ...subtitles,
+        ..._localSubtitles.appliedSubtitles,
+        ..._externalSubtitles.appliedSubtitles,
+      ],
       // Streaming already has a bounded in-memory buffer. A persistent media
       // cache can fill the limited internal storage available on Android TVs.
       cacheConfiguration: const BetterPlayerCacheConfiguration(useCache: false),
@@ -1531,6 +1577,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       if (!mounted) return;
       final nextSource = source;
       replacementStarted = true;
+      _preRollActive = false;
       await _betterPlayerController.setupDataSource(
         _buildDataSource(
           sources: nextSource.videoSources,

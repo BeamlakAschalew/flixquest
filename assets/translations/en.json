@@ -589,5 +589,17 @@
   "switched_to": "Switched to",
   "switch_provider_error": "Failed to switch provider",
   "loading_video_sources": "Loading Video Sources",
+  "upload_subtitles": "Upload Subtitles",
+  "select_subtitle_file": "Select a subtitle file from your device",
+  "upload_subtitle_file": "Upload File",
+  "supported_formats_srt_vtt": "Supported formats: .srt, .vtt",
+  "add_more": "Add More",
+  "local_file": "Local file",
+  "subtitle_file_count": "{count} file",
+  "subtitle_files_count": "{count} files",
+  "subtitle_added": "Subtitle added. Check subtitles menu to select.",
+  "subtitle_already_added": "This subtitle file was already added.",
+  "failed_upload_subtitle": "Failed to load subtitle: {error}",
+  "no_file_selected": "No file selected",
   "finding_best_source": "Please grab a popcorn while while we find the best source"
 }

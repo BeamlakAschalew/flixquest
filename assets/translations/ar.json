@@ -589,5 +589,17 @@
   "switched_to": "تم التبديل إلى",
   "switch_provider_error": "فشل تبديل المزود",
   "loading_video_sources": "جاري تحميل مصادر الفيديو",
+  "upload_subtitles": "رفع ترجمات",
+  "select_subtitle_file": "اختر ملف ترجمة من جهازك",
+  "upload_subtitle_file": "رفع ملف",
+  "supported_formats_srt_vtt": "الصيغ المدعومة: .srt، .vtt",
+  "add_more": "إضافة المزيد",
+  "local_file": "ملف محلي",
+  "subtitle_file_count": "{count} ملف",
+  "subtitle_files_count": "{count} ملفات",
+  "subtitle_added": "تمت إضافة الترجمة. تحقق من قائمة الترجمات للاختيار.",
+  "subtitle_already_added": "تم إضافة ملف الترجمة هذا بالفعل.",
+  "failed_upload_subtitle": "فشل في تحميل الترجمة: {error}",
+  "no_file_selected": "لم يتم اختيار ملف",
   "finding_best_source": "يرجى الانتظار بينما نبحث عن أفضل مصدر"
 }

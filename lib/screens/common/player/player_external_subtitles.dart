@@ -18,6 +18,10 @@ class PlayerExternalSubtitles {
   bool _isExternalSubtitlesMenuOpen = false;
   final Set<String> _addedExternalSubtitleIds = {}; // Track added subtitle IDs
 
+  final List<BetterPlayerSubtitlesSource> _appliedSubtitles = [];
+  List<BetterPlayerSubtitlesSource> get appliedSubtitles =>
+      List.unmodifiable(_appliedSubtitles);
+
   /// Show external subtitles menu
   void showExternalSubtitlesMenu({
     required BuildContext context,
@@ -377,6 +381,8 @@ class PlayerExternalSubtitles {
         // Add to the controller's subtitle list
         betterPlayerController.betterPlayerSubtitlesSourceList
             .add(betterPlayerSource);
+
+        _appliedSubtitles.add(betterPlayerSource);
 
         // Mark this subtitle ID as added
         _addedExternalSubtitleIds.add(externalSubtitle.id);

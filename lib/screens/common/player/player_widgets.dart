@@ -130,6 +130,7 @@ class PlayerNextEpisodeWidget {
 
     showDialog<void>(
       context: context,
+      useRootNavigator: true,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setDialogState) {
           timer ??= Timer.periodic(const Duration(seconds: 1), (_) {
