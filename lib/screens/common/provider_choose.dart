@@ -143,6 +143,21 @@ class _ProviderChooseScreenState extends State<ProviderChooseScreen> {
                                   fontSize: 16,
                                 ),
                               ),
+                              subtitle: provider.content?.trim().isNotEmpty ==
+                                      true
+                                  ? Padding(
+                                      padding: const EdgeInsets.only(top: 5),
+                                      child: Text(
+                                        provider.content!.trim(),
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurfaceVariant,
+                                          height: 1.3,
+                                        ),
+                                      ),
+                                    )
+                                  : null,
                               trailing: ReorderableDragStartListener(
                                 index: index,
                                 child: Container(

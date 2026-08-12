@@ -13,10 +13,9 @@ import '../../constants/app_constants.dart';
 import '../../provider/settings_provider.dart';
 import 'player/player_external_subtitles.dart';
 
-/// The lightweight offline variant of FlixQuest's Better Player. The controls
-/// keep the same visual language as streaming playback, while omitting
-/// provider, quality, subtitle-download and episode-selection actions that do
-/// not apply to a single, downloaded MP4.
+/// The lightweight offline variant of FlixQuest's Better Player. It keeps the
+/// same player actions as streaming playback while treating the downloaded
+/// quality as a fixed, one-item quality selection.
 class OfflinePlayerScreen extends StatefulWidget {
   const OfflinePlayerScreen({
     super.key,
@@ -56,7 +55,13 @@ class _OfflinePlayerScreenState extends State<OfflinePlayerScreen> {
       watchingText: tr('watching_text'),
       enableFullscreen: true,
       enableSubtitles: true,
-      enableQualities: false,
+      showSubtitlesButton: true,
+      enableQualities: true,
+      showQualitiesButton: true,
+      enableDownloadButton: true,
+      onDownloadTap: _showAlreadyDownloaded,
+      enableCrop: true,
+      cropIcon: PhosphorIcons.crop(),
       enablePip: true,
       enableAudioTracks: true,
       backgroundColor: Colors.black,
@@ -129,11 +134,17 @@ class _OfflinePlayerScreenState extends State<OfflinePlayerScreen> {
     );
     _controller.setBetterPlayerGlobalKey(_playerKey);
     final savedSubtitle = widget.download.offlineSubtitlePath;
+    final quality = widget.download.quality.trim().isEmpty
+        ? 'Auto'
+        : widget.download.quality.trim();
+    final offlineUrl = 'flixquest-offline://${widget.download.id}';
     _controller.setupDataSource(
       BetterPlayerDataSource(
         BetterPlayerDataSourceType.network,
-        'flixquest-offline://${widget.download.id}',
+        offlineUrl,
         videoFormat: BetterPlayerVideoFormat.other,
+        resolutions: <String, String>{quality: offlineUrl},
+        selectedResolution: quality,
         cacheConfiguration: BetterPlayerCacheConfiguration(
           key: 'flixquest-offline:${widget.download.id}',
         ),
@@ -149,6 +160,15 @@ class _OfflinePlayerScreenState extends State<OfflinePlayerScreen> {
               ]
             : const [],
       ),
+    );
+  }
+
+  void _showAlreadyDownloaded() {
+    final quality = widget.download.quality.trim().isEmpty
+        ? 'Auto'
+        : widget.download.quality.trim();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Already downloaded at $quality.')),
     );
   }
 

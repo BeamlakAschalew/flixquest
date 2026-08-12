@@ -13,6 +13,52 @@ class DaddyLiveException implements Exception {
   String toString() => message;
 }
 
+/// Converts network and API failures into copy that is safe to show in the
+/// player UI. In particular, this keeps API URLs, platform exception details,
+/// and stack-like messages out of the user-facing error state.
+String friendlyLiveTvError(Object error) {
+  const unavailable = 'Live TV is temporarily unavailable. Please try again.';
+  final raw =
+      (error is DaddyLiveException ? error.message : error.toString()).trim();
+  if (raw.isEmpty) return unavailable;
+
+  final lower = raw.toLowerCase();
+  if (lower.contains('timeout') || lower.contains('timed out')) {
+    return 'Live TV is taking too long to respond. Please try again.';
+  }
+  if (lower.contains('socketexception') ||
+      lower.contains('clientexception') ||
+      lower.contains('failed host lookup') ||
+      lower.contains('connection reset') ||
+      lower.contains('connection refused') ||
+      lower.contains('network is unreachable')) {
+    return 'Couldn’t connect to Live TV. Check your internet connection and try again.';
+  }
+  if (lower.contains('formatexception') ||
+      lower.contains('invalid data') ||
+      lower.contains('unexpected response') ||
+      lower.contains('json')) {
+    return 'Live TV returned an invalid response. Please try again later.';
+  }
+  if (RegExp(
+    r'https?://|uri[=:]|platformexception|methodchannel|stack trace|flixquest',
+    caseSensitive: false,
+  ).hasMatch(raw)) {
+    return unavailable;
+  }
+
+  final concise = raw
+      .replaceFirst(
+        RegExp(r'^(?:Bad state:\s*|[A-Za-z0-9_.]+(?:Exception|Error):\s*)'),
+        '',
+      )
+      .split('\n')
+      .first
+      .trim();
+  if (concise.isEmpty || concise.length > 140) return unavailable;
+  return concise;
+}
+
 class DaddyLiveCatalog {
   const DaddyLiveCatalog({
     required this.channels,

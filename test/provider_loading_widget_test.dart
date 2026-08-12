@@ -11,9 +11,8 @@ void main() {
     dotenv.testLoad(fileInput: 'FLIXQUEST_API_URL=https://example.com');
   });
 
-  testWidgets(
-    'fits the provider loader in a compact landscape viewport',
-    (tester) async {
+  testWidgets('fits the provider loader in a compact landscape viewport',
+      (tester) async {
     tester.view.physicalSize = const Size(844, 390);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
@@ -37,6 +36,7 @@ void main() {
                     ProviderLoadState(
                       codeName: 'second',
                       fullName: 'Second provider',
+                      content: 'Hollywood: English | Anime: Japanese',
                       status: ProviderStatus.loading,
                     ),
                     ProviderLoadState(
@@ -54,5 +54,6 @@ void main() {
     await tester.pump();
 
     expect(find.text('Second provider'), findsOneWidget);
+    expect(find.text('Hollywood: English | Anime: Japanese'), findsOneWidget);
   });
 }

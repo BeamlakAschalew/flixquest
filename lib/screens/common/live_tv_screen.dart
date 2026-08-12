@@ -128,7 +128,7 @@ class _ChannelListState extends State<ChannelList> {
         _channels = cached;
         _epg = cachedEpg;
         _loading = false;
-        _error = cached.isEmpty ? error.toString() : null;
+        _error = cached.isEmpty ? friendlyLiveTvError(error) : null;
       });
       _analytics.trackLiveTVCatalogLoad(
         surface: _analyticsSurface,
@@ -287,7 +287,7 @@ class _ChannelListState extends State<ChannelList> {
       );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(error.toString())),
+          SnackBar(content: Text(friendlyLiveTvError(error))),
         );
       }
     } finally {

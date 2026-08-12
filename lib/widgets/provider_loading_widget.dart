@@ -1,5 +1,3 @@
-import 'dart:ui' show FontFeature;
-
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -220,9 +218,9 @@ class _ProviderLoadingWidgetState extends State<ProviderLoadingWidget>
               Text(
                 '$completed/${widget.providers.length}',
                 style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: colors.onSurfaceVariant,
-                      fontFeatures: const [FontFeature.tabularFigures()],
-                    ),
+                  color: colors.onSurfaceVariant,
+                  fontFeatures: const [FontFeature.tabularFigures()],
+                ),
               ),
             ],
           ],
@@ -387,19 +385,39 @@ class _ProviderLoadingWidgetState extends State<ProviderLoadingWidget>
               _buildStatusIcon(provider.status, iconSize),
               const SizedBox(width: 14),
 
-              // Provider name
+              // Provider name and advertised catalogue/languages.
               Expanded(
-                child: Text(
-                  provider.fullName,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: fontSize,
-                    fontWeight:
-                        isHighlighted ? FontWeight.w600 : FontWeight.w500,
-                    fontFamily: 'Figtree',
-                    letterSpacing: 0.2,
-                  ),
-                  overflow: TextOverflow.ellipsis,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      provider.fullName,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface,
+                        fontSize: fontSize,
+                        fontWeight:
+                            isHighlighted ? FontWeight.w600 : FontWeight.w500,
+                        fontFamily: 'Figtree',
+                        letterSpacing: 0.2,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (isHighlighted &&
+                        provider.content?.trim().isNotEmpty == true) ...[
+                      const SizedBox(height: 3),
+                      Text(
+                        provider.content!.trim(),
+                        maxLines: compact ? 2 : 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          fontSize: compact ? 11.5 : 12,
+                          fontFamily: 'Figtree',
+                          height: 1.25,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
             ],

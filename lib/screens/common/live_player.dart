@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:better_player_plus/better_player.dart';
+import 'package:better_player_plus/better_player_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -30,6 +30,7 @@ class LivePlayer extends StatefulWidget {
     this.service,
     this.onChannelSwitch,
     this.enableCast = true,
+    this.useTvControls = false,
     super.key,
   });
 
@@ -50,6 +51,7 @@ class LivePlayer extends StatefulWidget {
   final DaddyLiveService? service;
   final void Function(Channel channel)? onChannelSwitch;
   final bool enableCast;
+  final bool useTvControls;
 
   @override
   State<LivePlayer> createState() => _LivePlayerState();
@@ -57,6 +59,8 @@ class LivePlayer extends StatefulWidget {
 
 class _LivePlayerState extends State<LivePlayer> {
   late BetterPlayerController _betterPlayerController;
+  final BetterPlayerTvControlsController _tvControlsController =
+      BetterPlayerTvControlsController();
   final StreamIntroService _introService = StreamIntroService();
   late BetterPlayerControlsConfiguration betterPlayerControlsConfiguration;
   late BetterPlayerBufferingConfiguration betterPlayerBufferingConfiguration;
@@ -113,11 +117,20 @@ class _LivePlayerState extends State<LivePlayer> {
     );
 
     betterPlayerControlsConfiguration = BetterPlayerControlsConfiguration(
+      gestureConfiguration: BetterPlayerGestureConfiguration(
+        enableVolumeSwipe: !widget.useTvControls,
+        enableBrightnessSwipe: !widget.useTvControls,
+        enableSeekSwipe: !widget.useTvControls,
+      ),
       name: widget.channelName,
       enableFullscreen: true,
-      enableSubtitles: false,
-      enablePip: true,
-      enableCast: widget.enableCast,
+      enableSubtitles: true,
+      showSubtitlesButton: !widget.useTvControls,
+      showQualitiesButton: !widget.useTvControls,
+      enableCrop: true,
+      cropIcon: PhosphorIcons.crop(),
+      enablePip: !widget.useTvControls,
+      enableCast: !widget.useTvControls && widget.enableCast,
       backgroundColor: widget.colors.elementAt(1).withValues(alpha: 0.6),
       controlBarColor: Colors.black.withValues(alpha: 0.3),
       progressBarBackgroundColor: Colors.white,
@@ -126,7 +139,20 @@ class _LivePlayerState extends State<LivePlayer> {
       pauseIcon: PhosphorIcons.pause(),
       pipMenuIcon: PhosphorIcons.appWindow(),
       playIcon: PhosphorIcons.play(),
-      showControlsOnInitialize: false,
+      showControlsOnInitialize: widget.useTvControls,
+      controlsHideTime: widget.useTvControls
+          ? const Duration(seconds: 5)
+          : const Duration(milliseconds: 300),
+      playerTheme: widget.useTvControls ? BetterPlayerTheme.custom : null,
+      customControlsBuilder: widget.useTvControls
+          ? (controller, onVisibilityChanged) => BetterPlayerTvControls(
+                controller: controller,
+                controlsController: _tvControlsController,
+                onControlsVisibilityChanged: onVisibilityChanged,
+                accentColor: widget.colors.first,
+                onExit: () => Navigator.of(context).maybePop(),
+              )
+          : null,
       loadingColor: widget.colors.first,
       iconsColor: widget.colors.first,
       backwardSkipTimeInMilliseconds:
@@ -159,7 +185,8 @@ class _LivePlayerState extends State<LivePlayer> {
 
     BetterPlayerConfiguration betterPlayerConfiguration =
         BetterPlayerConfiguration(
-      autoDetectFullscreenDeviceOrientation: true,
+      autoDetectFullscreenDeviceOrientation: !widget.useTvControls,
+      autoDetectFullscreenAspectRatio: !widget.useTvControls,
       looping: false,
       autoPlay: true,
       allowedScreenSleep: false,
@@ -315,13 +342,11 @@ class _LivePlayerState extends State<LivePlayer> {
     }
   }
 
-  void _setPlaybackError(String error) {
+  void _setPlaybackError(Object error) {
     _stopWatchClock();
     _wasPlayingBeforeBuffering = false;
     _playbackFailure.value = _LivePlaybackFailure(
-      message: error.trim().isEmpty
-          ? 'This channel is temporarily unavailable.'
-          : error.trim(),
+      message: friendlyLiveTvError(error),
     );
     unawaited(_pauseAfterPlaybackError());
   }

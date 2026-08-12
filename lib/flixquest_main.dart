@@ -9,6 +9,7 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flixquest/models/app_colors.dart';
 import 'package:flixquest/screens/common/update_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'constants/app_constants.dart';
 import 'constants/theme_data.dart';
@@ -169,9 +170,11 @@ class _FlixQuestState extends State<FlixQuest>
                       appDependencyProvider, snapshot) {
                 return DynamicColorBuilder(
                   builder: (lightDynamic, darkDynamic) {
+                    final isDarkTheme =
+                        settingsProvider.appTheme == 'dark' ||
+                            settingsProvider.appTheme == 'amoled';
                     final palette = AppColorsList().appColors(
-                      settingsProvider.appTheme == 'dark' ||
-                          settingsProvider.appTheme == 'amoled',
+                      isDarkTheme,
                     );
                     final selectedAppColor = palette.firstWhere(
                       (color) => color.index == settingsProvider.appColorIndex,
@@ -184,16 +187,28 @@ class _FlixQuestState extends State<FlixQuest>
                       supportedLocales: context.supportedLocales,
                       locale: context.locale,
                       debugShowCheckedModeBanner: false,
-                      builder: (context, child) => Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          child ?? const SizedBox.shrink(),
-                          OccasionalEffectOverlay(
-                            theme: appDependencyProvider.activeOccasionalTheme,
-                            enabled: appDependencyProvider
-                                .shouldShowOccasionalEffects,
-                          ),
-                        ],
+                      builder: (context, child) => AnnotatedRegion<
+                          SystemUiOverlayStyle>(
+                        value: SystemUiOverlayStyle(
+                          systemNavigationBarColor: Colors.transparent,
+                          systemNavigationBarDividerColor: Colors.transparent,
+                          systemNavigationBarIconBrightness: isDarkTheme
+                              ? Brightness.light
+                              : Brightness.dark,
+                          systemNavigationBarContrastEnforced: false,
+                        ),
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            child ?? const SizedBox.shrink(),
+                            OccasionalEffectOverlay(
+                              theme:
+                                  appDependencyProvider.activeOccasionalTheme,
+                              enabled: appDependencyProvider
+                                  .shouldShowOccasionalEffects,
+                            ),
+                          ],
+                        ),
                       ),
                       theme: Styles.themeData(
                           appThemeMode: settingsProvider.appTheme,

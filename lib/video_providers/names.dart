@@ -8,6 +8,7 @@ class VideoProvider {
     required this.fullName,
     required this.codeName,
     this.alias,
+    this.content,
     this.type = VideoProviderType.directVixSrc,
     this.apiId,
   });
@@ -21,6 +22,9 @@ class VideoProvider {
 
   /// User-facing name supplied by the scraper API.
   final String? alias;
+
+  /// Human-readable catalogue/language coverage supplied by the scraper.
+  final String? content;
   final VideoProviderType type;
   final String? apiId;
 
@@ -41,10 +45,12 @@ class VideoProvider {
     required String id,
     required String name,
     String? alias,
+    String? content,
   }) {
     return VideoProvider(
       fullName: name,
       alias: alias,
+      content: content,
       codeName: 'scraper:$id',
       type: VideoProviderType.scraperApi,
       apiId: id,

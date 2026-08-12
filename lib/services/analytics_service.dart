@@ -410,10 +410,17 @@ class AnalyticsService {
   void trackStreamServerChanged({
     required String mediaType,
     required String serverName,
+    dynamic contentId,
+    String? contentTitle,
   }) {
     _track('Stream Server Changed', {
-      'Media Type': mediaType,
+      ..._contentProperties(
+        mediaType: mediaType,
+        contentId: contentId,
+        contentTitle: contentTitle,
+      ),
       'Server Name': serverName,
+      'Provider': serverName,
     });
   }
 
@@ -455,9 +462,11 @@ class AnalyticsService {
     String? error,
   }) {
     _track('Playback Event', {
-      'Media Type': mediaType,
-      'Content ID': '$contentId',
-      'Content Title': contentTitle ?? 'N/A',
+      ..._contentProperties(
+        mediaType: mediaType,
+        contentId: contentId,
+        contentTitle: contentTitle,
+      ),
       'Surface': surface,
       'Session ID': sessionId,
       'Playback Event': event,
@@ -485,9 +494,11 @@ class AnalyticsService {
     String? provider,
   }) {
     _track('Playback Session Ended', {
-      'Media Type': mediaType,
-      'Content ID': '$contentId',
-      'Content Title': contentTitle ?? 'N/A',
+      ..._contentProperties(
+        mediaType: mediaType,
+        contentId: contentId,
+        contentTitle: contentTitle,
+      ),
       'Surface': surface,
       'Session ID': sessionId,
       'Duration Ms': durationMs,
@@ -501,6 +512,8 @@ class AnalyticsService {
 
   void trackProviderAttempt({
     required String mediaType,
+    dynamic contentId,
+    String? contentTitle,
     required String provider,
     required String purpose,
     required bool success,
@@ -510,7 +523,11 @@ class AnalyticsService {
     String? error,
   }) {
     _track('Stream Provider Attempt', {
-      'Media Type': mediaType,
+      ..._contentProperties(
+        mediaType: mediaType,
+        contentId: contentId,
+        contentTitle: contentTitle,
+      ),
       'Provider': provider,
       'Purpose': purpose,
       'Success': success,
@@ -519,6 +536,22 @@ class AnalyticsService {
       'Subtitle Count': subtitleCount,
       if (error != null) 'Error': _safeError(error),
     });
+  }
+
+  Map<String, dynamic> _contentProperties({
+    required String mediaType,
+    required dynamic contentId,
+    required String? contentTitle,
+  }) {
+    final title = contentTitle?.trim();
+    final displayTitle = title?.isNotEmpty == true ? title! : 'N/A';
+    return {
+      'Media Type': mediaType,
+      'Content ID': '$contentId',
+      'Content Title': displayTitle,
+      if (mediaType == 'movie') 'Movie name': displayTitle,
+      if (mediaType == 'tv') 'TV series name': displayTitle,
+    };
   }
 
   // ---------------------------------------------------------------------------

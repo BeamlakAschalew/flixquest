@@ -15,6 +15,7 @@ import '../models/tv_stream_metadata.dart';
 import '../provider/app_dependency_provider.dart';
 import '../provider/recently_watched_provider.dart';
 import '../screens/tv/tv_video_loader.dart';
+import '../screens/common/live_tv_screen.dart';
 import '../screens/tv/tv_episode_picker_sheet.dart';
 import '../screens/tv/tvdetail_castandcrew.dart';
 import '../screens/tv/tvepisode_castandcrew.dart';
@@ -102,6 +103,13 @@ class _MainTVDisplayState extends State<MainTVDisplay> {
   Widget build(BuildContext context) {
     var rEpisodes = Provider.of<RecentProvider>(context).episodes;
     final lang = Provider.of<SettingsProvider>(context).appLanguage;
+    final showLiveTV = context.watch<AppDependencyProvider>().displayOTTDrawer;
+    void openLiveTV() {
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(builder: (_) => const ChannelList()),
+      );
+    }
+
     return Stack(
       children: [
         CustomScrollView(
@@ -112,6 +120,7 @@ class _MainTVDisplayState extends State<MainTVDisplay> {
                 discoverType: 'discover',
                 includeAdult: Provider.of<SettingsProvider>(context).isAdult,
                 onSearchPressed: widget.onSearchPressed,
+                onLiveTVPressed: showLiveTV ? openLiveTV : null,
               ),
             ),
             SliverList(
@@ -177,6 +186,9 @@ class _MainTVDisplayState extends State<MainTVDisplay> {
                 child: AppFeedOverlayHeader(
                   title: tr('tv_series'),
                   onSearchPressed: widget.onSearchPressed,
+                  actionLabel: showLiveTV ? tr('live_tv') : null,
+                  actionIcon: showLiveTV ? PhosphorIcons.broadcast() : null,
+                  onActionPressed: showLiveTV ? openLiveTV : null,
                 ),
               ),
             ),
@@ -193,11 +205,13 @@ class DiscoverTV extends StatefulWidget {
     required this.includeAdult,
     required this.discoverType,
     this.onSearchPressed,
+    this.onLiveTVPressed,
     super.key,
   });
 
   final String discoverType;
   final VoidCallback? onSearchPressed;
+  final VoidCallback? onLiveTVPressed;
   @override
   DiscoverTVState createState() => DiscoverTVState();
 }
@@ -436,6 +450,12 @@ class DiscoverTVState extends State<DiscoverTV>
                                     ),
                                   ),
                                   const Spacer(),
+                                  if (widget.onLiveTVPressed != null) ...[
+                                    _TVHeroLiveButton(
+                                      onPressed: widget.onLiveTVPressed!,
+                                    ),
+                                    const SizedBox(width: 8),
+                                  ],
                                   _TVHeroIconButton(
                                     icon: saved
                                         ? PhosphorIcons.bookmarkSimple(
@@ -559,6 +579,42 @@ class _TVHeroIconButton extends StatelessWidget {
       child: IconButton(
         onPressed: onPressed,
         icon: Icon(icon, color: Colors.white),
+      ),
+    );
+  }
+}
+
+class _TVHeroLiveButton extends StatelessWidget {
+  const _TVHeroLiveButton({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.black.withValues(alpha: .38),
+      borderRadius: BorderRadius.circular(22),
+      child: InkWell(
+        key: const ValueKey('tv_live_tv_shortcut'),
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(22),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(PhosphorIcons.broadcast(), color: Colors.white, size: 19),
+              const SizedBox(width: 7),
+              Text(
+                tr('live_tv'),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

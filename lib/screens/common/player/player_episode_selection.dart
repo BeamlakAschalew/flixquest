@@ -29,20 +29,35 @@ class PlayerEpisodeSelection {
     bool useTvPlayer = false,
   }) {
     final episodes = tvMetadata.seasonEpisodes;
-    if (episodes == null || episodes.isEmpty) return Future.value();
+    debugPrint(
+      '[PlayerContentMenu] episode sheet requested '
+      'contextMounted=${context.mounted} episodes=${episodes?.length ?? 0}',
+    );
+    if (episodes == null || episodes.isEmpty) {
+      debugPrint('[PlayerContentMenu] episode sheet skipped: no episodes');
+      return Future.value();
+    }
     final playerContext = context;
     final seasonNumber = _browsedSeasonNumber ?? tvMetadata.seasonNumber ?? 0;
 
+    debugPrint(
+      '[PlayerContentMenu] pushing episode modal season=$seasonNumber',
+    );
     return showModalBottomSheet<void>(
       context: context,
       useRootNavigator: true,
       useSafeArea: true,
       backgroundColor: Theme.of(context).colorScheme.surface,
       isScrollControlled: true,
-      builder: (sheetContext) => Listener(
-        behavior: HitTestBehavior.opaque,
-        onPointerDown: (_) {},
-        child: DraggableScrollableSheet(
+      builder: (sheetContext) {
+        debugPrint(
+          '[PlayerContentMenu] episode modal builder '
+          'sheetContext=${identityHashCode(sheetContext)}',
+        );
+        return Listener(
+          behavior: HitTestBehavior.opaque,
+          onPointerDown: (_) {},
+          child: DraggableScrollableSheet(
           initialChildSize: .82,
           minChildSize: .55,
           maxChildSize: .95,
@@ -145,8 +160,9 @@ class PlayerEpisodeSelection {
               ),
             ),
           ),
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 

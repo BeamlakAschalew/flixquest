@@ -81,21 +81,34 @@ class PlayerMovieRecommendations {
     bool useTvPlayer = false,
   }) {
     final recommendations = movieMetadata.recommendations;
+    debugPrint(
+      '[PlayerContentMenu] recommendations sheet requested '
+      'contextMounted=${context.mounted} '
+      'recommendations=${recommendations?.length ?? 0}',
+    );
     if (recommendations == null || recommendations.isEmpty) {
+      debugPrint(
+          '[PlayerContentMenu] recommendations sheet skipped: no items');
       return Future.value();
     }
     final playerContext = context;
 
+    debugPrint('[PlayerContentMenu] pushing recommendations modal');
     return showModalBottomSheet<void>(
       context: context,
       useRootNavigator: true,
       useSafeArea: true,
       backgroundColor: Theme.of(context).colorScheme.surface,
       isScrollControlled: true,
-      builder: (sheetContext) => Listener(
-        behavior: HitTestBehavior.opaque,
-        onPointerDown: (_) {},
-        child: DraggableScrollableSheet(
+      builder: (sheetContext) {
+        debugPrint(
+          '[PlayerContentMenu] recommendations modal builder '
+          'sheetContext=${identityHashCode(sheetContext)}',
+        );
+        return Listener(
+          behavior: HitTestBehavior.opaque,
+          onPointerDown: (_) {},
+          child: DraggableScrollableSheet(
           initialChildSize: .8,
           minChildSize: .55,
           maxChildSize: .95,
@@ -143,8 +156,9 @@ class PlayerMovieRecommendations {
               },
             ),
           ),
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 

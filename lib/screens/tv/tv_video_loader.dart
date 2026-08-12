@@ -99,6 +99,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             (provider) => ProviderLoadState(
               codeName: provider.codeName,
               fullName: provider.displayName,
+              content: provider.content,
               status: ProviderStatus.pending,
             ),
           )
@@ -203,6 +204,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
               result.success && result.videoLinks?.isNotEmpty == true;
           settings.analytics.trackProviderAttempt(
             mediaType: 'tv',
+            contentId: widget.metadata.tvId,
+            contentTitle: widget.metadata.seriesName,
             provider: provider.displayName,
             purpose: widget.download ? 'download' : 'playback',
             success: providerSucceeded,

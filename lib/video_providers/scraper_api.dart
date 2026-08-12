@@ -46,6 +46,7 @@ class ScraperApi {
               id: provider['id']?.toString() ?? '',
               name: provider['name']?.toString() ?? 'Unknown provider',
               alias: provider['alias']?.toString(),
+              content: provider['content']?.toString(),
             ),
           )
           .where((provider) => provider.apiId?.isNotEmpty == true)

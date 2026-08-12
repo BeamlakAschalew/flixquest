@@ -102,6 +102,9 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   final PlayerMovieRecommendations _movieRecommendations =
       PlayerMovieRecommendations();
   final PlayerNextEpisodeWidget _nextEpisodeWidget = PlayerNextEpisodeWidget();
+  late final List<MovieRecommendation> _contentMenuRecommendations;
+  late final List<EpisodeMetadata> _contentMenuEpisodes;
+  late final List<SeasonMetadata> _contentMenuSeasons;
   int duration = 0;
 
   final GlobalKey _betterPlayerKey = GlobalKey();
@@ -166,6 +169,15 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     _activeVideoFormats =
         widget.videoFormats == null ? null : Map.of(widget.videoFormats!);
     _activeVideoHeaders = Map.of(widget.videoHeaders);
+    _contentMenuRecommendations = List<MovieRecommendation>.of(
+      widget.movieMetadata?.recommendations ?? const <MovieRecommendation>[],
+    );
+    _contentMenuEpisodes = List<EpisodeMetadata>.of(
+      widget.tvMetadata?.seasonEpisodes ?? const <EpisodeMetadata>[],
+    );
+    _contentMenuSeasons = List<SeasonMetadata>.of(
+      widget.tvMetadata?.allSeasons ?? const <SeasonMetadata>[],
+    );
     super.initState();
     _appDependencies =
         Provider.of<AppDependencyProvider>(context, listen: false);
@@ -194,10 +206,19 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           : _mobileBackBufferDurationMs,
       retainBackBufferFromKeyframe: !widget.useTvControls,
     );
-    final hasEpisodeSelection = widget.mediaType == MediaType.tvShow &&
-        widget.tvMetadata?.seasonEpisodes?.isNotEmpty == true;
+    final hasEpisodeSelection =
+        widget.mediaType == MediaType.tvShow && _contentMenuEpisodes.isNotEmpty;
     final hasMovieRecommendations = widget.mediaType == MediaType.movie &&
-        widget.movieMetadata?.recommendations?.isNotEmpty == true;
+        _contentMenuRecommendations.isNotEmpty;
+    debugPrint(
+      '[PlayerContentMenu] configure '
+      'mediaType=${widget.mediaType} '
+      'useTvControls=${widget.useTvControls} '
+      'episodes=${widget.tvMetadata?.seasonEpisodes?.length ?? 0} '
+      'recommendations=${widget.movieMetadata?.recommendations?.length ?? 0} '
+      'episodeButton=$hasEpisodeSelection '
+      'recommendationsButton=$hasMovieRecommendations',
+    );
     betterPlayerControlsConfiguration = BetterPlayerControlsConfiguration(
         // Gesture controls configuration
         gestureConfiguration: BetterPlayerGestureConfiguration(
@@ -215,13 +236,22 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         },
         enableFullscreen: true,
         enableEpisodeSelection: hasEpisodeSelection,
-        onEpisodeListTap: () => _scheduleContentMenu(_openEpisodeList),
+        // Open immediately: addPostFrameCallback does not request a frame and
+        // can leave these controls unresponsive while playback is idle.
+        onEpisodeListTap: () {
+          debugPrint('[PlayerContentMenu] episodes control tapped');
+          unawaited(_openEpisodeList());
+        },
         enableMovieRecommendations: hasMovieRecommendations,
-        onMovieRecommendationsTap: () =>
-            _scheduleContentMenu(_openMovieRecommendations),
+        onMovieRecommendationsTap: () {
+          debugPrint('[PlayerContentMenu] recommendations control tapped');
+          unawaited(_openMovieRecommendations());
+        },
         enableNextEpisodeButton: widget.mediaType == MediaType.tvShow &&
             widget.settings.enableNextEpisodeButton,
-        enableCast: !widget.useTvControls,
+        // The native MediaRouteButton currently crashes on some Android
+        // devices when its platform-view background resolves to transparent.
+        enableCast: false,
         name: widget.mediaType == MediaType.movie
             ? '${widget.movieMetadata!.movieName!} (${widget.movieMetadata!.releaseYear!})'
             : '${widget.tvMetadata!.seriesName!} - ${widget.tvMetadata!.episodeName!} | ${episodeSeasonFormatter(widget.tvMetadata!.episodeNumber!, widget.tvMetadata!.seasonNumber!)}',
@@ -278,8 +308,16 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         overflowModalTextColor: widget.colors.first,
         overflowModalColor: widget.colors.last,
         subtitlesIcon: PhosphorIcons.closedCaptioning(),
-        enableSubtitles: widget.useTvControls,
+        enableSubtitles: true,
+        showSubtitlesButton: !widget.useTvControls,
+        onSubtitlesTap: widget.useTvControls ? null : _showSubtitleSwitcher,
         qualitiesIcon: PhosphorIcons.highDefinition(),
+        showQualitiesButton: !widget.useTvControls,
+        enableDownloadButton: !widget.useTvControls,
+        onDownloadTap:
+            widget.useTvControls ? null : _downloadFromCurrentProvider,
+        enableCrop: true,
+        cropIcon: PhosphorIcons.crop(),
         enableAudioTracks: true,
         controlBarHeight: 56,
         watchingText: tr('watching_text'),
@@ -287,6 +325,11 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         // Add custom overflow menu item for external subtitles
         overflowMenuCustomItems: widget.useTvControls
             ? [
+                BetterPlayerOverflowMenuItem(
+                  PhosphorIcons.timer(),
+                  tr('subtitle_timing'),
+                  _showSubtitleTimingAdjuster,
+                ),
                 BetterPlayerOverflowMenuItem(
                   PhosphorIcons.fileArrowUp(),
                   tr('upload_subtitles'),
@@ -307,9 +350,9 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
               ]
             : [
                 BetterPlayerOverflowMenuItem(
-                  PhosphorIcons.closedCaptioning(),
-                  tr('subtitle'),
-                  _showSubtitleSwitcher,
+                  PhosphorIcons.timer(),
+                  tr('subtitle_timing'),
+                  _showSubtitleTimingAdjuster,
                 ),
                 BetterPlayerOverflowMenuItem(
                   PhosphorIcons.closedCaptioning(),
@@ -342,11 +385,6 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                     tr('switch_provider'),
                     _showProviderSwitcher,
                   ),
-                BetterPlayerOverflowMenuItem(
-                  PhosphorIcons.downloadSimple(),
-                  'Download',
-                  _downloadFromCurrentProvider,
-                ),
               ]);
     BetterPlayerConfiguration betterPlayerConfiguration =
         BetterPlayerConfiguration(
@@ -464,6 +502,12 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   String? get _analyticsContentTitle => widget.mediaType == MediaType.movie
       ? widget.movieMetadata?.movieName
       : widget.tvMetadata?.seriesName;
+
+  String? get _analyticsProviderName {
+    final code = _currentProviderCode;
+    if (code == null || code.trim().isEmpty) return null;
+    return _providerDisplayName(code);
+  }
 
   String get _analyticsSurface => widget.useTvControls ? 'tv' : 'standard';
 
@@ -583,7 +627,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       sessionId: _analyticsSessionId,
       event: event,
       sessionElapsedMs: _analyticsElapsedMs,
-      provider: _currentProviderCode,
+      provider: _analyticsProviderName,
       startupMs: startupMs,
       bufferingMs: bufferingMs,
       bufferCount: _analyticsBufferCount,
@@ -863,64 +907,149 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     return navigator.overlay?.context ?? context;
   }
 
-  void _scheduleContentMenu(Future<void> Function() openMenu) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) unawaited(openMenu());
-    });
+  MovieStreamMetadata? get _movieMetadataForContentMenu {
+    final metadata = widget.movieMetadata;
+    if (metadata != null &&
+        metadata.recommendations?.isNotEmpty != true &&
+        _contentMenuRecommendations.isNotEmpty) {
+      metadata.recommendations =
+          List<MovieRecommendation>.of(_contentMenuRecommendations);
+      debugPrint(
+        '[PlayerContentMenu] restored '
+        '${metadata.recommendations!.length} movie recommendations',
+      );
+    }
+    return metadata;
+  }
+
+  TVStreamMetadata? get _tvMetadataForContentMenu {
+    final metadata = widget.tvMetadata;
+    if (metadata != null &&
+        metadata.seasonEpisodes?.isNotEmpty != true &&
+        _contentMenuEpisodes.isNotEmpty) {
+      metadata.seasonEpisodes = List<EpisodeMetadata>.of(_contentMenuEpisodes);
+      debugPrint(
+        '[PlayerContentMenu] restored '
+        '${metadata.seasonEpisodes!.length} season episodes',
+      );
+    }
+    if (metadata != null &&
+        metadata.allSeasons?.isNotEmpty != true &&
+        _contentMenuSeasons.isNotEmpty) {
+      metadata.allSeasons = List<SeasonMetadata>.of(_contentMenuSeasons);
+    }
+    return metadata;
   }
 
   Future<void> _openEpisodeList() async {
-    if (!mounted || _isContentMenuOpen) return;
+    debugPrint(
+      '[PlayerContentMenu] open episodes requested '
+      'mounted=$mounted menuOpen=$_isContentMenuOpen '
+      'useTvControls=${widget.useTvControls}',
+    );
+    if (!mounted) {
+      debugPrint('[PlayerContentMenu] episodes aborted: player unmounted');
+      return;
+    }
+    if (_isContentMenuOpen) {
+      debugPrint('[PlayerContentMenu] episodes aborted: menu already open');
+      return;
+    }
     if (widget.useTvControls) {
+      debugPrint('[PlayerContentMenu] episodes routed to TV menu');
       _showTvEpisodeMenu();
       return;
     }
 
-    final metadata = widget.tvMetadata;
-    if (metadata?.seasonEpisodes?.isNotEmpty != true) return;
+    final metadata = _tvMetadataForContentMenu;
+    if (metadata?.seasonEpisodes?.isNotEmpty != true) {
+      debugPrint('[PlayerContentMenu] episodes aborted: metadata is empty');
+      return;
+    }
     _isContentMenuOpen = true;
     try {
+      final menuContext = _playerModalContext;
+      final navigator = Navigator.of(menuContext, rootNavigator: true);
+      debugPrint(
+        '[PlayerContentMenu] showing episodes sheet '
+        'episodes=${metadata!.seasonEpisodes!.length} '
+        'context=${identityHashCode(menuContext)} '
+        'overlay=${identityHashCode(navigator.overlay)} '
+        'canPop=${navigator.canPop()}',
+      );
       await _episodeSelection.showEpisodeSelectionBottomSheet(
-        context: _playerModalContext,
+        context: menuContext,
         colors: widget.colors,
-        tvMetadata: metadata!,
+        tvMetadata: metadata,
         onSaveProgress: _handleContentSwitch,
         closePlayer: _closePlayer,
       );
+      debugPrint('[PlayerContentMenu] episodes sheet future completed');
     } catch (error, stackTrace) {
       _reportContentMenuError(error, stackTrace);
     } finally {
       _isContentMenuOpen = false;
+      debugPrint('[PlayerContentMenu] episodes menu state reset');
     }
   }
 
   Future<void> _openMovieRecommendations() async {
-    if (!mounted || _isContentMenuOpen) return;
+    debugPrint(
+      '[PlayerContentMenu] open recommendations requested '
+      'mounted=$mounted menuOpen=$_isContentMenuOpen '
+      'useTvControls=${widget.useTvControls}',
+    );
+    if (!mounted) {
+      debugPrint(
+          '[PlayerContentMenu] recommendations aborted: player unmounted');
+      return;
+    }
+    if (_isContentMenuOpen) {
+      debugPrint(
+          '[PlayerContentMenu] recommendations aborted: menu already open');
+      return;
+    }
     if (widget.useTvControls) {
+      debugPrint('[PlayerContentMenu] recommendations routed to TV menu');
       _showTvMovieRecommendationsMenu();
       return;
     }
 
-    final metadata = widget.movieMetadata;
-    if (metadata?.recommendations?.isNotEmpty != true) return;
+    final metadata = _movieMetadataForContentMenu;
+    if (metadata?.recommendations?.isNotEmpty != true) {
+      debugPrint(
+          '[PlayerContentMenu] recommendations aborted: metadata is empty');
+      return;
+    }
     _isContentMenuOpen = true;
     try {
+      final menuContext = _playerModalContext;
+      final navigator = Navigator.of(menuContext, rootNavigator: true);
+      debugPrint(
+        '[PlayerContentMenu] showing recommendations sheet '
+        'recommendations=${metadata!.recommendations!.length} '
+        'context=${identityHashCode(menuContext)} '
+        'overlay=${identityHashCode(navigator.overlay)} '
+        'canPop=${navigator.canPop()}',
+      );
       await _movieRecommendations.showMovieRecommendationsBottomSheet(
-        context: _playerModalContext,
+        context: menuContext,
         colors: widget.colors,
-        movieMetadata: metadata!,
+        movieMetadata: metadata,
         onSaveProgress: _handleContentSwitch,
         closePlayer: _closePlayer,
       );
+      debugPrint('[PlayerContentMenu] recommendations sheet future completed');
     } catch (error, stackTrace) {
       _reportContentMenuError(error, stackTrace);
     } finally {
       _isContentMenuOpen = false;
+      debugPrint('[PlayerContentMenu] recommendations menu state reset');
     }
   }
 
   void _reportContentMenuError(Object error, StackTrace stackTrace) {
-    debugPrint('[Player] Unable to open content menu: $error');
+    debugPrint('[PlayerContentMenu] unable to open content menu: $error');
     debugPrintStack(stackTrace: stackTrace);
     if (!mounted) return;
     ScaffoldMessenger.maybeOf(context)?.showSnackBar(
@@ -990,7 +1119,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       bufferingMs: _analyticsBufferingMs,
       bufferCount: _analyticsBufferCount,
       providerSwitchCount: _analyticsProviderSwitchCount,
-      provider: _currentProviderCode,
+      provider: _analyticsProviderName,
     );
 
     // Dispose the BetterPlayer controller to clean up resources
@@ -1235,12 +1364,18 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           final selected = provider.codeName == _currentProviderCode;
           final loading = _loadingProviders.contains(provider.codeName);
           final error = _providerErrors[provider.codeName];
+          final content = provider.content?.trim();
           return BetterPlayerTvMenuItem(
             label: provider.displayName,
             subtitle: loading
                 ? tr('loading_video_sources')
                 : error ??
-                    (selected ? tr('currently_playing') : tr('video_source')),
+                    [
+                      if (selected) tr('currently_playing'),
+                      if (content?.isNotEmpty == true) content!,
+                      if (!selected && content?.isNotEmpty != true)
+                        tr('video_source'),
+                    ].join('  •  '),
             icon: error != null
                 ? PhosphorIcons.warningCircle()
                 : selected
@@ -1471,15 +1606,20 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                         final loading =
                             _loadingProviders.contains(provider.codeName);
                         final error = _providerErrors[provider.codeName];
+                        final content = provider.content?.trim();
                         return AppSelectionTile(
                           title: provider.displayName,
                           selected: selected,
                           subtitle: loading
                               ? tr('loading_video_sources')
                               : error ??
-                                  (selected
-                                      ? tr('currently_playing')
-                                      : tr('video_source')),
+                                  [
+                                    if (selected) tr('currently_playing'),
+                                    if (content?.isNotEmpty == true) content!,
+                                    if (!selected &&
+                                        content?.isNotEmpty != true)
+                                      tr('video_source'),
+                                  ].join('  •  '),
                           leading: Container(
                             width: 42,
                             height: 42,
@@ -1548,6 +1688,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   }) async {
     if (_isSwitchingProvider || providerCode == _currentProviderCode) return;
     final analyticsStopwatch = Stopwatch()..start();
+    final providerName = _providerDisplayName(providerCode);
 
     setState(() {
       _isSwitchingProvider = true;
@@ -1649,9 +1790,13 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       settings.analytics.trackStreamServerChanged(
         mediaType: _analyticsMediaType,
         serverName: nextSource.providerName,
+        contentId: _analyticsContentId,
+        contentTitle: _analyticsContentTitle,
       );
       settings.analytics.trackProviderAttempt(
         mediaType: _analyticsMediaType,
+        contentId: _analyticsContentId,
+        contentTitle: _analyticsContentTitle,
         provider: nextSource.providerName,
         purpose: 'provider_switch',
         success: true,
@@ -1667,7 +1812,9 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     } catch (error) {
       settings.analytics.trackProviderAttempt(
         mediaType: _analyticsMediaType,
-        provider: providerCode,
+        contentId: _analyticsContentId,
+        contentTitle: _analyticsContentTitle,
+        provider: providerName,
         purpose: 'provider_switch',
         success: false,
         durationMs: analyticsStopwatch.elapsedMilliseconds,
@@ -1677,7 +1824,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       );
       _trackPlaybackEvent(
         'provider_switch_failed',
-        value: providerCode,
+        value: providerName,
         error: error.toString(),
       );
       debugPrint(
@@ -1903,17 +2050,18 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     }
   }
 
-  String _currentProviderName() {
-    final code = _currentProviderCode;
-    final loadedName =
-        code == null ? null : _loadedProviders[code]?.providerName;
+  String _providerDisplayName(String? code) {
+    if (code == null || code.trim().isEmpty) return 'Current provider';
+    final loadedName = _loadedProviders[code]?.providerName;
     if (loadedName?.isNotEmpty == true) return loadedName!;
     for (final provider
         in widget.availableProviders ?? const <VideoProvider>[]) {
       if (provider.codeName == code) return provider.displayName;
     }
-    return 'Current provider';
+    return code;
   }
+
+  String _currentProviderName() => _providerDisplayName(_currentProviderCode);
 
   int? _downloadResolutionHeight(String resolution) {
     final match = RegExp(r'(\d{3,4})').firstMatch(resolution);
@@ -1940,67 +2088,62 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     final subtitles = List<BetterPlayerSubtitlesSource>.of(
       _betterPlayerController.betterPlayerSubtitlesSourceList,
     );
-    if (!subtitles.any(
+    final offIndex = subtitles.indexWhere(
       (source) => source.type == BetterPlayerSubtitlesSourceType.none,
-    )) {
-      subtitles.add(
+    );
+    if (offIndex < 0) {
+      subtitles.insert(
+        0,
         BetterPlayerSubtitlesSource(
           type: BetterPlayerSubtitlesSourceType.none,
         ),
       );
+    } else if (offIndex > 0) {
+      subtitles.insert(0, subtitles.removeAt(offIndex));
     }
-    final selected = _betterPlayerController.betterPlayerSubtitlesSource;
 
     showModalBottomSheet<void>(
       context: context,
       useSafeArea: true,
       backgroundColor: Theme.of(context).colorScheme.surface,
       isScrollControlled: true,
+      builder: (sheetContext) => _SubtitleSwitcherSheet(
+        controller: _betterPlayerController,
+        subtitles: subtitles,
+        onClose: () => Navigator.pop(sheetContext),
+      ),
+    );
+  }
+
+  void _showSubtitleTimingAdjuster() {
+    showModalBottomSheet<void>(
+      context: context,
+      useSafeArea: true,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      isScrollControlled: true,
       builder: (sheetContext) => DraggableScrollableSheet(
-        initialChildSize: .72,
-        minChildSize: .45,
-        maxChildSize: .95,
+        initialChildSize: .52,
+        minChildSize: .42,
+        maxChildSize: .72,
         expand: false,
         snap: true,
         builder: (context, scrollController) => PlayerSheetScaffold(
-          icon: PhosphorIcons.closedCaptioning(),
-          title: tr('subtitle'),
-          subtitle: tr('choose_subtitle_language'),
+          icon: PhosphorIcons.timer(),
+          title: tr('subtitle_timing'),
+          subtitle: tr('subtitle_timing_help'),
           actions: [
             IconButton(
+              tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
               onPressed: () => Navigator.pop(sheetContext),
               icon: Icon(PhosphorIcons.x()),
             ),
           ],
-          child: ListView.separated(
+          child: SingleChildScrollView(
             controller: scrollController,
             padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
-            itemCount: subtitles.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 4),
-            itemBuilder: (context, index) {
-              final source = subtitles[index];
-              final isOff = source.type == BetterPlayerSubtitlesSourceType.none;
-              final isSelected = source == selected ||
-                  (isOff &&
-                      selected?.type == BetterPlayerSubtitlesSourceType.none);
-              return PlayerChoiceCard(
-                title: isOff
-                    ? _betterPlayerController.translations.generalNone
-                    : source.name ??
-                        _betterPlayerController.translations.generalDefault,
-                subtitle: isOff ? null : tr('subtitle'),
-                selected: isSelected,
-                thumbnail: PlayerThumbnail(
-                  width: 48,
-                  height: 48,
-                  child: Icon(PhosphorIcons.closedCaptioning()),
-                ),
-                onTap: () async {
-                  await _betterPlayerController.setupSubtitleSource(source);
-                  if (sheetContext.mounted) Navigator.pop(sheetContext);
-                },
-              );
-            },
+            child: _SubtitleTimingControl(
+              controller: _betterPlayerController,
+            ),
           ),
         ),
       ),
@@ -2400,4 +2543,349 @@ class _TvPromptButtonState extends State<_TvPromptButton> {
       ),
     );
   }
+}
+
+class _SubtitleSwitcherSheet extends StatefulWidget {
+  const _SubtitleSwitcherSheet({
+    required this.controller,
+    required this.subtitles,
+    required this.onClose,
+  });
+
+  final BetterPlayerController controller;
+  final List<BetterPlayerSubtitlesSource> subtitles;
+  final VoidCallback onClose;
+
+  @override
+  State<_SubtitleSwitcherSheet> createState() => _SubtitleSwitcherSheetState();
+}
+
+class _SubtitleSwitcherSheetState extends State<_SubtitleSwitcherSheet> {
+  BetterPlayerSubtitlesSource? _loadingSource;
+
+  Future<void> _selectSubtitle(BetterPlayerSubtitlesSource source) async {
+    if (_loadingSource != null) return;
+    setState(() => _loadingSource = source);
+    try {
+      await widget.controller.setupSubtitleSource(source);
+      if (mounted) widget.onClose();
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+        SnackBar(
+          content: Text(
+            tr(
+              'failed_load_subtitles',
+              namedArgs: {'error': error.toString()},
+            ),
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _loadingSource = null);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final selected = widget.controller.betterPlayerSubtitlesSource;
+    return DraggableScrollableSheet(
+      initialChildSize: .78,
+      minChildSize: .55,
+      maxChildSize: .95,
+      expand: false,
+      snap: true,
+      builder: (context, scrollController) => PlayerSheetScaffold(
+        icon: PhosphorIcons.closedCaptioning(),
+        title: tr('subtitle'),
+        subtitle: tr('choose_subtitle_language'),
+        actions: [
+          IconButton(
+            tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+            onPressed: widget.onClose,
+            icon: Icon(PhosphorIcons.x()),
+          ),
+        ],
+        child: ListView.separated(
+          controller: scrollController,
+          padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+          itemCount: widget.subtitles.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 4),
+          itemBuilder: (context, index) {
+            final source = widget.subtitles[index];
+            final isOff = source.type == BetterPlayerSubtitlesSourceType.none;
+            final isSelected = identical(source, selected) ||
+                source == selected ||
+                (isOff &&
+                    selected?.type == BetterPlayerSubtitlesSourceType.none);
+            final isLoading = identical(source, _loadingSource);
+            return PlayerChoiceCard(
+              title: isOff
+                  ? widget.controller.translations.generalNone
+                  : source.name ??
+                      widget.controller.translations.generalDefault,
+              subtitle: isOff ? null : tr('subtitle'),
+              selected: isSelected,
+              thumbnail: PlayerThumbnail(
+                width: 48,
+                height: 48,
+                child: Icon(
+                  isOff
+                      ? PhosphorIcons.subtitlesSlash()
+                      : PhosphorIcons.closedCaptioning(),
+                ),
+              ),
+              trailing: isLoading
+                  ? Semantics(
+                      liveRegion: true,
+                      label: tr('loading_subtitles'),
+                      child: const SizedBox.square(
+                        key: Key('subtitle_selection_progress'),
+                        dimension: 24,
+                        child: CircularProgressIndicator(strokeWidth: 2.5),
+                      ),
+                    )
+                  : null,
+              onTap:
+                  _loadingSource == null ? () => _selectSubtitle(source) : null,
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _SubtitleTimingControl extends StatefulWidget {
+  const _SubtitleTimingControl({required this.controller});
+
+  final BetterPlayerController controller;
+
+  @override
+  State<_SubtitleTimingControl> createState() => _SubtitleTimingControlState();
+}
+
+class _SubtitleTimingControlState extends State<_SubtitleTimingControl> {
+  static const _step = Duration(milliseconds: 500);
+  static const _minimum = Duration(seconds: -10);
+  static const _limit = Duration(seconds: 10);
+
+  late Duration _offset;
+
+  @override
+  void initState() {
+    super.initState();
+    _offset = widget.controller.subtitleOffset;
+  }
+
+  @override
+  void didUpdateWidget(_SubtitleTimingControl oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.controller, widget.controller)) {
+      _offset = widget.controller.subtitleOffset;
+    }
+  }
+
+  void _setOffset(Duration offset) {
+    final milliseconds = offset.inMilliseconds.clamp(
+      -_limit.inMilliseconds,
+      _limit.inMilliseconds,
+    );
+    widget.controller.setSubtitleOffset(Duration(milliseconds: milliseconds));
+    setState(() => _offset = widget.controller.subtitleOffset);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = Theme.of(context).colorScheme;
+    final offset = _offset;
+    final isSynced = offset == Duration.zero;
+    final status = isSynced
+        ? tr('subtitle_timing_synced')
+        : tr(offset.isNegative ? 'subtitle_earlier' : 'subtitle_later');
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+      decoration: BoxDecoration(
+        color: colors.surfaceContainerHighest.withValues(alpha: .42),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: colors.outlineVariant.withValues(alpha: .5),
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              Icon(
+                isSynced
+                    ? PhosphorIcons.checkCircle(PhosphorIconsStyle.fill)
+                    : PhosphorIcons.timer(),
+                color: colors.primary,
+                size: 22,
+              ),
+              const SizedBox(width: 9),
+              Expanded(
+                child: Text(
+                  status,
+                  key: const Key('subtitle_timing_value'),
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    color: colors.onSurfaceVariant,
+                    fontFamily: 'FigtreeSB',
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 160),
+                child: Container(
+                  key: ValueKey(offset.inMilliseconds),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 11,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colors.primary.withValues(alpha: .12),
+                    borderRadius: BorderRadius.circular(99),
+                  ),
+                  child: Text(
+                    _subtitleOffsetValue(offset),
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: colors.primary,
+                      fontFamily: 'FigtreeSB',
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          SliderTheme(
+            data: SliderTheme.of(context).copyWith(
+              trackHeight: 5,
+              activeTrackColor: colors.primary,
+              inactiveTrackColor: colors.primary.withValues(alpha: .16),
+              thumbColor: colors.primary,
+              overlayColor: colors.primary.withValues(alpha: .12),
+              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 9),
+            ),
+            child: Slider(
+              key: const Key('subtitle_timing_slider'),
+              value: offset.inMilliseconds
+                  .clamp(-_limit.inMilliseconds, _limit.inMilliseconds)
+                  .toDouble(),
+              min: -_limit.inMilliseconds.toDouble(),
+              max: _limit.inMilliseconds.toDouble(),
+              divisions: 80,
+              semanticFormatterCallback: (_) => _subtitleOffsetLabel(offset),
+              onChanged: (value) => _setOffset(
+                Duration(milliseconds: value.round()),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('−10s', style: theme.textTheme.labelSmall),
+                Text('0s', style: theme.textTheme.labelSmall),
+                Text('+10s', style: theme.textTheme.labelSmall),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          Container(
+            decoration: BoxDecoration(
+              color: colors.surfaceContainerHigh,
+              borderRadius: BorderRadius.circular(99),
+              border: Border.all(
+                color: colors.outlineVariant.withValues(alpha: .45),
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Tooltip(
+                  message: '${tr('subtitle_earlier')} 0.5s',
+                  child: IconButton(
+                    key: const Key('subtitle_timing_earlier'),
+                    onPressed: offset <= _minimum
+                        ? null
+                        : () => _setOffset(offset - _step),
+                    icon: Icon(PhosphorIcons.minus(), size: 18),
+                    constraints: const BoxConstraints.tightFor(
+                      width: 42,
+                      height: 38,
+                    ),
+                    padding: EdgeInsets.zero,
+                    visualDensity: VisualDensity.compact,
+                  ),
+                ),
+                SizedBox(
+                  height: 22,
+                  child: VerticalDivider(
+                    width: 1,
+                    color: colors.outlineVariant,
+                  ),
+                ),
+                TextButton(
+                  key: const Key('subtitle_timing_reset'),
+                  onPressed: isSynced ? null : () => _setOffset(Duration.zero),
+                  style: TextButton.styleFrom(
+                    minimumSize: const Size(86, 38),
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    visualDensity: VisualDensity.compact,
+                  ),
+                  child: Text(tr('subtitle_timing_reset')),
+                ),
+                SizedBox(
+                  height: 22,
+                  child: VerticalDivider(
+                    width: 1,
+                    color: colors.outlineVariant,
+                  ),
+                ),
+                Tooltip(
+                  message: '${tr('subtitle_later')} 0.5s',
+                  child: IconButton(
+                    key: const Key('subtitle_timing_later'),
+                    onPressed: offset >= _limit
+                        ? null
+                        : () => _setOffset(offset + _step),
+                    icon: Icon(PhosphorIcons.plus(), size: 18),
+                    constraints: const BoxConstraints.tightFor(
+                      width: 42,
+                      height: 38,
+                    ),
+                    padding: EdgeInsets.zero,
+                    visualDensity: VisualDensity.compact,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+String _subtitleOffsetValue(Duration offset) {
+  if (offset == Duration.zero) return '0.0s';
+  final seconds = offset.inMilliseconds / 1000;
+  final sign = seconds > 0 ? '+' : '−';
+  return '$sign${seconds.abs().toStringAsFixed(1)}s';
+}
+
+String _subtitleOffsetLabel(Duration offset) {
+  if (offset == Duration.zero) return tr('subtitle_timing_synced');
+  final seconds = (offset.inMilliseconds.abs() / 1000).toStringAsFixed(2);
+  final compactSeconds = seconds.replaceFirst(RegExp(r'\.?0+$'), '');
+  return tr(
+    offset.isNegative ? 'subtitle_offset_earlier' : 'subtitle_offset_later',
+    namedArgs: {'offset': compactSeconds},
+  );
 }

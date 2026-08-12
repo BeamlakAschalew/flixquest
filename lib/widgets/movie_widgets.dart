@@ -10,6 +10,7 @@ import 'package:easy_localization/easy_localization.dart';
 import '../models/recently_watched.dart';
 import '../provider/recently_watched_provider.dart';
 import '../screens/common/update_screen.dart';
+import '../screens/common/live_tv_screen.dart';
 import '../screens/movie/movie_castandcrew.dart';
 import '../screens/movie/movie_video_loader.dart';
 import '../ui_components/movie_ui_components.dart';
@@ -95,6 +96,13 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
     bool includeAdult = Provider.of<SettingsProvider>(context).isAdult;
     final lang = Provider.of<SettingsProvider>(context).appLanguage;
     var rMovies = Provider.of<RecentProvider>(context).movies;
+    final showLiveTV = context.watch<AppDependencyProvider>().displayOTTDrawer;
+    void openLiveTV() {
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(builder: (_) => const ChannelList()),
+      );
+    }
+
     return Stack(
       children: [
         CustomScrollView(
@@ -105,6 +113,7 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
                 includeAdult: includeAdult,
                 discoverType: 'discover',
                 onSearchPressed: widget.onSearchPressed,
+                onLiveTVPressed: showLiveTV ? openLiveTV : null,
               ),
             ),
             SliverList(
@@ -171,6 +180,9 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
                 child: AppFeedOverlayHeader(
                   title: tr('movies'),
                   onSearchPressed: widget.onSearchPressed,
+                  actionLabel: showLiveTV ? tr('live_tv') : null,
+                  actionIcon: showLiveTV ? PhosphorIcons.broadcast() : null,
+                  onActionPressed: showLiveTV ? openLiveTV : null,
                 ),
               ),
             ),
@@ -186,10 +198,12 @@ class DiscoverMovies extends StatefulWidget {
       {super.key,
       required this.includeAdult,
       required this.discoverType,
-      this.onSearchPressed});
+      this.onSearchPressed,
+      this.onLiveTVPressed});
   final bool includeAdult;
   final String discoverType;
   final VoidCallback? onSearchPressed;
+  final VoidCallback? onLiveTVPressed;
   @override
   DiscoverMoviesState createState() => DiscoverMoviesState();
 }
@@ -430,6 +444,12 @@ class DiscoverMoviesState extends State<DiscoverMovies>
                                     ),
                                   ),
                                   const Spacer(),
+                                  if (widget.onLiveTVPressed != null) ...[
+                                    _HeroLiveButton(
+                                      onPressed: widget.onLiveTVPressed!,
+                                    ),
+                                    const SizedBox(width: 8),
+                                  ],
                                   _HeroIconButton(
                                     icon: isBookmarked
                                         ? PhosphorIcons.bookmarkSimple(
@@ -569,6 +589,42 @@ class _HeroIconButton extends StatelessWidget {
       child: IconButton(
         onPressed: onPressed,
         icon: Icon(icon, color: Colors.white),
+      ),
+    );
+  }
+}
+
+class _HeroLiveButton extends StatelessWidget {
+  const _HeroLiveButton({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.black.withValues(alpha: .38),
+      borderRadius: BorderRadius.circular(22),
+      child: InkWell(
+        key: const ValueKey('movie_live_tv_shortcut'),
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(22),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(PhosphorIcons.broadcast(), color: Colors.white, size: 19),
+              const SizedBox(width: 7),
+              Text(
+                tr('live_tv'),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

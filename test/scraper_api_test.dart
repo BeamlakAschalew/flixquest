@@ -7,7 +7,7 @@ import 'package:http/testing.dart';
 
 void main() {
   group('ScraperApi', () {
-    test('maps enabled API providers and exposes their aliases', () async {
+    test('maps enabled API providers, aliases, and content metadata', () async {
       late Uri requestedUri;
       final api = ScraperApi(
         'https://scraper.example',
@@ -21,6 +21,7 @@ void main() {
                   'id': 'vidsrc',
                   'name': 'VidSrc upstream',
                   'alias': 'VidSrc',
+                  'content': 'Hollywood: English | Anime: Japanese',
                   'enabled': true,
                 },
                 {
@@ -43,6 +44,7 @@ void main() {
       expect(providers.single.apiId, 'vidsrc');
       expect(providers.single.codeName, 'scraper:vidsrc');
       expect(providers.single.displayName, 'VidSrc');
+      expect(providers.single.content, 'Hollywood: English | Anime: Japanese');
     });
 
     test('normalizes movie links, subtitles, and proxy stream type', () async {

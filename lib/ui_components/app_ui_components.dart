@@ -361,11 +361,17 @@ class AppFeedOverlayHeader extends StatelessWidget {
   const AppFeedOverlayHeader({
     required this.title,
     required this.onSearchPressed,
+    this.actionLabel,
+    this.actionIcon,
+    this.onActionPressed,
     super.key,
   });
 
   final String title;
   final VoidCallback? onSearchPressed;
+  final String? actionLabel;
+  final IconData? actionIcon;
+  final VoidCallback? onActionPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -392,6 +398,12 @@ class AppFeedOverlayHeader extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
+                if (onActionPressed != null)
+                  TextButton.icon(
+                    onPressed: onActionPressed,
+                    icon: Icon(actionIcon, size: 19),
+                    label: Text(actionLabel ?? ''),
+                  ),
                 IconButton(
                   onPressed: onSearchPressed,
                   icon: Icon(PhosphorIcons.magnifyingGlass()),

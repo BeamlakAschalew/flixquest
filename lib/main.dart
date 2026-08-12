@@ -42,6 +42,11 @@ Future<DevicePresentation> appInitialize({
 }) async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Let Flutter paint behind Android's transparent gesture-navigation area.
+  // Individual surfaces remain responsible for applying SafeArea padding to
+  // interactive content.
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+
   // Firebase-dependent services and providers must not be accessed until the
   // default app has finished initializing.
   await _initialization;

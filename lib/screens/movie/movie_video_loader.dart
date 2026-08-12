@@ -100,6 +100,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
             (provider) => ProviderLoadState(
               codeName: provider.codeName,
               fullName: provider.displayName,
+              content: provider.content,
               status: ProviderStatus.pending,
             ),
           )
@@ -199,6 +200,8 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
               result.success && result.videoLinks?.isNotEmpty == true;
           settings.analytics.trackProviderAttempt(
             mediaType: 'movie',
+            contentId: widget.metadata.movieId,
+            contentTitle: widget.metadata.movieName,
             provider: provider.displayName,
             purpose: widget.download ? 'download' : 'playback',
             success: providerSucceeded,
