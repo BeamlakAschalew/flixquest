@@ -34,7 +34,7 @@ class StreamingServicesMovies extends StatelessWidget {
         includeAdult: Provider.of<SettingsProvider>(context).isAdult,
         providerID: providerId,
         api: Endpoints.watchProvidersMovies(providerId, 1, lang),
-        watchRegion: Provider.of<SettingsProvider>(context).defaultCountry,
+        watchRegion: 'US',
       ),
     );
   }

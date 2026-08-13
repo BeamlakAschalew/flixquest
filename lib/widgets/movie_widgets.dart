@@ -4075,22 +4075,29 @@ class ParticularStreamingServiceMoviesState
   int pageNum = 2;
   bool isLoading = false;
 
+  String _requestUrl(int page) {
+    final uri = Uri.parse(widget.api);
+    return uri.replace(queryParameters: {
+      ...uri.queryParameters,
+      'page': '$page',
+      'include_adult': '${widget.includeAdult}',
+    }).toString();
+  }
+
   void getMoreData() async {
     final isProxyEnabled =
         Provider.of<SettingsProvider>(context, listen: false).enableProxy;
     final proxyUrl =
         Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     _scrollController.addListener(() async {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
+      if (_scrollController.position.pixels >=
+              _scrollController.position.maxScrollExtent - 200 &&
+          !isLoading) {
         setState(() {
           isLoading = true;
         });
         if (mounted) {
-          fetchMovies(
-                  '${widget.api}&include_adult=${widget.includeAdult}&page=$pageNum',
-                  isProxyEnabled,
-                  proxyUrl)
+          fetchMovies(_requestUrl(pageNum), isProxyEnabled, proxyUrl)
               .then((value) {
             if (mounted) {
               setState(() {
@@ -4112,9 +4119,7 @@ class ParticularStreamingServiceMoviesState
         Provider.of<SettingsProvider>(context, listen: false).enableProxy;
     final proxyUrl =
         Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
-    fetchMovies('${widget.api}&include_adult=${widget.includeAdult}',
-            isProxyEnabled, proxyUrl)
-        .then((value) {
+    fetchMovies(_requestUrl(1), isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
           moviesList = value;
@@ -4122,6 +4127,12 @@ class ParticularStreamingServiceMoviesState
       }
     });
     getMoreData();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -4423,66 +4434,16 @@ class MoviesFromWatchProviders extends StatefulWidget {
 class MoviesFromWatchProvidersState extends State<MoviesFromWatchProviders> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        AppSectionHeader(title: tr('streaming_services')),
-        SizedBox(
-          height: 112,
-          child: ListView(
-            padding:
-                EdgeInsets.symmetric(horizontal: AppUI.pagePadding(context)),
-            physics: const BouncingScrollPhysics(),
-            scrollDirection: Axis.horizontal,
-            children: const [
-              StreamingServicesWidget(
-                  imagePath: 'assets/images/netflix.png',
-                  title: 'Netflix',
-                  providerID: 8),
-              StreamingServicesWidget(
-                  imagePath: 'assets/images/amazon_prime.png',
-                  title: 'Prime Video',
-                  providerID: 9),
-              StreamingServicesWidget(
-                  imagePath: 'assets/images/disney_plus.png',
-                  title: 'Disney+',
-                  providerID: 337),
-              StreamingServicesWidget(
-                  imagePath: 'assets/images/hulu.png',
-                  title: 'Hulu',
-                  providerID: 15),
-              StreamingServicesWidget(
-                  imagePath: 'assets/images/hbo_max.png',
-                  title: 'Max',
-                  providerID: 384),
-              StreamingServicesWidget(
-                  imagePath: 'assets/images/apple_tv.png',
-                  title: 'Apple TV+',
-                  providerID: 350),
-              StreamingServicesWidget(
-                  imagePath: 'assets/images/peacock.png',
-                  title: 'Peacock',
-                  providerID: 387),
-              StreamingServicesWidget(
-                  imagePath: 'assets/images/itunes.png',
-                  title: 'iTunes',
-                  providerID: 2),
-              StreamingServicesWidget(
-                  imagePath: 'assets/images/youtube.png',
-                  title: 'YouTube',
-                  providerID: 188),
-              StreamingServicesWidget(
-                  imagePath: 'assets/images/paramount.png',
-                  title: 'Paramount+',
-                  providerID: 531),
-              StreamingServicesWidget(
-                  imagePath: 'assets/images/netflix.png',
-                  title: 'Netflix Kids',
-                  providerID: 175),
-            ],
+    return AppStreamingServicesRail(
+      onSelected: (service) => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => StreamingServicesMovies(
+            providerId: service.providerId,
+            providerName: service.name,
           ),
         ),
-      ],
+      ),
     );
   }
 

@@ -5167,66 +5167,16 @@ class TVShowsFromWatchProviders extends StatefulWidget {
 class TVShowsFromWatchProvidersState extends State<TVShowsFromWatchProviders> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        AppSectionHeader(title: tr('streaming_services')),
-        SizedBox(
-          height: 112,
-          child: ListView(
-            padding:
-                EdgeInsets.symmetric(horizontal: AppUI.pagePadding(context)),
-            physics: const BouncingScrollPhysics(),
-            scrollDirection: Axis.horizontal,
-            children: const [
-              TVStreamingServicesWidget(
-                  imagePath: 'assets/images/netflix.png',
-                  title: 'Netflix',
-                  providerID: 8),
-              TVStreamingServicesWidget(
-                  imagePath: 'assets/images/amazon_prime.png',
-                  title: 'Prime Video',
-                  providerID: 9),
-              TVStreamingServicesWidget(
-                  imagePath: 'assets/images/disney_plus.png',
-                  title: 'Disney+',
-                  providerID: 337),
-              TVStreamingServicesWidget(
-                  imagePath: 'assets/images/hulu.png',
-                  title: 'Hulu',
-                  providerID: 15),
-              TVStreamingServicesWidget(
-                  imagePath: 'assets/images/hbo_max.png',
-                  title: 'Max',
-                  providerID: 384),
-              TVStreamingServicesWidget(
-                  imagePath: 'assets/images/apple_tv.png',
-                  title: 'Apple TV+',
-                  providerID: 350),
-              TVStreamingServicesWidget(
-                  imagePath: 'assets/images/peacock.png',
-                  title: 'Peacock',
-                  providerID: 387),
-              TVStreamingServicesWidget(
-                  imagePath: 'assets/images/itunes.png',
-                  title: 'iTunes',
-                  providerID: 2),
-              TVStreamingServicesWidget(
-                  imagePath: 'assets/images/youtube.png',
-                  title: 'YouTube',
-                  providerID: 188),
-              TVStreamingServicesWidget(
-                  imagePath: 'assets/images/paramount.png',
-                  title: 'Paramount+',
-                  providerID: 531),
-              TVStreamingServicesWidget(
-                  imagePath: 'assets/images/netflix.png',
-                  title: 'Netflix Kids',
-                  providerID: 175),
-            ],
+    return AppStreamingServicesRail(
+      onSelected: (service) => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => StreamingServicesTVShows(
+            providerId: service.providerId,
+            providerName: service.name,
           ),
         ),
-      ],
+      ),
     );
   }
 
@@ -5325,10 +5275,20 @@ class ParticularStreamingServiceTVShowsState
   int pageNum = 2;
   bool isLoading = false;
 
+  String _requestUrl(int page) {
+    final uri = Uri.parse(widget.api);
+    return uri.replace(queryParameters: {
+      ...uri.queryParameters,
+      'page': '$page',
+      'include_adult': '${widget.includeAdult}',
+    }).toString();
+  }
+
   void getMoreData() async {
     _scrollController.addListener(() async {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
+      if (_scrollController.position.pixels >=
+              _scrollController.position.maxScrollExtent - 200 &&
+          !isLoading) {
         setState(() {
           isLoading = true;
         });
@@ -5337,9 +5297,7 @@ class ParticularStreamingServiceTVShowsState
         final proxyUrl =
             Provider.of<AppDependencyProvider>(context, listen: false)
                 .tmdbProxy;
-        fetchTV('${widget.api}&page=$pageNum&include_adult=${widget.includeAdult}',
-                isProxyEnabled, proxyUrl)
-            .then((value) {
+        fetchTV(_requestUrl(pageNum), isProxyEnabled, proxyUrl).then((value) {
           if (mounted) {
             setState(() {
               tvList!.addAll(value);
@@ -5359,9 +5317,7 @@ class ParticularStreamingServiceTVShowsState
         Provider.of<SettingsProvider>(context, listen: false).enableProxy;
     final proxyUrl =
         Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
-    fetchTV('${widget.api}&include_adult=${widget.includeAdult}',
-            isProxyEnabled, proxyUrl)
-        .then((value) {
+    fetchTV(_requestUrl(1), isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
           tvList = value;
@@ -5369,6 +5325,12 @@ class ParticularStreamingServiceTVShowsState
       }
     });
     getMoreData();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override

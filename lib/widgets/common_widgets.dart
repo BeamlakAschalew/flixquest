@@ -31,6 +31,161 @@ Widget discoverMoviesAndTVShimmer(String themeMode) => LayoutBuilder(
       ),
     );
 
+class AppStreamingService {
+  const AppStreamingService(this.imagePath, this.name, this.providerId);
+
+  final String imagePath;
+  final String name;
+  final int providerId;
+}
+
+const appStreamingServices = <AppStreamingService>[
+  AppStreamingService('assets/images/netflix.png', 'Netflix', 8),
+  AppStreamingService('assets/images/amazon_prime.png', 'Prime Video', 9),
+  AppStreamingService('assets/images/disney_plus.png', 'Disney+', 337),
+  AppStreamingService('assets/images/hulu.png', 'Hulu', 15),
+  AppStreamingService('assets/images/hbo_max.png', 'Max', 384),
+  AppStreamingService('assets/images/apple_tv.png', 'Apple TV+', 350),
+  AppStreamingService('assets/images/peacock.png', 'Peacock', 387),
+  AppStreamingService('assets/images/itunes.png', 'iTunes', 2),
+  AppStreamingService('assets/images/youtube.png', 'YouTube', 188),
+  AppStreamingService('assets/images/paramount.png', 'Paramount+', 531),
+  AppStreamingService('assets/images/netflix.png', 'Netflix Kids', 175),
+];
+
+class AppStreamingServicesRail extends StatelessWidget {
+  const AppStreamingServicesRail({
+    required this.onSelected,
+    super.key,
+  });
+
+  final ValueChanged<AppStreamingService> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AppSectionHeader(title: tr('streaming_services')),
+        SizedBox(
+          height: 132,
+          child: ListView.separated(
+            padding: EdgeInsets.symmetric(
+              horizontal: AppUI.pagePadding(context),
+              vertical: 2,
+            ),
+            physics: const BouncingScrollPhysics(),
+            scrollDirection: Axis.horizontal,
+            itemCount: appStreamingServices.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            itemBuilder: (context, index) {
+              final service = appStreamingServices[index];
+              return _StreamingServiceCard(
+                service: service,
+                onTap: () => onSelected(service),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _StreamingServiceCard extends StatelessWidget {
+  const _StreamingServiceCard({
+    required this.service,
+    required this.onTap,
+  });
+
+  final AppStreamingService service;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Semantics(
+      button: true,
+      label: service.name,
+      child: Tooltip(
+        message: service.name,
+        child: SizedBox(
+          width: 96,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(22),
+            child: Column(
+              children: [
+                Container(
+                  width: 88,
+                  height: 88,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF111216),
+                    borderRadius: BorderRadius.circular(22),
+                    border: Border.all(
+                      color: colors.outlineVariant.withValues(alpha: .4),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: colors.shadow.withValues(alpha: .14),
+                        blurRadius: 14,
+                        offset: const Offset(0, 5),
+                      ),
+                    ],
+                  ),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Positioned.fill(
+                        child: Image.asset(
+                          service.imagePath,
+                          fit: BoxFit.contain,
+                          filterQuality: FilterQuality.high,
+                        ),
+                      ),
+                      Positioned(
+                        right: -8,
+                        bottom: -8,
+                        child: Container(
+                          width: 24,
+                          height: 24,
+                          decoration: BoxDecoration(
+                            color: colors.primary,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: colors.surface, width: 2),
+                          ),
+                          child: Icon(
+                            PhosphorIcons.caretRight(
+                              PhosphorIconsStyle.bold,
+                            ),
+                            size: 12,
+                            color: colors.onPrimary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  service.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 Widget scrollingImageShimmer(String themeMode) => ShimmerBase(
     themeMode: themeMode,
     child: Container(
@@ -1638,7 +1793,8 @@ class ReportErrorWidget extends StatelessWidget {
               decoration: BoxDecoration(
                 color: colors.surfaceContainerHighest.withValues(alpha: .55),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: colors.outline.withValues(alpha: .16)),
+                border:
+                    Border.all(color: colors.outline.withValues(alpha: .16)),
               ),
               child: Text(
                 error,

@@ -429,40 +429,45 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
             ),
           ),
         ),
-        body: IndexedStack(
-          index: selectedIndex,
-          children: <Widget>[
-            MainMoviesDisplay(
-              onSearchPressed: () {
-                showSearch(
-                  context: context,
-                  delegate: Search(
-                    includeAdult:
-                        Provider.of<SettingsProvider>(context, listen: false)
-                            .isAdult,
-                    lang: lang,
-                  ),
-                );
-              },
-            ),
-            MainTVDisplay(
-              onSearchPressed: () {
-                showSearch(
-                  context: context,
-                  delegate: Search(
-                    includeAdult:
-                        Provider.of<SettingsProvider>(context, listen: false)
-                            .isAdult,
-                    lang: lang,
-                  ),
-                );
-              },
-            ),
-            const DiscoverPage(),
-            const BookmarkScreen(embedded: true),
-            const DownloadsScreen(embedded: true),
-            const UserInfo()
-          ],
+        body: SafeArea(
+          top: false,
+          left: false,
+          right: false,
+          child: IndexedStack(
+            index: selectedIndex,
+            children: <Widget>[
+              MainMoviesDisplay(
+                onSearchPressed: () {
+                  showSearch(
+                    context: context,
+                    delegate: Search(
+                      includeAdult:
+                          Provider.of<SettingsProvider>(context, listen: false)
+                              .isAdult,
+                      lang: lang,
+                    ),
+                  );
+                },
+              ),
+              MainTVDisplay(
+                onSearchPressed: () {
+                  showSearch(
+                    context: context,
+                    delegate: Search(
+                      includeAdult:
+                          Provider.of<SettingsProvider>(context, listen: false)
+                              .isAdult,
+                      lang: lang,
+                    ),
+                  );
+                },
+              ),
+              const DiscoverPage(),
+              const BookmarkScreen(embedded: true),
+              const DownloadsScreen(embedded: true),
+              const UserInfo()
+            ],
+          ),
         ));
   }
 }

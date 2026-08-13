@@ -145,7 +145,7 @@ class Endpoints {
         '/discover/tv?api_key='
         '$TMDB_API_KEY'
         '&language=$l&sort_by=popularity'
-        '.desc&include_adult=false&include_video=false&page=$page'
+        '.desc&include_adult=false&page=$page'
         '&with_watch_providers=$providerId'
         '&watch_region=US';
   }

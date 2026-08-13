@@ -115,6 +115,8 @@ class _SettingsState extends State<Settings> {
                 ),
                 SwitchListTile(
                   value: appDependencies.ambientModeEnabled,
+                  inactiveThumbColor: Colors.white,
+                  inactiveTrackColor: const Color(0xFF9B9B9B),
                   secondary: Icon(
                     PhosphorIcons.imageSquare(),
                     color: Theme.of(context).colorScheme.primary,
@@ -128,6 +130,8 @@ class _SettingsState extends State<Settings> {
                 if (occasionalCatalog.enabled)
                   SwitchListTile(
                     value: appDependencies.occasionalThemeEnabled,
+                    inactiveThumbColor: Colors.white,
+                    inactiveTrackColor: const Color(0xFF9B9B9B),
                     secondary: Icon(
                       PhosphorIcons.sparkle(),
                       color: Theme.of(context).colorScheme.primary,
@@ -151,6 +155,8 @@ class _SettingsState extends State<Settings> {
                     occasionalCatalog.allowUserEffectsToggle)
                   SwitchListTile(
                     value: appDependencies.occasionalEffectsEnabled,
+                    inactiveThumbColor: Colors.white,
+                    inactiveTrackColor: const Color(0xFF9B9B9B),
                     secondary: Icon(
                       PhosphorIcons.sparkle(),
                       color: Theme.of(context).colorScheme.primary,
