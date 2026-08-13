@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class Channels {
   const Channels({required this.channels});
 
@@ -204,6 +206,30 @@ class DaddyLiveEpgEvent {
   final String title;
   final DateTime? startsAt;
   final List<Channel> channels;
+
+  /// Returns the event start time formatted for the user's phone local timezone.
+  String get displayTime {
+    if (startsAt != null) {
+      final local = startsAt!.toLocal();
+      return DateFormat.jm().format(local);
+    }
+    final raw = time.trim();
+    if (raw.isEmpty) return '';
+    final parts = raw.split(':');
+    if (parts.length >= 2) {
+      final hour = int.tryParse(parts[0]);
+      final minutePart = parts[1].split(' ').first;
+      final minute = int.tryParse(minutePart);
+      if (hour != null && minute != null) {
+        final now = DateTime.now().toUtc();
+        final utcDateTime =
+            DateTime.utc(now.year, now.month, now.day, hour, minute);
+        final localDateTime = utcDateTime.toLocal();
+        return DateFormat.jm().format(localDateTime);
+      }
+    }
+    return raw;
+  }
 
   Map<String, dynamic> toJson() => <String, dynamic>{
         if (time.isNotEmpty) 'time': time,

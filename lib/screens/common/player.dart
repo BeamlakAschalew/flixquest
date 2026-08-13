@@ -307,7 +307,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         skipBackIcon: PhosphorIcons.rewind(),
         fullscreenEnableIcon: PhosphorIcons.cornersOut(),
         fullscreenDisableIcon: PhosphorIcons.cornersIn(),
-        overflowMenuIcon: PhosphorIcons.dotsThreeVertical(),
+        overflowMenuIcon: PhosphorIcons.list(),
         overflowMenuIconsColor: widget.colors.first,
         overflowModalTextColor: widget.colors.first,
         overflowModalColor: widget.colors.last,

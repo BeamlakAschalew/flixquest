@@ -597,7 +597,7 @@ class _ChannelListState extends State<ChannelList> {
             padding: const EdgeInsets.only(top: 12, bottom: 2),
             child: Text(
               isSchedule
-                  ? '$_visibleEventCount events'
+                  ? '$_visibleEventCount events • Times in $_localTimeZoneLabel'
                   : '${_visibleChannels.length} channels',
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -607,6 +607,17 @@ class _ChannelListState extends State<ChannelList> {
         ],
       ),
     );
+  }
+
+  String get _localTimeZoneLabel {
+    final offset = DateTime.now().timeZoneOffset;
+    final hours = offset.inHours;
+    final minutes = (offset.inMinutes % 60).abs();
+    final sign = hours >= 0 ? '+' : '-';
+    final formattedHours = hours.abs();
+    final minutesStr =
+        minutes > 0 ? ':${minutes.toString().padLeft(2, '0')}' : '';
+    return 'GMT$sign$formattedHours$minutesStr';
   }
 
   String _prettyDayLabel(String label) {
@@ -1023,19 +1034,19 @@ class _ScheduleEventTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Container(
-                width: 52,
-                padding: const EdgeInsets.symmetric(vertical: 6),
+                constraints: const BoxConstraints(minWidth: 64),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
                 decoration: BoxDecoration(
                   color: colors.primary.withValues(alpha: .1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
-                  event.time,
+                  event.displayTime,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: colors.primary,
                     fontFamily: 'FigtreeSB',
-                    fontSize: 13,
+                    fontSize: 12,
                   ),
                 ),
               ),

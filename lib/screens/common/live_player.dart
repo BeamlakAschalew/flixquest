@@ -117,8 +117,6 @@ class _LivePlayerState extends State<LivePlayer> {
     _currentChannelName = widget.channelName;
     _currentVideoUrl = widget.videoUrl;
     _currentVideoHeaders = Map<String, String>.of(widget.headers);
-    final seekDuration = Provider.of<SettingsProvider>(context, listen: false)
-        .defaultSeekDuration;
 
     betterPlayerBufferingConfiguration =
         const BetterPlayerBufferingConfiguration(
@@ -132,72 +130,8 @@ class _LivePlayerState extends State<LivePlayer> {
       retainBackBufferFromKeyframe: false,
     );
 
-    betterPlayerControlsConfiguration = BetterPlayerControlsConfiguration(
-      gestureConfiguration: BetterPlayerGestureConfiguration(
-        enableVolumeSwipe: !widget.useTvControls,
-        enableBrightnessSwipe: !widget.useTvControls,
-        enableSeekSwipe: !widget.useTvControls,
-      ),
-      name: widget.channelName,
-      enableFullscreen: true,
-      enableSubtitles: true,
-      showSubtitlesButton: !widget.useTvControls,
-      showQualitiesButton: !widget.useTvControls,
-      enableCrop: true,
-      cropIcon: PhosphorIcons.crop(),
-      enablePip: !widget.useTvControls,
-      enableCast: !widget.useTvControls && widget.enableCast,
-      backgroundColor: Colors.black,
-      controlBarColor: Colors.black.withValues(alpha: 0.3),
-      progressBarBackgroundColor: Colors.white,
-      muteIcon: PhosphorIcons.speakerSimpleSlash(),
-      unMuteIcon: PhosphorIcons.speakerHigh(),
-      pauseIcon: PhosphorIcons.pause(),
-      pipMenuIcon: PhosphorIcons.appWindow(),
-      playIcon: PhosphorIcons.play(),
-      showControlsOnInitialize: widget.useTvControls,
-      controlsHideTime: widget.useTvControls
-          ? const Duration(seconds: 5)
-          : const Duration(milliseconds: 300),
-      playerTheme: widget.useTvControls ? BetterPlayerTheme.custom : null,
-      customControlsBuilder: widget.useTvControls
-          ? (controller, onVisibilityChanged) => BetterPlayerTvControls(
-                controller: controller,
-                controlsController: _tvControlsController,
-                onControlsVisibilityChanged: onVisibilityChanged,
-                accentColor: widget.colors.first,
-                onExit: () => Navigator.of(context).maybePop(),
-              )
-          : null,
-      loadingColor: widget.colors.first,
-      iconsColor: widget.colors.first,
-      backwardSkipTimeInMilliseconds:
-          Duration(seconds: seekDuration).inMilliseconds,
-      forwardSkipTimeInMilliseconds:
-          Duration(seconds: seekDuration).inMilliseconds,
-      progressBarPlayedColor: widget.colors.first,
-      progressBarBufferedColor: Colors.black45,
-      skipForwardIcon: PhosphorIcons.fastForward(),
-      skipBackIcon: PhosphorIcons.rewind(),
-      fullscreenEnableIcon: PhosphorIcons.cornersOut(),
-      fullscreenDisableIcon: PhosphorIcons.cornersIn(),
-      overflowMenuIcon: PhosphorIcons.list(),
-      subtitlesIcon: PhosphorIcons.closedCaptioning(),
-      qualitiesIcon: PhosphorIcons.highDefinition(),
-      overflowMenuIconsColor: widget.colors.first,
-      overflowModalTextColor: widget.colors.first,
-      overflowModalColor: widget.colors.last,
-      enableAudioTracks: false,
-      overflowMenuCustomItems: canSwitchChannels
-          ? <BetterPlayerOverflowMenuItem>[
-              BetterPlayerOverflowMenuItem(
-                PhosphorIcons.televisionSimple(),
-                'Channels',
-                _showChannelSwitcher,
-              ),
-            ]
-          : const <BetterPlayerOverflowMenuItem>[],
-    );
+    betterPlayerControlsConfiguration =
+        _buildControlsConfiguration(_currentChannelName);
 
     BetterPlayerConfiguration betterPlayerConfiguration =
         BetterPlayerConfiguration(
@@ -284,6 +218,80 @@ class _LivePlayerState extends State<LivePlayer> {
           maxCacheFileSize: 20 * 1024 * 1024,
         ),
       );
+
+  BetterPlayerControlsConfiguration _buildControlsConfiguration(
+    String channelName,
+  ) {
+    final seekDuration = Provider.of<SettingsProvider>(context, listen: false)
+        .defaultSeekDuration;
+
+    return BetterPlayerControlsConfiguration(
+      gestureConfiguration: BetterPlayerGestureConfiguration(
+        enableVolumeSwipe: !widget.useTvControls,
+        enableBrightnessSwipe: !widget.useTvControls,
+        enableSeekSwipe: !widget.useTvControls,
+      ),
+      name: channelName,
+      enableFullscreen: true,
+      enableSubtitles: true,
+      showSubtitlesButton: !widget.useTvControls,
+      showQualitiesButton: !widget.useTvControls,
+      enableCrop: true,
+      cropIcon: PhosphorIcons.crop(),
+      enablePip: !widget.useTvControls,
+      enableCast: !widget.useTvControls && widget.enableCast,
+      backgroundColor: Colors.black,
+      controlBarColor: Colors.black.withValues(alpha: 0.3),
+      progressBarBackgroundColor: Colors.white,
+      muteIcon: PhosphorIcons.speakerSimpleSlash(),
+      unMuteIcon: PhosphorIcons.speakerHigh(),
+      pauseIcon: PhosphorIcons.pause(),
+      pipMenuIcon: PhosphorIcons.appWindow(),
+      playIcon: PhosphorIcons.play(),
+      showControlsOnInitialize: widget.useTvControls,
+      controlsHideTime: widget.useTvControls
+          ? const Duration(seconds: 5)
+          : const Duration(milliseconds: 300),
+      playerTheme: widget.useTvControls ? BetterPlayerTheme.custom : null,
+      customControlsBuilder: widget.useTvControls
+          ? (controller, onVisibilityChanged) => BetterPlayerTvControls(
+                controller: controller,
+                controlsController: _tvControlsController,
+                onControlsVisibilityChanged: onVisibilityChanged,
+                accentColor: widget.colors.first,
+                onExit: () => Navigator.of(context).maybePop(),
+              )
+          : null,
+      loadingColor: widget.colors.first,
+      iconsColor: widget.colors.first,
+      backwardSkipTimeInMilliseconds:
+          Duration(seconds: seekDuration).inMilliseconds,
+      forwardSkipTimeInMilliseconds:
+          Duration(seconds: seekDuration).inMilliseconds,
+      progressBarPlayedColor: widget.colors.first,
+      progressBarBufferedColor: Colors.black45,
+      skipForwardIcon: PhosphorIcons.fastForward(),
+      skipBackIcon: PhosphorIcons.rewind(),
+      fullscreenEnableIcon: PhosphorIcons.cornersOut(),
+      fullscreenDisableIcon: PhosphorIcons.cornersIn(),
+      overflowMenuIcon: PhosphorIcons.list(),
+      subtitlesIcon: PhosphorIcons.closedCaptioning(),
+      qualitiesIcon: PhosphorIcons.highDefinition(),
+      overflowMenuIconsColor: widget.colors.first,
+      overflowModalTextColor: widget.colors.first,
+      overflowModalColor: widget.colors.last,
+      enableAudioTracks: false,
+      overflowMenuCustomItems: canSwitchChannels
+          ? <BetterPlayerOverflowMenuItem>[
+              BetterPlayerOverflowMenuItem(
+                PhosphorIcons.televisionSimple(),
+                'Channels',
+                _showChannelSwitcher,
+              ),
+            ]
+          : const <BetterPlayerOverflowMenuItem>[],
+    );
+  }
 
   bool get canSwitchChannels =>
       widget.service != null &&
@@ -605,7 +613,16 @@ class _LivePlayerState extends State<LivePlayer> {
         retrying: true,
       );
     }
-    setState(() => _isSwitching = true);
+    setState(() {
+      _isSwitching = true;
+      _currentChannelId = channel.id;
+      _currentChannelName = channel.name;
+      betterPlayerControlsConfiguration =
+          _buildControlsConfiguration(channel.name);
+      _betterPlayerController.setBetterPlayerControlsConfiguration(
+        betterPlayerControlsConfiguration,
+      );
+    });
     _showBanner('Switching to ${channel.name}…');
     final stopwatch = Stopwatch()..start();
     widget.analytics.trackLiveTVInteraction(
@@ -623,8 +640,6 @@ class _LivePlayerState extends State<LivePlayer> {
       _currentVideoUrl = stream.url;
       _currentVideoHeaders = Map<String, String>.of(stream.headers);
       setState(() {
-        _currentChannelId = channel.id;
-        _currentChannelName = channel.name;
         _isSwitching = false;
       });
       _finishPlaybackRecovery();

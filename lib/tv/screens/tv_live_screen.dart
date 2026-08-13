@@ -776,14 +776,14 @@ class _TvScheduleEventTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Container(
-              width: 64,
-              padding: const EdgeInsets.symmetric(vertical: 8),
+              constraints: const BoxConstraints(minWidth: 76),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               decoration: BoxDecoration(
                 color: colors.primary.withValues(alpha: 0.14),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                event.time,
+                event.displayTime,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: colors.primary,

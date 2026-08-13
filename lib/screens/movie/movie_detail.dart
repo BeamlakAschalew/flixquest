@@ -948,10 +948,15 @@ class _SummaryAction extends StatelessWidget {
     return IconButton(
       tooltip: tooltip,
       onPressed: onPressed,
+      constraints: const BoxConstraints(),
+      padding: const EdgeInsets.all(8),
       style: IconButton.styleFrom(
         backgroundColor:
             Theme.of(context).colorScheme.onSurface.withValues(alpha: .06),
         foregroundColor: Theme.of(context).colorScheme.primary,
+        minimumSize: Size.zero,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        visualDensity: VisualDensity.compact,
       ),
       icon: child,
     );

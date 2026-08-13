@@ -536,6 +536,13 @@ class _TVSummary extends StatelessWidget {
                         onPressed: isBookmarked == null || bookmarkBusy
                             ? null
                             : onBookmark,
+                        constraints: const BoxConstraints(),
+                        padding: const EdgeInsets.all(8),
+                        style: IconButton.styleFrom(
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          visualDensity: VisualDensity.compact,
+                        ),
                         icon: bookmarkBusy || isBookmarked == null
                             ? const SizedBox.square(
                                 dimension: 18,
@@ -553,6 +560,13 @@ class _TVSummary extends StatelessWidget {
                       IconButton.filledTonal(
                         tooltip: tr('shared_the_app'),
                         onPressed: onShare,
+                        constraints: const BoxConstraints(),
+                        padding: const EdgeInsets.all(8),
+                        style: IconButton.styleFrom(
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          visualDensity: VisualDensity.compact,
+                        ),
                         icon: Icon(PhosphorIcons.shareNetwork()),
                       ),
                     ],
