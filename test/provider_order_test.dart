@@ -19,7 +19,7 @@ void main() {
       );
     });
 
-    test('ignores removed providers and appends new providers', () {
+    test('ignores removed providers and inserts new ones at API indexes', () {
       final ordered = VideoProviderOrder.apply(
         [alpha, gamma, VideoProvider.directVixSrc],
         ['scraper:removed', 'direct:vixsrc', 'scraper:alpha'],
@@ -27,7 +27,42 @@ void main() {
 
       expect(
         ordered.map((provider) => provider.codeName),
-        ['direct:vixsrc', 'scraper:alpha', 'scraper:gamma'],
+        ['direct:vixsrc', 'scraper:gamma', 'scraper:alpha'],
+      );
+    });
+
+    test('keeps custom relative order around a newly added provider', () {
+      final ordered = VideoProviderOrder.apply(
+        [alpha, gamma, beta, VideoProvider.directVixSrc],
+        ['direct:vixsrc', 'scraper:beta', 'scraper:alpha'],
+      );
+
+      expect(
+        ordered.map((provider) => provider.codeName),
+        [
+          'direct:vixsrc',
+          'scraper:gamma',
+          'scraper:beta',
+          'scraper:alpha',
+        ],
+      );
+    });
+
+    test('inserts multiple new providers in API order', () {
+      final delta = VideoProvider.scraper(id: 'delta', name: 'Delta');
+      final ordered = VideoProviderOrder.apply(
+        [gamma, alpha, delta, beta],
+        ['scraper:beta', 'scraper:alpha'],
+      );
+
+      expect(
+        ordered.map((provider) => provider.codeName),
+        [
+          'scraper:gamma',
+          'scraper:beta',
+          'scraper:delta',
+          'scraper:alpha',
+        ],
       );
     });
 

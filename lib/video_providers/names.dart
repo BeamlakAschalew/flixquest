@@ -61,17 +61,24 @@ class VideoProvider {
 /// Applies a persisted provider preference to the providers currently
 /// advertised by the backend.
 ///
-/// Missing providers are ignored and newly advertised providers are appended
-/// in backend order. Provider codes, rather than display names or list indexes,
-/// keep the preference stable when names change or the catalog is updated.
+/// Missing providers are ignored. Newly advertised providers are inserted at
+/// their indexes in the current backend catalog, while providers already in
+/// the preference retain their custom relative order. Provider codes, rather
+/// than display names, keep the preference stable when names change.
 abstract final class VideoProviderOrder {
   static List<VideoProvider> apply(
     Iterable<VideoProvider> availableProviders,
     Iterable<String> preferredCodes,
   ) {
+    // Materialize a de-duplicated catalog first so a malformed duplicate API
+    // entry cannot shift the insertion index of providers that follow it.
+    final catalog = <VideoProvider>[];
     final remaining = <String, VideoProvider>{};
     for (final provider in availableProviders) {
-      remaining.putIfAbsent(provider.codeName, () => provider);
+      if (!remaining.containsKey(provider.codeName)) {
+        catalog.add(provider);
+        remaining[provider.codeName] = provider;
+      }
     }
 
     final ordered = <VideoProvider>[];
@@ -79,7 +86,19 @@ abstract final class VideoProviderOrder {
       final provider = remaining.remove(code);
       if (provider != null) ordered.add(provider);
     }
-    ordered.addAll(remaining.values);
+
+    // Anything left was not known when the preference was saved. Place each
+    // such provider at its API index instead of demoting it behind the user's
+    // entire custom order. Increasing catalog indexes also preserve API order
+    // when several providers are introduced at once.
+    for (var catalogIndex = 0; catalogIndex < catalog.length; catalogIndex++) {
+      final provider = catalog[catalogIndex];
+      if (remaining.remove(provider.codeName) == null) continue;
+
+      final insertionIndex =
+          catalogIndex < ordered.length ? catalogIndex : ordered.length;
+      ordered.insert(insertionIndex, provider);
+    }
     return ordered;
   }
 
