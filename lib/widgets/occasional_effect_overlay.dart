@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
 import '../models/occasional_theme.dart';
 
@@ -11,11 +12,20 @@ class OccasionalEffectOverlay extends StatefulWidget {
   const OccasionalEffectOverlay({
     required this.theme,
     required this.enabled,
+    this.visibilityListenable,
+    this.visibilityResolver,
     super.key,
   });
 
   final OccasionalTheme? theme;
   final bool enabled;
+
+  /// Optional live visibility source used by app-level overlays. This lets the
+  /// painter react immediately when a route suppresses effects, even if the
+  /// Navigator is currently building that route and the parent's rebuild is
+  /// deferred until the next frame.
+  final Listenable? visibilityListenable;
+  final bool Function()? visibilityResolver;
 
   @visibleForTesting
   static const int adeyFlowerPetalCount = 7;
@@ -30,6 +40,7 @@ class _OccasionalEffectOverlayState extends State<OccasionalEffectOverlay>
   late final AnimationController _controller;
   late final ContinuousEffectClock _clock;
   bool _appActive = true;
+  bool _visibilityRebuildScheduled = false;
 
   @override
   void initState() {
@@ -40,6 +51,7 @@ class _OccasionalEffectOverlayState extends State<OccasionalEffectOverlay>
       duration: const Duration(seconds: 12),
     );
     _clock = ContinuousEffectClock(_controller);
+    widget.visibilityListenable?.addListener(_handleVisibilityChanged);
   }
 
   @override
@@ -51,7 +63,28 @@ class _OccasionalEffectOverlayState extends State<OccasionalEffectOverlay>
   @override
   void didUpdateWidget(OccasionalEffectOverlay oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.visibilityListenable != widget.visibilityListenable) {
+      oldWidget.visibilityListenable?.removeListener(_handleVisibilityChanged);
+      widget.visibilityListenable?.addListener(_handleVisibilityChanged);
+    }
     _syncAnimation();
+  }
+
+  void _handleVisibilityChanged() {
+    _syncAnimation();
+    if (!mounted) return;
+    final phase = SchedulerBinding.instance.schedulerPhase;
+    if (phase == SchedulerPhase.idle ||
+        phase == SchedulerPhase.postFrameCallbacks) {
+      setState(() {});
+      return;
+    }
+    if (_visibilityRebuildScheduled) return;
+    _visibilityRebuildScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _visibilityRebuildScheduled = false;
+      if (mounted) setState(() {});
+    });
   }
 
   @override
@@ -66,7 +99,7 @@ class _OccasionalEffectOverlayState extends State<OccasionalEffectOverlay>
     final reduceMotion =
         media?.disableAnimations == true || media?.accessibleNavigation == true;
     final effect = widget.theme?.effect;
-    final shouldRun = widget.enabled &&
+    final shouldRun = _effectsVisible &&
         _appActive &&
         !reduceMotion &&
         effect?.enabled == true &&
@@ -81,7 +114,7 @@ class _OccasionalEffectOverlayState extends State<OccasionalEffectOverlay>
   @override
   Widget build(BuildContext context) {
     final theme = widget.theme;
-    if (!widget.enabled || theme == null || !theme.effect.enabled) {
+    if (!_effectsVisible || theme == null || !theme.effect.enabled) {
       return const SizedBox.shrink();
     }
     final media = MediaQuery.of(context);
@@ -95,6 +128,8 @@ class _OccasionalEffectOverlayState extends State<OccasionalEffectOverlay>
             key: const Key('occasional-effect-canvas'),
             painter: _OccasionalEffectPainter(
               clock: _clock,
+              visibilityListenable: widget.visibilityListenable,
+              visibilityResolver: widget.visibilityResolver,
               effect: theme.effect,
               primary: theme.primaryColor,
               secondary: theme.secondaryColor,
@@ -107,8 +142,12 @@ class _OccasionalEffectOverlayState extends State<OccasionalEffectOverlay>
     );
   }
 
+  bool get _effectsVisible =>
+      widget.enabled && (widget.visibilityResolver?.call() ?? true);
+
   @override
   void dispose() {
+    widget.visibilityListenable?.removeListener(_handleVisibilityChanged);
     WidgetsBinding.instance.removeObserver(this);
     _clock.dispose();
     _controller.dispose();
@@ -152,14 +191,21 @@ class ContinuousEffectClock extends ChangeNotifier {
 class _OccasionalEffectPainter extends CustomPainter {
   _OccasionalEffectPainter({
     required ContinuousEffectClock clock,
+    required Listenable? visibilityListenable,
+    required this.visibilityResolver,
     required this.effect,
     required this.primary,
     required this.secondary,
     required this.tertiary,
   })  : _clock = clock,
-        super(repaint: clock);
+        super(
+          repaint: visibilityListenable == null
+              ? clock
+              : Listenable.merge(<Listenable>[clock, visibilityListenable]),
+        );
 
   final ContinuousEffectClock _clock;
+  final bool Function()? visibilityResolver;
   final OccasionalEffect effect;
   final Color primary;
   final Color secondary;
@@ -227,7 +273,7 @@ class _OccasionalEffectPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (size.isEmpty) return;
+    if (size.isEmpty || visibilityResolver?.call() == false) return;
     switch (effect.type) {
       case OccasionalEffectType.snow:
         _paintSnow(canvas, size);

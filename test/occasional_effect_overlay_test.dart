@@ -56,6 +56,34 @@ void main() {
     expect(find.byKey(const Key('occasional-effect-canvas')), findsNothing);
   });
 
+  testWidgets('live visibility suppression clears the effect canvas',
+      (tester) async {
+    final visibility = ValueNotifier<bool>(true);
+    addTearDown(visibility.dispose);
+
+    await tester.pumpWidget(
+      MediaQuery(
+        data: const MediaQueryData(size: Size(800, 600)),
+        child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: SizedBox.expand(
+            child: OccasionalEffectOverlay(
+              theme: theme,
+              enabled: true,
+              visibilityListenable: visibility,
+              visibilityResolver: () => visibility.value,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byKey(const Key('occasional-effect-canvas')), findsOneWidget);
+    visibility.value = false;
+    await tester.pump();
+    expect(find.byKey(const Key('occasional-effect-canvas')), findsNothing);
+  });
+
   testWidgets('renders leaves with Easter treats and Ethiopian Adey flowers',
       (tester) async {
     for (final id in <String>['easter', 'ethiopian_new_year']) {

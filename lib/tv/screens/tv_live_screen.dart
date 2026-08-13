@@ -257,7 +257,8 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
                 theme.colorScheme.primary,
                 Colors.black,
               ],
-              channels: _visible,
+              // Keep in-player switching independent from browse filters.
+              channels: _channels,
               initialChannelId: channel.id,
               service: _api(),
               analytics: _analytics,

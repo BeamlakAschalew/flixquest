@@ -262,7 +262,8 @@ class _ChannelListState extends State<ChannelList> {
               Theme.of(context).colorScheme.primary,
               Theme.of(context).colorScheme.surface,
             ],
-            channels: _visibleChannels,
+            // Keep in-player switching independent from browse filters.
+            channels: _channels,
             initialChannelId: channel.id,
             service: _api(),
             analytics: _analytics,

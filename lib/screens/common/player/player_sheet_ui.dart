@@ -11,6 +11,7 @@ class PlayerSheetScaffold extends StatelessWidget {
     this.subtitle,
     this.actions = const [],
     this.footer,
+    this.showDragHandle = false,
     this.onHeaderVerticalDragUpdate,
     this.onHeaderVerticalDragEnd,
     super.key,
@@ -22,6 +23,7 @@ class PlayerSheetScaffold extends StatelessWidget {
   final List<Widget> actions;
   final Widget child;
   final Widget? footer;
+  final bool showDragHandle;
   final GestureDragUpdateCallback? onHeaderVerticalDragUpdate;
   final GestureDragEndCallback? onHeaderVerticalDragEnd;
 
@@ -37,48 +39,73 @@ class PlayerSheetScaffold extends StatelessWidget {
             behavior: HitTestBehavior.opaque,
             onVerticalDragUpdate: onHeaderVerticalDragUpdate,
             onVerticalDragEnd: onHeaderVerticalDragEnd,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 4, 12, 16),
-              child: Row(
-                children: [
-                  Container(
-                    width: 42,
-                    height: 42,
-                    decoration: BoxDecoration(
-                      color: colors.primary.withValues(alpha: .12),
-                      shape: BoxShape.circle,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (showDragHandle)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8, bottom: 10),
+                    child: Container(
+                      key: const Key('player_sheet_drag_handle'),
+                      width: 38,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: colors.onSurfaceVariant.withValues(alpha: .45),
+                        borderRadius: BorderRadius.circular(99),
+                      ),
                     ),
-                    child: Icon(icon, color: colors.primary),
                   ),
-                  const SizedBox(width: 13),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          title,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.titleLarge,
+                Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    20,
+                    showDragHandle ? 0 : 4,
+                    12,
+                    16,
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 42,
+                        height: 42,
+                        decoration: BoxDecoration(
+                          color: colors.primary.withValues(alpha: .12),
+                          shape: BoxShape.circle,
                         ),
-                        if (subtitle != null) ...[
-                          const SizedBox(height: 2),
-                          Text(
-                            subtitle!,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style:
-                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                        child: Icon(icon, color: colors.primary),
+                      ),
+                      const SizedBox(width: 13),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                            if (subtitle != null) ...[
+                              const SizedBox(height: 2),
+                              Text(
+                                subtitle!,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.copyWith(
                                       color: colors.onSurfaceVariant,
                                     ),
-                          ),
-                        ],
-                      ],
-                    ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      ...actions,
+                    ],
                   ),
-                  ...actions,
-                ],
-              ),
+                ),
+              ],
             ),
           ),
           Expanded(child: child),

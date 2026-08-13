@@ -28,6 +28,7 @@ import '../../services/stream_intro_service.dart';
 import '../movie/movie_video_loader.dart';
 import '../tv/tv_video_loader.dart';
 import 'player/player_data_management.dart';
+import 'player/player_completion_detector.dart';
 import 'player/player_external_subtitles.dart';
 import 'player/player_local_subtitles.dart';
 import 'player/player_episode_selection.dart';
@@ -121,6 +122,9 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   bool _showNextEpisodeButton = false;
   bool _nextEpisodeButtonDismissed = false;
   bool _preRollActive = false;
+  bool _playbackCompletionHandled = false;
+  final PlayerCompletionDetector _completionDetector =
+      PlayerCompletionDetector();
   Timer? _progressCheckTimer;
   OverlayEntry? _nextEpisodeOverlay;
   Timer? _tvNextEpisodeTimer;
@@ -421,11 +425,9 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     // transition events cannot race the first platform callback.
     unawaited(_setupInitialDataSource(dataSource));
 
-    // Preserve the original TV-only next-episode progress check. Movies and
-    // completion handling continue to use Better Player's native events.
-    if (widget.mediaType == MediaType.tvShow) {
-      _startProgressCheck();
-    }
+    // Monitor every stream because some platform/provider combinations reach
+    // the final timestamp without delivering Better Player's finished event.
+    _startPlaybackMonitor();
 
     // _betterPlayerController.addEventsListener((BetterPlayerEvent event) {
     //   if (event.betterPlayerEventType == BetterPlayerEventType.play ||
@@ -529,6 +531,8 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         break;
       case BetterPlayerEventType.preRollEnded:
         _preRollActive = false;
+        _completionDetector.reset();
+        _playbackCompletionHandled = false;
         duration = _betterPlayerController
                 .videoPlayerController?.value.duration?.inSeconds ??
             duration;
@@ -577,9 +581,11 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         }
         break;
       case BetterPlayerEventType.finished:
-        _stopAnalyticsWatchClock();
-        _trackPlaybackEvent('finished');
-        _handleVideoFinished();
+        _handlePlaybackCompleted(source: 'native');
+        break;
+      case BetterPlayerEventType.setupDataSource:
+        _completionDetector.reset();
+        _playbackCompletionHandled = false;
         break;
       case BetterPlayerEventType.changedResolution:
         final name = event.parameters?['name']?.toString();
@@ -636,7 +642,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     );
   }
 
-  void _startProgressCheck() {
+  void _startPlaybackMonitor() {
     _progressCheckTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_betterPlayerController.isVideoInitialized() == true &&
           _betterPlayerController.videoPlayerController != null) {
@@ -646,13 +652,23 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
             _betterPlayerController.videoPlayerController!.value.duration;
         final isFullScreen = _betterPlayerController.isFullScreen;
 
-        if (duration != null && duration.inSeconds > 0) {
-          final progress = position.inSeconds / duration.inSeconds;
-
-          // Native Android/iOS players emit preRollEnded only after advancing
-          // to the main content item. When no pre-roll is configured this flag
-          // is false, leaving the original TV progress behavior untouched.
+        if (duration != null && duration.inMilliseconds > 0) {
           if (_preRollActive) return;
+
+          final value = _betterPlayerController.videoPlayerController!.value;
+          final completed = _completionDetector.observe(
+            position: position,
+            duration: duration,
+            isPlaying: value.isPlaying,
+            isBuffering: value.isBuffering,
+          );
+          if (completed) {
+            _handlePlaybackCompleted(source: 'position_fallback');
+            return;
+          }
+
+          if (widget.mediaType != MediaType.tvShow) return;
+          final progress = position.inMilliseconds / duration.inMilliseconds;
 
           // Surface the next episode near the end. TV playback already owns the
           // full screen route, so Better Player's internal fullscreen flag is
@@ -1090,8 +1106,12 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   void dispose() {
     final suppressionId = _occasionalEffectsSuppressionId;
     if (suppressionId != null) {
-      _appDependencies.releaseOccasionalEffectsSuppression(suppressionId);
       _occasionalEffectsSuppressionId = null;
+      // Keep effects suppressed through the outgoing route frame. This also
+      // overlaps safely with a replacement player's newly acquired scope.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _appDependencies.releaseOccasionalEffectsSuppression(suppressionId);
+      });
     }
     // _resetTimer?.cancel();
     _progressCheckTimer?.cancel();
@@ -1198,6 +1218,19 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         debugPrint('No recommendations available for this movie');
       }
     }
+  }
+
+  void _handlePlaybackCompleted({required String source}) {
+    if (!mounted || _preRollActive || _playbackCompletionHandled) return;
+    _playbackCompletionHandled = true;
+    _stopAnalyticsWatchClock();
+    _trackPlaybackEvent('finished', value: source);
+
+    // Remove the near-end teaser before presenting the definitive completion
+    // action. Native and fallback completion can arrive close together.
+    _showNextEpisodeButton = false;
+    _hideNextEpisodeOverlay();
+    _handleVideoFinished();
   }
 
   void _openTvMenu(String title, List<BetterPlayerTvMenuItem> items) {
@@ -2116,21 +2149,60 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   }
 
   void _showSubtitleTimingAdjuster() {
+    const initialSize = .52;
+    const minSize = .42;
+    const maxSize = .72;
+    final dragController = DraggableScrollableController();
+
+    void updateFromHeader(DragUpdateDetails details) {
+      if (!dragController.isAttached) return;
+      final viewportHeight = MediaQuery.sizeOf(context).height;
+      final nextSize = (dragController.size - details.delta.dy / viewportHeight)
+          .clamp(minSize, maxSize);
+      dragController.jumpTo(nextSize);
+    }
+
+    void settleFromHeader(DragEndDetails details) {
+      if (!dragController.isAttached) return;
+      final velocity = details.primaryVelocity ?? 0;
+      final current = dragController.size;
+      final target = velocity < -250
+          ? maxSize
+          : velocity > 250
+              ? minSize
+              : (current < (initialSize + minSize) / 2)
+                  ? minSize
+                  : (current > (initialSize + maxSize) / 2)
+                      ? maxSize
+                      : initialSize;
+      unawaited(
+        dragController.animateTo(
+          target,
+          duration: const Duration(milliseconds: 220),
+          curve: Curves.easeOutCubic,
+        ),
+      );
+    }
+
     showModalBottomSheet<void>(
       context: context,
       useSafeArea: true,
       backgroundColor: Theme.of(context).colorScheme.surface,
       isScrollControlled: true,
       builder: (sheetContext) => DraggableScrollableSheet(
-        initialChildSize: .52,
-        minChildSize: .42,
-        maxChildSize: .72,
+        controller: dragController,
+        initialChildSize: initialSize,
+        minChildSize: minSize,
+        maxChildSize: maxSize,
         expand: false,
         snap: true,
         builder: (context, scrollController) => PlayerSheetScaffold(
           icon: PhosphorIcons.timer(),
           title: tr('subtitle_timing'),
           subtitle: tr('subtitle_timing_help'),
+          showDragHandle: true,
+          onHeaderVerticalDragUpdate: updateFromHeader,
+          onHeaderVerticalDragEnd: settleFromHeader,
           actions: [
             IconButton(
               tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
@@ -2147,7 +2219,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           ),
         ),
       ),
-    );
+    ).whenComplete(dragController.dispose);
   }
 
   String _sanitizeError(dynamic error) {
@@ -2799,10 +2871,10 @@ class _SubtitleTimingControlState extends State<_SubtitleTimingControl> {
           const SizedBox(height: 10),
           Container(
             decoration: BoxDecoration(
-              color: colors.surfaceContainerHigh,
+              color: colors.primary.withValues(alpha: .13),
               borderRadius: BorderRadius.circular(99),
               border: Border.all(
-                color: colors.outlineVariant.withValues(alpha: .45),
+                color: colors.primary.withValues(alpha: .28),
               ),
             ),
             child: Row(
@@ -2822,6 +2894,8 @@ class _SubtitleTimingControlState extends State<_SubtitleTimingControl> {
                     ),
                     padding: EdgeInsets.zero,
                     visualDensity: VisualDensity.compact,
+                    color: colors.primary,
+                    disabledColor: colors.onSurface.withValues(alpha: .28),
                   ),
                 ),
                 SizedBox(
@@ -2835,6 +2909,9 @@ class _SubtitleTimingControlState extends State<_SubtitleTimingControl> {
                   key: const Key('subtitle_timing_reset'),
                   onPressed: isSynced ? null : () => _setOffset(Duration.zero),
                   style: TextButton.styleFrom(
+                    foregroundColor: colors.primary,
+                    disabledForegroundColor:
+                        colors.onSurface.withValues(alpha: .32),
                     minimumSize: const Size(86, 38),
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     visualDensity: VisualDensity.compact,
@@ -2862,6 +2939,8 @@ class _SubtitleTimingControlState extends State<_SubtitleTimingControl> {
                     ),
                     padding: EdgeInsets.zero,
                     visualDensity: VisualDensity.compact,
+                    color: colors.primary,
+                    disabledColor: colors.onSurface.withValues(alpha: .28),
                   ),
                 ),
               ],

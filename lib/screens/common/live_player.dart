@@ -58,6 +58,13 @@ class LivePlayer extends StatefulWidget {
 }
 
 class _LivePlayerState extends State<LivePlayer> {
+  static const Duration _recoveryWindow = Duration(seconds: 60);
+  static const List<Duration> _automaticRecoveryDelays = <Duration>[
+    Duration(seconds: 8),
+    Duration(seconds: 12),
+    Duration(seconds: 15),
+  ];
+
   late BetterPlayerController _betterPlayerController;
   final BetterPlayerTvControlsController _tvControlsController =
       BetterPlayerTvControlsController();
@@ -72,6 +79,8 @@ class _LivePlayerState extends State<LivePlayer> {
   bool _isSwitching = false;
   String? _bannerText;
   Timer? _bannerTimer;
+  Timer? _recoveryDeadlineTimer;
+  Timer? _recoveryAttemptTimer;
   late final DateTime _sessionStartedAt;
   late final String _sessionId;
   DateTime? _playingStartedAt;
@@ -82,6 +91,10 @@ class _LivePlayerState extends State<LivePlayer> {
   int _channelSwitchCount = 0;
   bool _hasInitialized = false;
   bool _wasPlayingBeforeBuffering = false;
+  bool _automaticRecoveryRunning = false;
+  int _automaticRecoveryAttempt = 0;
+  DateTime? _recoveryStartedAt;
+  Object? _lastPlaybackError;
   late String _currentVideoUrl;
   late Map<String, String> _currentVideoHeaders;
   final ValueNotifier<_LivePlaybackFailure?> _playbackFailure =
@@ -109,11 +122,14 @@ class _LivePlayerState extends State<LivePlayer> {
 
     betterPlayerBufferingConfiguration =
         const BetterPlayerBufferingConfiguration(
-      // Keep memory usage predictable on low-memory Android TV hardware.
-      maxBufferMs: 120000,
-      minBufferMs: 15000,
-      bufferForPlaybackMs: 2500,
-      bufferForPlaybackAfterRebufferMs: 5000,
+      // Favor a deeper forward buffer so slow and fluctuating links can
+      // absorb sustained throughput drops. Bound history for Android TV RAM.
+      maxBufferMs: 180000,
+      minBufferMs: 30000,
+      bufferForPlaybackMs: 6000,
+      bufferForPlaybackAfterRebufferMs: 12000,
+      backBufferDurationMs: 30000,
+      retainBackBufferFromKeyframe: false,
     );
 
     betterPlayerControlsConfiguration = BetterPlayerControlsConfiguration(
@@ -131,7 +147,7 @@ class _LivePlayerState extends State<LivePlayer> {
       cropIcon: PhosphorIcons.crop(),
       enablePip: !widget.useTvControls,
       enableCast: !widget.useTvControls && widget.enableCast,
-      backgroundColor: widget.colors.elementAt(1).withValues(alpha: 0.6),
+      backgroundColor: Colors.black,
       controlBarColor: Colors.black.withValues(alpha: 0.3),
       progressBarBackgroundColor: Colors.white,
       muteIcon: PhosphorIcons.speakerSimpleSlash(),
@@ -194,6 +210,7 @@ class _LivePlayerState extends State<LivePlayer> {
       autoDispose: true,
       controlsConfiguration: betterPlayerControlsConfiguration,
       errorBuilder: (_, __) => const SizedBox.expand(),
+      overlayOnTop: true,
       overlay: ValueListenableBuilder<_LivePlaybackFailure?>(
         valueListenable: _playbackFailure,
         builder: (context, failure, _) {
@@ -234,7 +251,7 @@ class _LivePlayerState extends State<LivePlayer> {
       }
     } catch (error) {
       _trackPlayerEvent('setup_error', error: error.toString());
-      _setPlaybackError(error.toString());
+      _beginPlaybackRecovery(error);
     }
   }
 
@@ -310,10 +327,12 @@ class _LivePlayerState extends State<LivePlayer> {
   Future<void> _retryStream() async {
     final failure = _playbackFailure.value;
     if (failure?.retrying == true || !mounted) return;
+    _cancelPlaybackRecovery();
     _playbackFailure.value = _LivePlaybackFailure(
       message: failure?.message ?? 'This channel is temporarily unavailable.',
       retrying: true,
     );
+    _betterPlayerController.setControlsEnabled(false);
     _trackPlayerEvent('retry');
     try {
       final service = widget.service;
@@ -327,43 +346,133 @@ class _LivePlayerState extends State<LivePlayer> {
         throw StateError('The channel returned no playable stream.');
       }
 
-      await _setupStreamWithIntro(_buildDataSource(url, headers));
+      // Do not replay the branded intro during recovery.
+      await _betterPlayerController.setupDataSource(
+        _buildDataSource(url, headers),
+      );
       if (!mounted) return;
       _currentVideoUrl = url;
       _currentVideoHeaders = Map<String, String>.of(headers);
-      _playbackFailure.value = null;
+      _finishPlaybackRecovery();
       if (_betterPlayerController.isPlaying() != true) {
         await _betterPlayerController.play();
       }
       _trackPlayerEvent('retry_success');
     } catch (error) {
       _trackPlayerEvent('retry_error', error: error.toString());
-      _setPlaybackError(error.toString());
+      _beginPlaybackRecovery(error);
     }
   }
 
-  void _setPlaybackError(Object error) {
+  void _beginPlaybackRecovery(Object error) {
+    if (!mounted) return;
     _stopWatchClock();
     _wasPlayingBeforeBuffering = false;
+    _lastPlaybackError = error;
+    if (_recoveryStartedAt == null) {
+      _recoveryStartedAt = DateTime.now();
+      _automaticRecoveryAttempt = 0;
+      _recoveryDeadlineTimer = Timer(
+        _recoveryWindow,
+        _showTerminalPlaybackError,
+      );
+      _trackPlayerEvent('reconnecting', error: error.toString());
+    }
+    _playbackFailure.value = _LivePlaybackFailure(
+      message: friendlyLiveTvError(error),
+      retrying: true,
+    );
+    // Keep playback alive. Better Player retries the current HLS source on
+    // its own; the slower app-level attempts below also resolve fresh tokens.
+    _betterPlayerController.setControlsEnabled(false);
+    _scheduleAutomaticRecovery();
+  }
+
+  void _scheduleAutomaticRecovery() {
+    if (_recoveryStartedAt == null ||
+        _automaticRecoveryRunning ||
+        _recoveryAttemptTimer?.isActive == true ||
+        _automaticRecoveryAttempt >= _automaticRecoveryDelays.length) {
+      return;
+    }
+    final delay = _automaticRecoveryDelays[_automaticRecoveryAttempt];
+    _recoveryAttemptTimer = Timer(
+      delay,
+      () => unawaited(_attemptAutomaticRecovery()),
+    );
+  }
+
+  Future<void> _attemptAutomaticRecovery() async {
+    _recoveryAttemptTimer = null;
+    if (!mounted || _recoveryStartedAt == null || _automaticRecoveryRunning) {
+      return;
+    }
+    _automaticRecoveryRunning = true;
+    final attempt = ++_automaticRecoveryAttempt;
+    _trackPlayerEvent('auto_retry_$attempt');
+    try {
+      final service = widget.service;
+      final channelId = _currentChannelId;
+      if (service != null && channelId != null) {
+        final stream = await service.getStream(channelId);
+        if (!mounted || _recoveryStartedAt == null) return;
+        _currentVideoUrl = stream.url;
+        _currentVideoHeaders = Map<String, String>.of(stream.headers);
+        await _betterPlayerController.setupDataSource(
+          _buildDataSource(stream.url, stream.headers),
+        );
+      } else {
+        await _betterPlayerController.retryDataSource();
+      }
+      if (!mounted || _recoveryStartedAt == null) return;
+      if (_betterPlayerController.isPlaying() != true) {
+        await _betterPlayerController.play();
+      }
+    } catch (error) {
+      _lastPlaybackError = error;
+      _trackPlayerEvent('auto_retry_error', error: error.toString());
+    } finally {
+      _automaticRecoveryRunning = false;
+      if (mounted && _recoveryStartedAt != null) {
+        _scheduleAutomaticRecovery();
+      }
+    }
+  }
+
+  void _finishPlaybackRecovery() {
+    if (_recoveryStartedAt != null) {
+      _trackPlayerEvent('reconnected');
+    }
+    _cancelPlaybackRecovery();
+    _playbackFailure.value = null;
+    _betterPlayerController.setControlsEnabled(true);
+  }
+
+  void _showTerminalPlaybackError() {
+    if (!mounted || _recoveryStartedAt == null) return;
+    final error = _lastPlaybackError ??
+        'This channel did not recover after several attempts.';
+    _cancelPlaybackRecovery();
     _playbackFailure.value = _LivePlaybackFailure(
       message: friendlyLiveTvError(error),
     );
-    unawaited(_pauseAfterPlaybackError());
+    _trackPlayerEvent('reconnect_exhausted', error: error.toString());
   }
 
-  Future<void> _pauseAfterPlaybackError() async {
-    try {
-      if (_betterPlayerController.isPlaying() == true) {
-        await _betterPlayerController.pause();
-      }
-    } catch (_) {
-      // The native controller may already have been torn down after an error.
-    }
+  void _cancelPlaybackRecovery() {
+    _recoveryDeadlineTimer?.cancel();
+    _recoveryDeadlineTimer = null;
+    _recoveryAttemptTimer?.cancel();
+    _recoveryAttemptTimer = null;
+    _recoveryStartedAt = null;
+    _automaticRecoveryAttempt = 0;
+    _lastPlaybackError = null;
   }
 
   void _onPlayerEvent(BetterPlayerEvent event) {
     switch (event.betterPlayerEventType) {
       case BetterPlayerEventType.initialized:
+        if (_playbackFailure.value != null) _finishPlaybackRecovery();
         if (!_hasInitialized) {
           _hasInitialized = true;
           _trackPlayerEvent(
@@ -373,10 +482,7 @@ class _LivePlayerState extends State<LivePlayer> {
         }
         break;
       case BetterPlayerEventType.play:
-        if (_playbackFailure.value case final failure? when !failure.retrying) {
-          unawaited(_pauseAfterPlaybackError());
-          break;
-        }
+        if (_playbackFailure.value != null) _finishPlaybackRecovery();
         _startWatchClock();
         _trackPlayerEvent('play');
         break;
@@ -401,6 +507,7 @@ class _LivePlayerState extends State<LivePlayer> {
         _bufferingStartedAt = null;
         if (_wasPlayingBeforeBuffering) _startWatchClock();
         _wasPlayingBeforeBuffering = false;
+        if (_recoveryStartedAt != null) _finishPlaybackRecovery();
         _trackPlayerEvent('buffering_ended', bufferingMs: durationMs);
         break;
       case BetterPlayerEventType.exception:
@@ -408,7 +515,7 @@ class _LivePlayerState extends State<LivePlayer> {
             event.parameters?.toString() ??
             'Unknown player error';
         _trackPlayerEvent('error', error: error);
-        _setPlaybackError(error);
+        _beginPlaybackRecovery(error);
         break;
       case BetterPlayerEventType.openFullscreen:
         _trackPlayerEvent('fullscreen_opened');
@@ -490,6 +597,7 @@ class _LivePlayerState extends State<LivePlayer> {
     if (_isSwitching || service == null || channel.id == _currentChannelId) {
       return;
     }
+    _cancelPlaybackRecovery();
     final failure = _playbackFailure.value;
     if (failure != null) {
       _playbackFailure.value = _LivePlaybackFailure(
@@ -508,13 +616,9 @@ class _LivePlayerState extends State<LivePlayer> {
     try {
       final stream = await service.getStream(channel.id);
       if (!mounted) return;
-      Future<void> prepareStream() async {
-        await _setupStreamWithIntro(
-          _buildDataSource(stream.url, stream.headers),
-        );
-      }
-
-      await prepareStream();
+      await _betterPlayerController.setupDataSource(
+        _buildDataSource(stream.url, stream.headers),
+      );
       if (!mounted) return;
       _currentVideoUrl = stream.url;
       _currentVideoHeaders = Map<String, String>.of(stream.headers);
@@ -523,7 +627,7 @@ class _LivePlayerState extends State<LivePlayer> {
         _currentChannelName = channel.name;
         _isSwitching = false;
       });
-      _playbackFailure.value = null;
+      _finishPlaybackRecovery();
       _channelSwitchCount++;
       widget.analytics.trackLiveTVChannelView(
         channelName: channel.name,
@@ -551,7 +655,9 @@ class _LivePlayerState extends State<LivePlayer> {
       );
       if (!mounted) return;
       setState(() => _isSwitching = false);
-      _setPlaybackError('Unable to switch channel: ${error.toString()}');
+      _beginPlaybackRecovery(
+        'Unable to switch channel: ${error.toString()}',
+      );
     }
   }
 
@@ -567,10 +673,15 @@ class _LivePlayerState extends State<LivePlayer> {
   void dispose() {
     final suppressionId = _occasionalEffectsSuppressionId;
     if (suppressionId != null) {
-      _appDependencies.releaseOccasionalEffectsSuppression(suppressionId);
       _occasionalEffectsSuppressionId = null;
+      // Do not reveal the app-level particle canvas over the outgoing player
+      // transition. Nested scopes keep replacement players suppressed.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _appDependencies.releaseOccasionalEffectsSuppression(suppressionId);
+      });
     }
     _bannerTimer?.cancel();
+    _cancelPlaybackRecovery();
     _betterPlayerController.removeEventsListener(_onPlayerEvent);
     _playbackFailure.dispose();
     _stopWatchClock();
@@ -604,6 +715,7 @@ class _LivePlayerState extends State<LivePlayer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Center(
         child: SizedBox(
           height: MediaQuery.of(context).size.height,

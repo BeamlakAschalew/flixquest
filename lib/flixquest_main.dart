@@ -170,9 +170,8 @@ class _FlixQuestState extends State<FlixQuest>
                       appDependencyProvider, snapshot) {
                 return DynamicColorBuilder(
                   builder: (lightDynamic, darkDynamic) {
-                    final isDarkTheme =
-                        settingsProvider.appTheme == 'dark' ||
-                            settingsProvider.appTheme == 'amoled';
+                    final isDarkTheme = settingsProvider.appTheme == 'dark' ||
+                        settingsProvider.appTheme == 'amoled';
                     final palette = AppColorsList().appColors(
                       isDarkTheme,
                     );
@@ -187,14 +186,13 @@ class _FlixQuestState extends State<FlixQuest>
                       supportedLocales: context.supportedLocales,
                       locale: context.locale,
                       debugShowCheckedModeBanner: false,
-                      builder: (context, child) => AnnotatedRegion<
-                          SystemUiOverlayStyle>(
+                      builder: (context, child) =>
+                          AnnotatedRegion<SystemUiOverlayStyle>(
                         value: SystemUiOverlayStyle(
                           systemNavigationBarColor: Colors.transparent,
                           systemNavigationBarDividerColor: Colors.transparent,
-                          systemNavigationBarIconBrightness: isDarkTheme
-                              ? Brightness.light
-                              : Brightness.dark,
+                          systemNavigationBarIconBrightness:
+                              isDarkTheme ? Brightness.light : Brightness.dark,
                           systemNavigationBarContrastEnforced: false,
                         ),
                         child: Stack(
@@ -205,6 +203,9 @@ class _FlixQuestState extends State<FlixQuest>
                               theme:
                                   appDependencyProvider.activeOccasionalTheme,
                               enabled: appDependencyProvider
+                                  .shouldShowOccasionalEffects,
+                              visibilityListenable: appDependencyProvider,
+                              visibilityResolver: () => appDependencyProvider
                                   .shouldShowOccasionalEffects,
                             ),
                           ],
@@ -316,8 +317,7 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
   }
 
   void checkForcedUpdate() async {
-    final provider =
-        Provider.of<AppDependencyProvider>(context, listen: false);
+    final provider = Provider.of<AppDependencyProvider>(context, listen: false);
     if (!provider.isForcedUpdate) return;
 
     final packageInfo = await PackageInfo.fromPlatform();
@@ -346,6 +346,9 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
       _selectedDestinationId.value,
     );
     return Scaffold(
+        // Keep the page surface behind the floating navigation bar and the
+        // transparent Android gesture-navigation area.
+        extendBody: true,
         bottomNavigationBar: Align(
           heightFactor: 1,
           alignment: Alignment.bottomCenter,
