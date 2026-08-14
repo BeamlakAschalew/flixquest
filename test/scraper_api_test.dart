@@ -47,6 +47,81 @@ void main() {
       expect(providers.single.content, 'Hollywood: English | Anime: Japanese');
     });
 
+    test('maps the persisted provider health snapshot', () async {
+      late Uri requestedUri;
+      final api = ScraperApi(
+        'https://scraper.example',
+        client: MockClient((request) async {
+          requestedUri = request.url;
+          return http.Response(
+            jsonEncode({
+              'success': true,
+              'startedAt': '2026-08-14T09:00:00.000Z',
+              'updatedAt': '2026-08-14T09:00:04.000Z',
+              'intervalMs': 900000,
+              'methodology': 'Checks one known title per provider.',
+              'summary': {'total': 2, 'online': 1, 'offline': 1},
+              'providers': [
+                {
+                  'id': 'vixsrc',
+                  'alias': 'VixSrc',
+                  'status': 'online',
+                  'requestTimeMs': 1432,
+                },
+                {
+                  'id': 'vidsrc',
+                  'alias': 'VidSrc',
+                  'status': 'offline',
+                  'requestTimeMs': 30001,
+                },
+              ],
+            }),
+            200,
+          );
+        }),
+      );
+
+      final snapshot = await api.getProviderHealthStatus();
+
+      expect(requestedUri.path, '/api/v2/providers/status');
+      expect(snapshot.updatedAt, DateTime.utc(2026, 8, 14, 9, 0, 4));
+      expect(snapshot.interval, const Duration(minutes: 15));
+      expect(snapshot.total, 2);
+      expect(snapshot.online, 1);
+      expect(snapshot.offline, 1);
+      expect(snapshot.availability, .5);
+      expect(snapshot.providers.first.displayName, 'VixSrc');
+      expect(snapshot.providers.first.online, isTrue);
+      expect(
+        snapshot.providers.first.requestTime,
+        const Duration(milliseconds: 1432),
+      );
+      expect(snapshot.providers.last.online, isFalse);
+    });
+
+    test('surfaces an unavailable health snapshot response', () async {
+      final api = ScraperApi(
+        'https://scraper.example/api/v2',
+        client: MockClient(
+          (_) async => http.Response(
+            jsonEncode({'error': 'No provider health snapshot available'}),
+            503,
+          ),
+        ),
+      );
+
+      expect(
+        api.getProviderHealthStatus,
+        throwsA(
+          isA<ScraperApiException>().having(
+            (error) => error.message,
+            'message',
+            'No provider health snapshot available',
+          ),
+        ),
+      );
+    });
+
     test('normalizes movie links, subtitles, and proxy stream type', () async {
       late Uri requestedUri;
       final api = ScraperApi(

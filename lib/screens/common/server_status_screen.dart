@@ -7,8 +7,6 @@ import 'package:provider/provider.dart';
 
 import '../../provider/app_dependency_provider.dart';
 import '../../ui_components/app_ui_components.dart';
-import '../../video_providers/names.dart';
-import '../../video_providers/provider_loader.dart';
 import '../../video_providers/scraper_api.dart';
 
 class ServerStatusScreen extends StatefulWidget {
@@ -20,8 +18,8 @@ class ServerStatusScreen extends StatefulWidget {
 
 class _ServerStatusScreenState extends State<ServerStatusScreen> {
   bool _checking = true;
-  String? _discoveryError;
-  List<_ProviderStatus> _providers = const [];
+  String? _error;
+  ProviderHealthSnapshot? _snapshot;
 
   @override
   void initState() {
@@ -30,168 +28,380 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
   }
 
   Future<void> _checkServer() async {
-    final scraperApiUrl = context.read<AppDependencyProvider>().flixquestAPIURL;
     if (mounted) {
       setState(() {
         _checking = true;
-        _discoveryError = null;
+        _error = null;
       });
     }
 
-    final providers = <VideoProvider>[];
-    String? discoveryError;
     try {
-      providers.addAll(await ScraperApi(scraperApiUrl).getProviders());
+      final scraperApiUrl =
+          context.read<AppDependencyProvider>().flixquestAPIURL;
+      final snapshot =
+          await ScraperApi(scraperApiUrl).getProviderHealthStatus();
+      if (!mounted) return;
+      setState(() => _snapshot = snapshot);
     } catch (error) {
-      discoveryError = error.toString();
+      if (!mounted) return;
+      setState(() => _error = error.toString());
+    } finally {
+      if (mounted) setState(() => _checking = false);
     }
-    providers.add(VideoProvider.directVixSrc);
-
-    if (!mounted) return;
-    setState(() {
-      _providers = providers.map(_ProviderStatus.checking).toList();
-      _discoveryError = discoveryError;
-    });
-
-    final results = await Future.wait(
-      providers.map(
-        (provider) => _checkProvider(provider, scraperApiUrl),
-      ),
-    );
-    if (!mounted) return;
-    setState(() {
-      _checking = false;
-      _providers = results;
-    });
-  }
-
-  Future<_ProviderStatus> _checkProvider(
-    VideoProvider provider,
-    String scraperApiUrl,
-  ) async {
-    final stopwatch = Stopwatch()..start();
-    final result = await ProviderLoader.loadMovieFromProvider(
-      provider: provider,
-      movieId: 884605,
-      scraperApiUrl: scraperApiUrl,
-    );
-    stopwatch.stop();
-    return _ProviderStatus(
-      provider: provider,
-      checking: false,
-      working: result.success && (result.videoLinks?.isNotEmpty ?? false),
-      latency: stopwatch.elapsed,
-      error: result.errorMessage,
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(title: Text(tr('check_server'))),
+      appBar: AppBar(
+        title: Text(tr('check_server')),
+        actions: [
+          IconButton(
+            onPressed: _checking ? null : _checkServer,
+            tooltip: tr('check'),
+            icon: Icon(PhosphorIcons.arrowsClockwise()),
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
       body: AppResponsiveContent(
-        maxWidth: 680,
-        padding: const EdgeInsets.fromLTRB(16, 20, 16, 28),
+        maxWidth: 760,
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
         child: Column(
           children: [
-            if (_discoveryError != null)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Text(
-                  _discoveryError!,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: colors.onSurfaceVariant),
-                ),
-              ),
-            Expanded(
-              child: ListView.separated(
-                itemCount: _providers.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 10),
-                itemBuilder: (context, index) =>
-                    _buildProviderCard(_providers[index], colors),
-              ),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              child: _checking
+                  ? const LinearProgressIndicator(key: ValueKey('loading'))
+                  : const SizedBox(height: 4, key: ValueKey('idle')),
             ),
-            const SizedBox(height: 20),
-            FilledButton.icon(
-              onPressed: _checking ? null : _checkServer,
-              icon: Icon(PhosphorIcons.arrowsClockwise()),
-              label: Text(tr('check_server')),
-            ),
+            const SizedBox(height: 12),
+            Expanded(child: _buildBody(colors)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildProviderCard(_ProviderStatus status, ColorScheme colors) {
-    final color = status.checking
-        ? colors.primary
-        : status.working
-            ? colors.tertiary
-            : colors.error;
+  Widget _buildBody(ColorScheme colors) {
+    final snapshot = _snapshot;
+    if (snapshot == null) {
+      if (_checking) {
+        return Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircularProgressIndicator(),
+              const SizedBox(height: 20),
+              Text(
+                tr('checking_server'),
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ],
+          ),
+        );
+      }
+      return _buildErrorState(colors);
+    }
+
+    return RefreshIndicator(
+      onRefresh: _checkServer,
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [
+          if (_error != null) ...[
+            _buildRefreshError(colors),
+            const SizedBox(height: 12),
+          ],
+          _buildOverview(snapshot, colors),
+          const SizedBox(height: 24),
+          Row(
+            children: [
+              Text(
+                tr('provider_health_overview'),
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const Spacer(),
+              Text(
+                '${snapshot.providers.length}',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          if (snapshot.providers.isEmpty)
+            _buildEmptyProviders(colors)
+          else
+            for (var index = 0; index < snapshot.providers.length; index++) ...[
+              _buildProviderCard(snapshot.providers[index], colors),
+              if (index != snapshot.providers.length - 1)
+                const SizedBox(height: 10),
+            ],
+          const SizedBox(height: 12),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOverview(
+    ProviderHealthSnapshot snapshot,
+    ColorScheme colors,
+  ) {
+    final healthy = snapshot.offline == 0 && snapshot.total > 0;
+    final unavailable = snapshot.online == 0;
+    final statusColor = healthy
+        ? colors.tertiary
+        : unavailable
+            ? colors.error
+            : colors.primary;
+    final statusText = healthy
+        ? tr('server_working')
+        : unavailable
+            ? tr('server_down')
+            : tr('provider_health_degraded');
+    final percentage = (snapshot.availability * 100).round();
+    final updatedAt = snapshot.updatedAt;
+    final materialLocalizations = MaterialLocalizations.of(context);
+    final localUpdatedAt = updatedAt?.toLocal();
+    final updatedText = localUpdatedAt == null
+        ? null
+        : '${materialLocalizations.formatMediumDate(localUpdatedAt)} • '
+            '${materialLocalizations.formatTimeOfDay(TimeOfDay.fromDateTime(localUpdatedAt))}';
+    final intervalMinutes = snapshot.interval.inMinutes;
+
     return Card(
+      margin: EdgeInsets.zero,
+      color: colors.surfaceContainerHighest.withValues(alpha: .55),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+        side: BorderSide(color: statusColor.withValues(alpha: .28)),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(22),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                SizedBox.square(
+                  dimension: 92,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      SizedBox.square(
+                        dimension: 84,
+                        child: CircularProgressIndicator(
+                          value: snapshot.availability.clamp(0.0, 1.0),
+                          strokeWidth: 9,
+                          strokeCap: StrokeCap.round,
+                          color: statusColor,
+                          backgroundColor: colors.surfaceContainerHighest,
+                        ),
+                      ),
+                      Text(
+                        '$percentage%',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        statusText,
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        tr(
+                          'provider_availability',
+                          namedArgs: {'percentage': '$percentage'},
+                        ),
+                        style: TextStyle(color: colors.onSurfaceVariant),
+                      ),
+                      if (updatedText != null) ...[
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Icon(
+                              PhosphorIcons.clock(),
+                              size: 16,
+                              color: colors.onSurfaceVariant,
+                            ),
+                            const SizedBox(width: 6),
+                            Flexible(
+                              child: Text(
+                                '${tr('last_updated')}: $updatedText',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.copyWith(
+                                      color: colors.onSurfaceVariant,
+                                    ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildMetric(
+                    tr('provider_online'),
+                    snapshot.online,
+                    colors.tertiary,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildMetric(
+                    tr('provider_offline'),
+                    snapshot.offline,
+                    colors.error,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildMetric(
+                    tr('provider_total'),
+                    snapshot.total,
+                    colors.primary,
+                  ),
+                ),
+              ],
+            ),
+            if (intervalMinutes > 0) ...[
+              const SizedBox(height: 16),
+              Text(
+                tr(
+                  'provider_health_interval',
+                  namedArgs: {'minutes': '$intervalMinutes'},
+                ),
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMetric(String label, int value, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: .09),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(
+        children: [
+          Text(
+            '$value',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProviderCard(
+    ProviderHealthResult provider,
+    ColorScheme colors,
+  ) {
+    final color = provider.online ? colors.tertiary : colors.error;
+    return Card(
+      margin: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+        side: BorderSide(color: colors.outline.withValues(alpha: .14)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
         child: Row(
           children: [
             Container(
-              width: 52,
-              height: 52,
+              width: 48,
+              height: 48,
               decoration: BoxDecoration(
-                color: color.withValues(alpha: .12),
-                borderRadius: BorderRadius.circular(16),
+                color: color.withValues(alpha: .11),
+                borderRadius: BorderRadius.circular(14),
               ),
-              child: status.checking
-                  ? const Padding(
-                      padding: EdgeInsets.all(15),
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Icon(
-                      status.working
-                          ? PhosphorIcons.checkCircle()
-                          : PhosphorIcons.warningCircle(),
-                      color: color,
-                    ),
+              child: Icon(
+                provider.online
+                    ? PhosphorIcons.checkCircle()
+                    : PhosphorIcons.warningCircle(),
+                color: color,
+                size: 25,
+              ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // The API alias is the user-facing name everywhere.
                   Text(
-                    status.provider.displayName,
+                    provider.displayName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 5),
                   Text(
-                    status.checking
-                        ? tr('checking_server')
-                        : status.working
-                            ? tr('server_working')
-                            : tr('server_down'),
-                    style: TextStyle(color: colors.onSurfaceVariant),
+                    tr(
+                      'provider_response_time',
+                      namedArgs: {
+                        'milliseconds':
+                            '${provider.requestTime.inMilliseconds}',
+                      },
+                    ),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: colors.onSurfaceVariant,
+                        ),
                   ),
-                  if (!status.checking && status.latency != null) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      '${status.latency!.inMilliseconds} ms',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ],
-                  if (!status.checking &&
-                      !status.working &&
-                      status.error != null) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      status.error!,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: colors.error,
-                          ),
-                    ),
-                  ],
                 ],
+              ),
+            ),
+            const SizedBox(width: 10),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: .1),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                provider.online
+                    ? tr('provider_online')
+                    : tr('provider_offline'),
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: color,
+                      fontWeight: FontWeight.w700,
+                    ),
               ),
             ),
           ],
@@ -199,24 +409,94 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
       ),
     );
   }
-}
 
-class _ProviderStatus {
-  const _ProviderStatus({
-    required this.provider,
-    required this.checking,
-    this.working = false,
-    this.latency,
-    this.error,
-  });
-
-  factory _ProviderStatus.checking(VideoProvider provider) {
-    return _ProviderStatus(provider: provider, checking: true);
+  Widget _buildRefreshError(ColorScheme colors) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: colors.errorContainer.withValues(alpha: .65),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        children: [
+          Icon(PhosphorIcons.warningCircle(), color: colors.error),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              _error!,
+              style: TextStyle(color: colors.onErrorContainer),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
-  final VideoProvider provider;
-  final bool checking;
-  final bool working;
-  final Duration? latency;
-  final String? error;
+  Widget _buildErrorState(ColorScheme colors) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 76,
+              height: 76,
+              decoration: BoxDecoration(
+                color: colors.errorContainer,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                PhosphorIcons.cloudSlash(),
+                size: 36,
+                color: colors.error,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              tr('provider_health_unavailable'),
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              _error ?? tr('check_connection'),
+              textAlign: TextAlign.center,
+              style: TextStyle(color: colors.onSurfaceVariant),
+            ),
+            const SizedBox(height: 24),
+            FilledButton.icon(
+              onPressed: _checkServer,
+              icon: Icon(PhosphorIcons.arrowsClockwise()),
+              label: Text(tr('retry')),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyProviders(ColorScheme colors) {
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(28),
+        child: Column(
+          children: [
+            Icon(
+              PhosphorIcons.info(),
+              color: colors.onSurfaceVariant,
+              size: 30,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              tr('provider_health_empty'),
+              textAlign: TextAlign.center,
+              style: TextStyle(color: colors.onSurfaceVariant),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

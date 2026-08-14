@@ -56,6 +56,26 @@ class ScraperApi {
     }
   }
 
+  Future<ProviderHealthSnapshot> getProviderHealthStatus() async {
+    try {
+      final uri = _endpoint('/providers/status');
+      _logRequest(uri);
+      final response = await _get(uri);
+      _logResponse(uri, response);
+      final body = _decodeObject(response.body);
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw ScraperApiException(_messageFrom(body, response.statusCode));
+      }
+      if (body['success'] != true) {
+        throw ScraperApiException(_messageFrom(body, response.statusCode));
+      }
+
+      return ProviderHealthSnapshot.fromJson(body);
+    } finally {
+      if (_ownsClient) _client.close();
+    }
+  }
+
   Future<ProviderLoadResult> loadMovie({
     required String providerId,
     required int movieId,
@@ -239,4 +259,94 @@ class ScraperApiException implements Exception {
 
   @override
   String toString() => message;
+}
+
+class ProviderHealthSnapshot {
+  const ProviderHealthSnapshot({
+    required this.interval,
+    required this.total,
+    required this.online,
+    required this.offline,
+    required this.providers,
+    this.startedAt,
+    this.updatedAt,
+    this.methodology,
+  });
+
+  factory ProviderHealthSnapshot.fromJson(Map<String, dynamic> json) {
+    final rawProviders = json['providers'];
+    final providers = rawProviders is List
+        ? rawProviders
+            .whereType<Map>()
+            .map((item) => Map<String, dynamic>.from(item))
+            .map(ProviderHealthResult.fromJson)
+            .where((provider) => provider.id.isNotEmpty)
+            .toList(growable: false)
+        : const <ProviderHealthResult>[];
+    final rawSummary = json['summary'];
+    final summary = rawSummary is Map
+        ? Map<String, dynamic>.from(rawSummary)
+        : const <String, dynamic>{};
+
+    return ProviderHealthSnapshot(
+      startedAt: _dateTimeFrom(json['startedAt']),
+      updatedAt: _dateTimeFrom(json['updatedAt']),
+      interval: Duration(milliseconds: _intFrom(json['intervalMs'])),
+      methodology: json['methodology']?.toString(),
+      total: _intFrom(summary['total'], fallback: providers.length),
+      online: _intFrom(
+        summary['online'],
+        fallback: providers.where((provider) => provider.online).length,
+      ),
+      offline: _intFrom(
+        summary['offline'],
+        fallback: providers.where((provider) => !provider.online).length,
+      ),
+      providers: providers,
+    );
+  }
+
+  final DateTime? startedAt;
+  final DateTime? updatedAt;
+  final Duration interval;
+  final String? methodology;
+  final int total;
+  final int online;
+  final int offline;
+  final List<ProviderHealthResult> providers;
+
+  double get availability => total == 0 ? 0 : online / total;
+}
+
+class ProviderHealthResult {
+  const ProviderHealthResult({
+    required this.id,
+    required this.alias,
+    required this.online,
+    required this.requestTime,
+  });
+
+  factory ProviderHealthResult.fromJson(Map<String, dynamic> json) {
+    return ProviderHealthResult(
+      id: json['id']?.toString() ?? '',
+      alias: json['alias']?.toString() ?? '',
+      online: json['status'] == 'online',
+      requestTime: Duration(milliseconds: _intFrom(json['requestTimeMs'])),
+    );
+  }
+
+  final String id;
+  final String alias;
+  final bool online;
+  final Duration requestTime;
+
+  String get displayName => alias.trim().isEmpty ? id : alias;
+}
+
+int _intFrom(Object? value, {int fallback = 0}) {
+  return value is num ? value.toInt() : fallback;
+}
+
+DateTime? _dateTimeFrom(Object? value) {
+  return value is String ? DateTime.tryParse(value) : null;
 }
