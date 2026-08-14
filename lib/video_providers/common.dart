@@ -1,6 +1,7 @@
 class RegularVideoLinks {
   String? url;
   String? quality;
+  String? server;
   bool? isM3U8;
   bool? isDash;
   Map<String, String>? headers;
@@ -8,6 +9,7 @@ class RegularVideoLinks {
   RegularVideoLinks({
     this.url,
     this.quality = 'unknown quality',
+    this.server,
     this.isM3U8,
     this.isDash,
     this.headers,
@@ -15,6 +17,7 @@ class RegularVideoLinks {
 
   RegularVideoLinks.fromJson(Map<String, dynamic> json) {
     url = json['url'];
+    server = json['server']?.toString();
     if (json.containsKey('quality')) {
       quality = json['quality'];
     } else {

@@ -110,17 +110,10 @@ class VideoUtils {
   /// Convert video links to a map format for the player
   static Map<String, String> convertVideoLinksToMap(
       List<RegularVideoLinks> vids) {
-    Map<String, String> videos = {};
+    final videos = <String, String>{};
+    final keys = _videoSourceKeys(vids);
     for (int k = 0; k < vids.length; k++) {
-      if (vids[k].quality! == 'unknown quality') {
-        videos.addAll({
-          '${vids[k].quality!} $k': vids[k].url!,
-        });
-      } else {
-        videos.addAll({
-          vids[k].quality!: vids[k].url!,
-        });
-      }
+      videos[keys[k]] = vids[k].url!;
     }
     return videos;
   }
@@ -132,10 +125,9 @@ class VideoUtils {
     List<RegularVideoLinks> vids,
   ) {
     final formats = <String, BetterPlayerVideoFormat?>{};
+    final keys = _videoSourceKeys(vids);
     for (var index = 0; index < vids.length; index++) {
-      final key = vids[index].quality == 'unknown quality'
-          ? '${vids[index].quality} $index'
-          : vids[index].quality!;
+      final key = keys[index];
       formats[key] = vids[index].isM3U8 == true
           ? BetterPlayerVideoFormat.hls
           : vids[index].isDash == true
@@ -151,15 +143,47 @@ class VideoUtils {
     List<RegularVideoLinks> vids,
   ) {
     final headers = <String, Map<String, String>>{};
+    final keys = _videoSourceKeys(vids);
     for (var index = 0; index < vids.length; index++) {
       final linkHeaders = vids[index].headers;
       if (linkHeaders == null || linkHeaders.isEmpty) continue;
-      final key = vids[index].quality == 'unknown quality'
-          ? '${vids[index].quality} $index'
-          : vids[index].quality!;
+      final key = keys[index];
       headers[key] = Map.of(linkHeaders);
     }
     return headers;
+  }
+
+  /// Build stable display keys without collapsing same-quality links returned
+  /// by different servers. All source metadata maps use this same key list so
+  /// URLs, formats, and headers remain aligned.
+  static List<String> _videoSourceKeys(List<RegularVideoLinks> vids) {
+    final qualityCounts = <String, int>{};
+    for (final video in vids) {
+      final quality = video.quality ?? 'unknown quality';
+      qualityCounts[quality] = (qualityCounts[quality] ?? 0) + 1;
+    }
+
+    final usedKeys = <String>{};
+    return [
+      for (var index = 0; index < vids.length; index++)
+        () {
+          final video = vids[index];
+          final quality = video.quality ?? 'unknown quality';
+          final server = video.server?.trim();
+          var key = quality == 'unknown quality'
+              ? '$quality $index'
+              : qualityCounts[quality]! > 1 && server?.isNotEmpty == true
+                  ? '$quality · $server'
+                  : quality;
+          final baseKey = key;
+          var occurrence = 1;
+          while (!usedKeys.add(key)) {
+            occurrence++;
+            key = '$baseKey ($occurrence)';
+          }
+          return key;
+        }(),
+    ];
   }
 
   /// Provider defaults used when a source does not explicitly return headers.

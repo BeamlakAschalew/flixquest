@@ -20,6 +20,7 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
   bool _checking = true;
   String? _error;
   ProviderHealthSnapshot? _snapshot;
+  final Set<String> _revealedProviderIds = <String>{};
 
   @override
   void initState() {
@@ -116,20 +117,33 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
           ],
           _buildOverview(snapshot, colors),
           const SizedBox(height: 24),
-          Row(
-            children: [
-              Text(
-                tr('provider_health_overview'),
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const Spacer(),
-              Text(
-                '${snapshot.providers.length}',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: colors.onSurfaceVariant,
-                    ),
-              ),
-            ],
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onDoubleTap: () {
+              setState(() {
+                if (_revealedProviderIds.length == snapshot.providers.length) {
+                  _revealedProviderIds.clear();
+                } else {
+                  _revealedProviderIds
+                      .addAll(snapshot.providers.map((p) => p.id));
+                }
+              });
+            },
+            child: Row(
+              children: [
+                Text(
+                  tr('provider_health_overview'),
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const Spacer(),
+                Text(
+                  '${snapshot.providers.length}',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: colors.onSurfaceVariant,
+                      ),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 12),
           if (snapshot.providers.isEmpty)
@@ -335,76 +349,93 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
     ColorScheme colors,
   ) {
     final color = provider.online ? colors.tertiary : colors.error;
+    final isRevealed = _revealedProviderIds.contains(provider.id);
+    final providerTitle =
+        isRevealed ? provider.originalName : provider.displayName;
+
     return Card(
       margin: EdgeInsets.zero,
+      clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(18),
         side: BorderSide(color: colors.outline.withValues(alpha: .14)),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: .11),
-                borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(18),
+        onDoubleTap: () {
+          setState(() {
+            if (_revealedProviderIds.contains(provider.id)) {
+              _revealedProviderIds.remove(provider.id);
+            } else {
+              _revealedProviderIds.add(provider.id);
+            }
+          });
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: .11),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(
+                  provider.online
+                      ? PhosphorIcons.checkCircle()
+                      : PhosphorIcons.warningCircle(),
+                  color: color,
+                  size: 25,
+                ),
               ),
-              child: Icon(
-                provider.online
-                    ? PhosphorIcons.checkCircle()
-                    : PhosphorIcons.warningCircle(),
-                color: color,
-                size: 25,
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    provider.displayName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    tr(
-                      'provider_response_time',
-                      namedArgs: {
-                        'milliseconds':
-                            '${provider.requestTime.inMilliseconds}',
-                      },
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      providerTitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: colors.onSurfaceVariant,
-                        ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 10),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: .1),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                provider.online
-                    ? tr('provider_online')
-                    : tr('provider_offline'),
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: color,
-                      fontWeight: FontWeight.w700,
+                    const SizedBox(height: 5),
+                    Text(
+                      tr(
+                        'provider_response_time',
+                        namedArgs: {
+                          'milliseconds':
+                              '${provider.requestTime.inMilliseconds}',
+                        },
+                      ),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: colors.onSurfaceVariant,
+                          ),
                     ),
+                  ],
+                ),
               ),
-            ),
-          ],
+              const SizedBox(width: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: .1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  provider.online
+                      ? tr('provider_online')
+                      : tr('provider_offline'),
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: color,
+                        fontWeight: FontWeight.w700,
+                      ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -91,11 +91,13 @@ void main() {
       expect(snapshot.offline, 1);
       expect(snapshot.availability, .5);
       expect(snapshot.providers.first.displayName, 'VixSrc');
+      expect(snapshot.providers.first.originalName, 'vixsrc');
       expect(snapshot.providers.first.online, isTrue);
       expect(
         snapshot.providers.first.requestTime,
         const Duration(milliseconds: 1432),
       );
+      expect(snapshot.providers.last.originalName, 'vidsrc');
       expect(snapshot.providers.last.online, isFalse);
     });
 
@@ -135,6 +137,7 @@ void main() {
               'links': [
                 {
                   'url': 'https://scraper.example/proxy?token=first',
+                  'server': 'ShowBox 2',
                   'quality': '1080p',
                   'isM3U8': true,
                   'isDASH': false,
@@ -180,6 +183,7 @@ void main() {
       expect(result.success, isTrue);
       expect(result.videoLinks, hasLength(2));
       expect(result.videoLinks!.first.isM3U8, isTrue);
+      expect(result.videoLinks!.first.server, 'ShowBox 2');
       expect(result.videoLinks!.first.headers, {
         'Referer': 'https://provider.example/',
         'Origin': 'https://provider.example',

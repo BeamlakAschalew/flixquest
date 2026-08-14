@@ -147,6 +147,7 @@ class ScraperApi {
             RegularVideoLinks(
               url: url,
               quality: link['quality']?.toString() ?? 'unknown quality',
+              server: link['server']?.toString(),
               isM3U8: link['isM3U8'] == true,
               isDash: link['isDASH'] == true,
               headers: linkHeaders,
@@ -322,6 +323,7 @@ class ProviderHealthResult {
   const ProviderHealthResult({
     required this.id,
     required this.alias,
+    this.name,
     required this.online,
     required this.requestTime,
   });
@@ -330,6 +332,7 @@ class ProviderHealthResult {
     return ProviderHealthResult(
       id: json['id']?.toString() ?? '',
       alias: json['alias']?.toString() ?? '',
+      name: json['name']?.toString(),
       online: json['status'] == 'online',
       requestTime: Duration(milliseconds: _intFrom(json['requestTimeMs'])),
     );
@@ -337,10 +340,19 @@ class ProviderHealthResult {
 
   final String id;
   final String alias;
+  final String? name;
   final bool online;
   final Duration requestTime;
 
-  String get displayName => alias.trim().isEmpty ? id : alias;
+  String get originalName {
+    final rawName = name?.trim();
+    if (rawName != null && rawName.isNotEmpty) {
+      return rawName;
+    }
+    return id;
+  }
+
+  String get displayName => alias.trim().isEmpty ? originalName : alias;
 }
 
 int _intFrom(Object? value, {int fallback = 0}) {

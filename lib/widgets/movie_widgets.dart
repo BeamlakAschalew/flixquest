@@ -451,14 +451,6 @@ class DiscoverMoviesState extends State<DiscoverMovies>
                                     const SizedBox(width: 8),
                                   ],
                                   _HeroIconButton(
-                                    icon: isBookmarked
-                                        ? PhosphorIcons.bookmarkSimple(
-                                            PhosphorIconsStyle.fill)
-                                        : PhosphorIcons.bookmarkSimple(),
-                                    onPressed: () => _toggleBookmark(movie),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  _HeroIconButton(
                                     icon: PhosphorIcons.magnifyingGlass(),
                                     onPressed: widget.onSearchPressed,
                                   ),

@@ -457,14 +457,6 @@ class DiscoverTVState extends State<DiscoverTV>
                                     const SizedBox(width: 8),
                                   ],
                                   _TVHeroIconButton(
-                                    icon: saved
-                                        ? PhosphorIcons.bookmarkSimple(
-                                            PhosphorIconsStyle.fill)
-                                        : PhosphorIcons.bookmarkSimple(),
-                                    onPressed: () => _toggleBookmark(item),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  _TVHeroIconButton(
                                     icon: PhosphorIcons.magnifyingGlass(),
                                     onPressed: widget.onSearchPressed,
                                   ),

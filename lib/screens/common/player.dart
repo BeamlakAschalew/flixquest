@@ -767,12 +767,40 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     final resolvedHeaders = suppliedHeaders?.isNotEmpty == true
         ? suppliedHeaders!
         : VideoUtils.inferVideoHeaders(link) ?? const <String, String>{};
+    final resolutionVideoFormats = <String, BetterPlayerVideoFormat?>{
+      for (final source in sources.entries)
+        source.key:
+            videoFormats?[source.key] ?? _inferVideoFormat(source.value),
+    };
+    final resolutionHeaders = <String, Map<String, String>>{
+      for (final source in sources.entries)
+        source.key: videoHeaders[source.key]?.isNotEmpty == true
+            ? videoHeaders[source.key]!
+            : VideoUtils.inferVideoHeaders(source.value) ??
+                const <String, String>{},
+    };
+    final resolutionDisplayNames = <String, String>{
+      for (final source in sources.entries)
+        source.key: _resolutionDisplayName(source.key),
+    };
+    final resolutionDescriptions = <String, String>{
+      for (final source in sources.entries)
+        if (_resolutionDescription(source.key) case final description?)
+          source.key: description,
+    };
 
     return BetterPlayerDataSource(
       BetterPlayerDataSourceType.network,
       link,
       resolutions: sources.length > 1 ? sources : null,
       selectedResolution: selectedSource.key,
+      resolutionVideoFormats:
+          sources.length > 1 ? resolutionVideoFormats : null,
+      resolutionHeaders: sources.length > 1 ? resolutionHeaders : null,
+      resolutionDisplayNames:
+          sources.length > 1 ? resolutionDisplayNames : null,
+      resolutionDescriptions:
+          sources.length > 1 ? resolutionDescriptions : null,
       videoFormat: videoFormats?[selectedSource.key] ?? _inferVideoFormat(link),
       headers: resolvedHeaders,
       castConfiguration: widget.useTvControls
@@ -813,6 +841,18 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       cacheConfiguration: const BetterPlayerCacheConfiguration(useCache: false),
       bufferingConfiguration: betterPlayerBufferingConfiguration,
     );
+  }
+
+  String _resolutionDisplayName(String sourceKey) {
+    final separator = sourceKey.indexOf(' · ');
+    return separator < 0 ? sourceKey : sourceKey.substring(0, separator);
+  }
+
+  String? _resolutionDescription(String sourceKey) {
+    final separator = sourceKey.indexOf(' · ');
+    if (separator < 0) return null;
+    final description = sourceKey.substring(separator + 3).trim();
+    return description.isEmpty ? null : description;
   }
 
   String? _castArtworkUrl() {

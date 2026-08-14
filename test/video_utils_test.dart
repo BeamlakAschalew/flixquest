@@ -1,4 +1,6 @@
 import 'package:flixquest/functions/video_utils.dart';
+import 'package:flixquest/video_providers/common.dart';
+import 'package:better_player_plus/better_player_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -84,6 +86,81 @@ void main() {
       expect(
         ordered.keys,
         ['2160p', '1080p', '720p', '480p', 'Voesx', 'playhq'],
+      );
+    });
+  });
+
+  group('VideoUtils source maps', () {
+    final showboxLinks = [
+      RegularVideoLinks(
+        url: 'https://showbox.example/1080.m3u8',
+        quality: '1080p H.264 | AAC',
+        server: 'ShowBox 2',
+        isM3U8: true,
+      ),
+      RegularVideoLinks(
+        url: 'https://showbox.example/server-1-720.m3u8',
+        quality: '720p H.264 | AAC',
+        server: 'ShowBox 1',
+        isM3U8: true,
+      ),
+      RegularVideoLinks(
+        url: 'https://showbox.example/server-2-720.m3u8',
+        quality: '720p H.264 | AAC',
+        server: 'ShowBox 2',
+        isM3U8: true,
+      ),
+      RegularVideoLinks(
+        url: 'https://showbox.example/server-1-360.mpd',
+        quality: '360p H.264 | AAC',
+        server: 'ShowBox 1',
+        isDash: true,
+        headers: {'Referer': 'https://showbox.example/'},
+      ),
+      RegularVideoLinks(
+        url: 'https://showbox.example/server-2-360.mpd',
+        quality: '360p H.264 | AAC',
+        server: 'ShowBox 2',
+        isDash: true,
+      ),
+    ];
+
+    test('preserves same-quality streams from different servers', () {
+      final sources = VideoUtils.convertVideoLinksToMap(showboxLinks);
+
+      expect(sources, hasLength(5));
+      expect(sources.keys, [
+        '1080p H.264 | AAC',
+        '720p H.264 | AAC · ShowBox 1',
+        '720p H.264 | AAC · ShowBox 2',
+        '360p H.264 | AAC · ShowBox 1',
+        '360p H.264 | AAC · ShowBox 2',
+      ]);
+    });
+
+    test('keeps formats and headers aligned with unique source keys', () {
+      final formats = VideoUtils.convertVideoFormatsToMap(showboxLinks);
+      final headers = VideoUtils.convertVideoHeadersToMap(showboxLinks);
+
+      expect(
+        formats['720p H.264 | AAC · ShowBox 2'],
+        BetterPlayerVideoFormat.hls,
+      );
+      expect(
+        formats['360p H.264 | AAC · ShowBox 1'],
+        BetterPlayerVideoFormat.dash,
+      );
+      expect(headers['360p H.264 | AAC · ShowBox 1'], {
+        'Referer': 'https://showbox.example/',
+      });
+    });
+
+    test('keeps default quality matching based on the quality prefix', () {
+      final sources = VideoUtils.convertVideoLinksToMap(showboxLinks);
+
+      expect(
+        VideoUtils.preferredVideoSource(sources, 720)?.key,
+        '720p H.264 | AAC · ShowBox 1',
       );
     });
   });
