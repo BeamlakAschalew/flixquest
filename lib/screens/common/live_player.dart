@@ -259,7 +259,7 @@ class _LivePlayerState extends State<LivePlayer> {
                 controlsController: _tvControlsController,
                 onControlsVisibilityChanged: onVisibilityChanged,
                 accentColor: widget.colors.first,
-                onExit: () => Navigator.of(context).maybePop(),
+                onExit: _exitPlayer,
               )
           : null,
       loadingColor: widget.colors.first,
@@ -280,7 +280,7 @@ class _LivePlayerState extends State<LivePlayer> {
       overflowMenuIconsColor: widget.colors.first,
       overflowModalTextColor: widget.colors.first,
       overflowModalColor: widget.colors.last,
-      enableAudioTracks: false,
+      enableAudioTracks: true,
       overflowMenuCustomItems: canSwitchChannels
           ? <BetterPlayerOverflowMenuItem>[
               BetterPlayerOverflowMenuItem(
@@ -729,80 +729,89 @@ class _LivePlayerState extends State<LivePlayer> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Center(
-        child: SizedBox(
-          height: MediaQuery.of(context).size.height,
-          width: double.infinity,
-          child: Stack(
-            children: <Widget>[
-              Positioned.fill(
-                child: BetterPlayer(
-                  key: _betterPlayerKey,
-                  controller: _betterPlayerController,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        if (widget.useTvControls && _tvControlsController.handleBack()) return;
+        _exitPlayer();
+      },
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            width: double.infinity,
+            child: Stack(
+              children: <Widget>[
+                Positioned.fill(
+                  child: BetterPlayer(
+                    key: _betterPlayerKey,
+                    controller: _betterPlayerController,
+                  ),
                 ),
-              ),
-              Positioned(
-                top: MediaQuery.of(context).padding.top + 12,
-                left: 0,
-                right: 0,
-                child: IgnorePointer(
-                  child: Center(
-                    child: AnimatedSlide(
-                      offset: _bannerText == null
-                          ? const Offset(0, -2)
-                          : Offset.zero,
-                      duration: const Duration(milliseconds: 240),
-                      curve: Curves.easeOutCubic,
-                      child: AnimatedOpacity(
-                        opacity: _bannerText == null ? 0 : 1,
+                Positioned(
+                  top: MediaQuery.of(context).padding.top + 12,
+                  left: 0,
+                  right: 0,
+                  child: IgnorePointer(
+                    child: Center(
+                      child: AnimatedSlide(
+                        offset: _bannerText == null
+                            ? const Offset(0, -2)
+                            : Offset.zero,
                         duration: const Duration(milliseconds: 240),
-                        child: Material(
-                          color: Colors.black.withValues(alpha: .78),
-                          borderRadius: BorderRadius.circular(24),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 9,
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                if (_isSwitching)
-                                  const SizedBox.square(
-                                    dimension: 16,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: Colors.white,
+                        curve: Curves.easeOutCubic,
+                        child: AnimatedOpacity(
+                          opacity: _bannerText == null ? 0 : 1,
+                          duration: const Duration(milliseconds: 240),
+                          child: Material(
+                            color: Colors.black.withValues(alpha: .78),
+                            borderRadius: BorderRadius.circular(24),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 9,
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  if (_isSwitching)
+                                    const SizedBox.square(
+                                      dimension: 16,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  else
+                                    Icon(
+                                      PhosphorIcons.broadcast(
+                                        PhosphorIconsStyle.fill,
+                                      ),
+                                      size: 18,
+                                      color: widget.colors.first,
                                     ),
-                                  )
-                                else
-                                  Icon(
-                                    PhosphorIcons.broadcast(
-                                      PhosphorIconsStyle.fill,
+                                  const SizedBox(width: 9),
+                                  ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                      maxWidth:
+                                          MediaQuery.of(context).size.width *
+                                              .62,
                                     ),
-                                    size: 18,
-                                    color: widget.colors.first,
-                                  ),
-                                const SizedBox(width: 9),
-                                ConstrainedBox(
-                                  constraints: BoxConstraints(
-                                    maxWidth:
-                                        MediaQuery.of(context).size.width * .62,
-                                  ),
-                                  child: Text(
-                                    _bannerText ?? '',
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontFamily: 'FigtreeSB',
-                                      fontSize: 14,
+                                    child: Text(
+                                      _bannerText ?? '',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: 'FigtreeSB',
+                                        fontSize: 14,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -810,12 +819,16 @@ class _LivePlayerState extends State<LivePlayer> {
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  void _exitPlayer() {
+    Navigator.of(context).pop();
   }
 }
 

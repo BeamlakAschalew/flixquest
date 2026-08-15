@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
@@ -35,7 +36,8 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
   static const _analyticsSurface = 'tv';
   final _database = LiveTVDatabaseController();
   final _searchController = TextEditingController();
-  final _searchFocus = FocusNode(debugLabel: 'Live TV search');
+  late final FocusNode _searchFocus;
+  late final FocusNode _firstChannelFocus;
   DaddyLiveService? _service;
   List<Channel> _channels = const <Channel>[];
   DaddyLiveEpg? _epg;
@@ -49,15 +51,40 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
   String _query = '';
   String? _error;
   bool _loading = true;
+  bool _initialChannelFocusRequested = false;
   Timer? _searchAnalyticsDebounce;
 
   @override
   void initState() {
     super.initState();
+    _searchFocus = FocusNode(
+      debugLabel: 'Live TV search',
+      onKeyEvent: _handleSearchKeyEvent,
+    );
+    _firstChannelFocus = FocusNode(
+      debugLabel: 'Live TV first channel result',
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _analytics.trackLiveTVScreenOpened(surface: _analyticsSurface);
       _load();
     });
+  }
+
+  KeyEventResult _handleSearchKeyEvent(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
+      return KeyEventResult.ignored;
+    }
+    final direction = switch (event.logicalKey) {
+      LogicalKeyboardKey.arrowUp => TraversalDirection.up,
+      LogicalKeyboardKey.arrowDown => TraversalDirection.down,
+      LogicalKeyboardKey.arrowLeft => TraversalDirection.left,
+      LogicalKeyboardKey.arrowRight => TraversalDirection.right,
+      _ => null,
+    };
+    if (direction == null) return KeyEventResult.ignored;
+    return node.focusInDirection(direction)
+        ? KeyEventResult.handled
+        : KeyEventResult.ignored;
   }
 
   @override
@@ -66,6 +93,7 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
     _service?.close();
     _searchController.dispose();
     _searchFocus.dispose();
+    _firstChannelFocus.dispose();
     super.dispose();
   }
 
@@ -109,6 +137,7 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
         _recent = recent;
         _loading = false;
       });
+      _focusInitialChannelResult();
       _analytics.trackLiveTVCatalogLoad(
         surface: _analyticsSurface,
         refresh: refresh,
@@ -128,6 +157,7 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
         _loading = false;
         _error = cached.isEmpty ? friendlyLiveTvError(error) : null;
       });
+      _focusInitialChannelResult();
       _analytics.trackLiveTVCatalogLoad(
         surface: _analyticsSurface,
         refresh: refresh,
@@ -310,6 +340,26 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
     });
   }
 
+  void _focusInitialChannelResult() {
+    if (_initialChannelFocusRequested || _visible.isEmpty) return;
+    _initialChannelFocusRequested = true;
+    _focusFirstChannelResult();
+  }
+
+  void _focusFirstChannelResult() {
+    if (_mode != _TvLiveMode.channels || _visible.isEmpty) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted ||
+          _mode != _TvLiveMode.channels ||
+          _visible.isEmpty ||
+          _firstChannelFocus.context == null ||
+          !_firstChannelFocus.canRequestFocus) {
+        return;
+      }
+      _firstChannelFocus.requestFocus();
+    });
+  }
+
   void _selectMode(_TvLiveMode mode) {
     if (mode == _mode) return;
     setState(() => _mode = mode);
@@ -456,31 +506,76 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
   }
 
   Widget _buildControls(bool isSchedule) {
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        for (final entry in <(_TvLiveMode, String, IconData)>[
-          (_TvLiveMode.channels, 'Channels', PhosphorIcons.televisionSimple()),
-          (_TvLiveMode.schedule, 'Schedule', PhosphorIcons.calendarDots()),
-        ]) ...<Widget>[
-          TvFocusable(
-            semanticLabel: '${entry.$2} view',
-            selected: _mode == entry.$1,
-            onActivate: () => _selectMode(entry.$1),
-            focusScale: 1.025,
-            child: _TvPill(
-              icon: entry.$3,
-              label: entry.$2,
-              selected: _mode == entry.$1,
-            ),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 3),
+          child: Row(
+            children: <Widget>[
+              for (final entry in <(_TvLiveMode, String, IconData)>[
+                (
+                  _TvLiveMode.channels,
+                  'Channels',
+                  PhosphorIcons.televisionSimple()
+                ),
+                (
+                  _TvLiveMode.schedule,
+                  'Schedule',
+                  PhosphorIcons.calendarDots()
+                ),
+              ]) ...<Widget>[
+                TvFocusable(
+                  semanticLabel: '${entry.$2} view',
+                  selected: _mode == entry.$1,
+                  onActivate: () => _selectMode(entry.$1),
+                  focusScale: 1.025,
+                  child: _TvPill(
+                    icon: entry.$3,
+                    label: entry.$2,
+                    selected: _mode == entry.$1,
+                  ),
+                ),
+                const SizedBox(width: 8),
+              ],
+              if (!isSchedule) ...<Widget>[
+                const SizedBox(width: 10),
+                for (final entry in <(_TvLiveScope, String, IconData)>[
+                  (_TvLiveScope.all, 'All', PhosphorIcons.broadcast()),
+                  (_TvLiveScope.favorites, 'Favorites', PhosphorIcons.heart()),
+                  (
+                    _TvLiveScope.recent,
+                    'Recent',
+                    PhosphorIcons.clockCounterClockwise()
+                  ),
+                ]) ...<Widget>[
+                  TvFocusable(
+                    semanticLabel: '${entry.$2} channels',
+                    selected: _scope == entry.$1,
+                    onActivate: () => _selectScope(entry.$1),
+                    focusScale: 1.025,
+                    child: _TvPill(
+                      icon: entry.$3,
+                      label: entry.$2,
+                      selected: _scope == entry.$1,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                ],
+              ],
+            ],
           ),
-          const SizedBox(width: 8),
-        ],
-        const SizedBox(width: 6),
-        Expanded(
+        ),
+        const SizedBox(height: 10),
+        SizedBox(
+          height: 56,
           child: TextField(
             controller: _searchController,
             focusNode: _searchFocus,
             onChanged: _onSearchChanged,
+            onSubmitted: (_) => _focusFirstChannelResult(),
+            textInputAction: TextInputAction.search,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSurface,
               fontSize: 20,
@@ -490,36 +585,43 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
                   ? 'Search matches, teams & leagues'
                   : 'Search channels',
               prefixIcon: Icon(PhosphorIcons.magnifyingGlass()),
+              suffixIcon: _query.isEmpty
+                  ? null
+                  : IconButton(
+                      tooltip: 'Clear search',
+                      onPressed: () {
+                        _searchController.clear();
+                        _onSearchChanged('');
+                        _searchFocus.requestFocus();
+                      },
+                      icon: Icon(PhosphorIcons.x()),
+                    ),
               filled: true,
-              border: InputBorder.none,
+              fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+              contentPadding: const EdgeInsets.symmetric(vertical: 16),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withValues(alpha: 0.08),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.primary,
+                  width: 3,
+                ),
+              ),
             ),
           ),
         ),
-        if (!isSchedule) ...<Widget>[
-          const SizedBox(width: 14),
-          for (final entry in <(_TvLiveScope, String, IconData)>[
-            (_TvLiveScope.all, 'All', PhosphorIcons.broadcast()),
-            (_TvLiveScope.favorites, 'Favorites', PhosphorIcons.heart()),
-            (
-              _TvLiveScope.recent,
-              'Recent',
-              PhosphorIcons.clockCounterClockwise()
-            ),
-          ]) ...<Widget>[
-            TvFocusable(
-              semanticLabel: '${entry.$2} channels',
-              selected: _scope == entry.$1,
-              onActivate: () => _selectScope(entry.$1),
-              focusScale: 1.025,
-              child: _TvPill(
-                icon: entry.$3,
-                label: entry.$2,
-                selected: _scope == entry.$1,
-              ),
-            ),
-            const SizedBox(width: 8),
-          ],
-        ],
       ],
     );
   }
@@ -599,16 +701,17 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
     return GridView.builder(
       padding: const EdgeInsets.fromLTRB(3, 3, 12, 30),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: widget.metrics.compact ? 3 : 4,
-        childAspectRatio: widget.metrics.compact ? 1.8 : 1.65,
-        crossAxisSpacing: 14,
-        mainAxisSpacing: 14,
+        crossAxisCount: 2,
+        mainAxisExtent: widget.metrics.compact ? 202 : 216,
+        crossAxisSpacing: widget.metrics.compact ? 14 : 18,
+        mainAxisSpacing: widget.metrics.compact ? 14 : 18,
       ),
       itemCount: channels.length,
       itemBuilder: (_, index) {
         final channel = channels[index];
         return _TvChannelCard(
           channel: channel,
+          playFocusNode: index == 0 ? _firstChannelFocus : null,
           favorite: _favorites.contains(channel.id),
           resolving: _resolvingId == channel.id,
           onPlay: () => _play(channel),
@@ -734,16 +837,17 @@ class _TvPill extends StatelessWidget {
               size: 22,
               color: selected ? colors.primary : colors.onSurfaceVariant,
             ),
-            const SizedBox(width: 8),
+            if (label.isNotEmpty) const SizedBox(width: 8),
           ],
-          Text(
-            label,
-            style: TextStyle(
-              color: colors.onSurface,
-              fontFamily: selected ? 'FigtreeSB' : 'Figtree',
-              fontSize: 17,
+          if (label.isNotEmpty)
+            Text(
+              label,
+              style: TextStyle(
+                color: colors.onSurface,
+                fontFamily: selected ? 'FigtreeSB' : 'Figtree',
+                fontSize: 17,
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -877,6 +981,7 @@ class _TvScheduleEventTile extends StatelessWidget {
 class _TvChannelCard extends StatelessWidget {
   const _TvChannelCard({
     required this.channel,
+    required this.playFocusNode,
     required this.favorite,
     required this.resolving,
     required this.onPlay,
@@ -884,6 +989,7 @@ class _TvChannelCard extends StatelessWidget {
   });
 
   final Channel channel;
+  final FocusNode? playFocusNode;
   final bool favorite;
   final bool resolving;
   final VoidCallback onPlay;
@@ -917,11 +1023,10 @@ class _TvChannelCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     channel.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontFamily: 'FigtreeSB',
-                      fontSize: 18,
+                      fontSize: 19,
+                      height: 1.15,
                     ),
                   ),
                 ),
@@ -996,6 +1101,7 @@ class _TvChannelCard extends StatelessWidget {
               children: <Widget>[
                 Expanded(
                   child: TvFocusable(
+                    focusNode: playFocusNode,
                     semanticLabel: 'Play ${channel.name}',
                     enabled: !resolving,
                     onActivate: onPlay,

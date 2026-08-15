@@ -142,103 +142,117 @@ class TvNavigationRailState extends State<TvNavigationRail> {
                     ),
             ),
             Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  for (final destination in widget.destinations) ...<Widget>[
-                    TvFocusable(
-                      focusNode: _focusNodes[destination.id],
-                      autofocus: destination.id == initialFocusId,
-                      selected: destination.id == widget.selectedId,
-                      semanticLabel: destination.label,
-                      onFocusChanged: (hasFocus) {
-                        if (hasFocus) {
-                          memory?.remember(
-                            scopeId: 'tv-navigation',
-                            itemId: destination.id,
-                          );
-                        }
-                      },
-                      onActivate: () =>
-                          widget.onDestinationSelected(destination.id),
-                      focusScale: 1.015,
-                      borderRadius: const BorderRadius.all(Radius.circular(12)),
-                      child: Container(
-                        height: widget.metrics.navItemHeight,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: widget.metrics.compact ? 0 : 12,
-                        ),
-                        decoration: BoxDecoration(
-                          gradient: destination.id == widget.selectedId
-                              ? LinearGradient(
-                                  colors: <Color>[
-                                    colors.primary.withValues(alpha: 0.2),
-                                    colors.primary.withValues(alpha: 0.08),
-                                  ],
-                                )
-                              : null,
-                          borderRadius: BorderRadius.circular(9),
-                        ),
-                        child: Stack(
-                          fit: StackFit.expand,
-                          children: <Widget>[
-                            if (destination.id == widget.selectedId)
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child: Container(
-                                  width: 4,
-                                  height: 24,
-                                  decoration: BoxDecoration(
-                                    color: colors.primary,
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                ),
-                              ),
-                            Row(
-                              mainAxisAlignment: widget.metrics.compact
-                                  ? MainAxisAlignment.center
-                                  : MainAxisAlignment.start,
-                              children: <Widget>[
-                                Icon(
-                                  destination.id == widget.selectedId
-                                      ? destination.selectedIcon ??
-                                          destination.icon
-                                      : destination.icon,
-                                  color: destination.id == widget.selectedId
-                                      ? colors.primary
-                                      : colors.onSurfaceVariant,
-                                  size: widget.metrics.compact ? 25 : 26,
-                                ),
-                                if (!widget.metrics.compact) ...<Widget>[
-                                  const SizedBox(width: 14),
-                                  Expanded(
-                                    child: Text(
-                                      destination.label,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        color:
-                                            destination.id == widget.selectedId
-                                                ? colors.onSurface
-                                                : colors.onSurfaceVariant,
-                                        fontFamily:
-                                            destination.id == widget.selectedId
-                                                ? 'FigtreeSB'
-                                                : 'Figtree',
-                                        fontSize: 18,
-                                      ),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final itemExtent =
+                      widget.metrics.navItemHeight + widget.metrics.navItemGap;
+                  final contentHeight = widget.destinations.isEmpty
+                      ? 0.0
+                      : widget.destinations.length * itemExtent -
+                          widget.metrics.navItemGap;
+                  final centeredInset =
+                      ((constraints.maxHeight - contentHeight) / 2)
+                          .clamp(0.0, double.infinity);
+                  return ListView.separated(
+                    padding: EdgeInsets.symmetric(vertical: centeredInset),
+                    itemCount: widget.destinations.length,
+                    separatorBuilder: (context, index) =>
+                        SizedBox(height: widget.metrics.navItemGap),
+                    itemBuilder: (context, index) {
+                      final destination = widget.destinations[index];
+                      return TvFocusable(
+                        focusNode: _focusNodes[destination.id],
+                        autofocus: destination.id == initialFocusId,
+                        selected: destination.id == widget.selectedId,
+                        semanticLabel: destination.label,
+                        onFocusChanged: (hasFocus) {
+                          if (hasFocus) {
+                            memory?.remember(
+                              scopeId: 'tv-navigation',
+                              itemId: destination.id,
+                            );
+                          }
+                        },
+                        onActivate: () =>
+                            widget.onDestinationSelected(destination.id),
+                        focusScale: 1.015,
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(12)),
+                        child: Container(
+                          height: widget.metrics.navItemHeight,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: widget.metrics.compact ? 0 : 12,
+                          ),
+                          decoration: BoxDecoration(
+                            gradient: destination.id == widget.selectedId
+                                ? LinearGradient(
+                                    colors: <Color>[
+                                      colors.primary.withValues(alpha: 0.2),
+                                      colors.primary.withValues(alpha: 0.08),
+                                    ],
+                                  )
+                                : null,
+                            borderRadius: BorderRadius.circular(9),
+                          ),
+                          child: Stack(
+                            fit: StackFit.expand,
+                            children: <Widget>[
+                              if (destination.id == widget.selectedId)
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Container(
+                                    width: 4,
+                                    height: 24,
+                                    decoration: BoxDecoration(
+                                      color: colors.primary,
+                                      borderRadius: BorderRadius.circular(4),
                                     ),
                                   ),
+                                ),
+                              Row(
+                                mainAxisAlignment: widget.metrics.compact
+                                    ? MainAxisAlignment.center
+                                    : MainAxisAlignment.start,
+                                children: <Widget>[
+                                  Icon(
+                                    destination.id == widget.selectedId
+                                        ? destination.selectedIcon ??
+                                            destination.icon
+                                        : destination.icon,
+                                    color: destination.id == widget.selectedId
+                                        ? colors.primary
+                                        : colors.onSurfaceVariant,
+                                    size: widget.metrics.compact ? 25 : 26,
+                                  ),
+                                  if (!widget.metrics.compact) ...<Widget>[
+                                    const SizedBox(width: 14),
+                                    Expanded(
+                                      child: Text(
+                                        destination.label,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          color: destination.id ==
+                                                  widget.selectedId
+                                              ? colors.onSurface
+                                              : colors.onSurfaceVariant,
+                                          fontFamily: destination.id ==
+                                                  widget.selectedId
+                                              ? 'FigtreeSB'
+                                              : 'Figtree',
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ],
-                              ],
-                            ),
-                          ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ),
-                    SizedBox(height: widget.metrics.navItemGap),
-                  ],
-                ],
+                      );
+                    },
+                  );
+                },
               ),
             ),
           ],
