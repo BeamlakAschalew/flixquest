@@ -13,6 +13,7 @@ import '../../screens/movie/movie_video_loader.dart';
 import '../../screens/tv/tv_video_loader.dart';
 import '../../services/app_session_state_store.dart';
 import '../focus/tv_focus_memory.dart';
+import '../focus/tv_screen_focus_controller.dart';
 import '../models/tv_media_item.dart';
 import '../navigation/tv_back_dispatcher.dart';
 import '../screens/tv_catalog_screen.dart';
@@ -39,6 +40,14 @@ class _TvHomeShellState extends State<TvHomeShell> with RestorationMixin {
   final TvFocusMemory _focusMemory = TvFocusMemory();
   final GlobalKey<TvNavigationRailState> _navigationRailKey =
       GlobalKey<TvNavigationRailState>();
+  final TvScreenFocusController _searchFocusController =
+      TvScreenFocusController();
+  final TvScreenFocusController _moviesFocusController =
+      TvScreenFocusController();
+  final TvScreenFocusController _seriesFocusController =
+      TvScreenFocusController();
+  final TvScreenFocusController _settingsFocusController =
+      TvScreenFocusController();
   late final FocusScopeNode _shellFocusScope;
   late final List<TvNavigationDestination> _destinations;
   late final AppSessionStateStore _sessionState;
@@ -145,6 +154,11 @@ class _TvHomeShellState extends State<TvHomeShell> with RestorationMixin {
   }
 
   Future<bool> _handleBack() async {
+    if (_navigationRailKey.currentState?.hasFocus != true) {
+      _navigationRailKey.currentState
+          ?.requestFocus(_selectedDestinationId.value);
+      return true;
+    }
     if (_selectedDestinationId.value == 'home') return false;
     setState(() => _selectedDestinationId.value = 'home');
     context.read<SettingsProvider>().analytics.trackNavigation(
@@ -155,6 +169,22 @@ class _TvHomeShellState extends State<TvHomeShell> with RestorationMixin {
     unawaited(_sessionState.rememberTelevisionDestination('home'));
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _navigationRailKey.currentState?.requestFocus('home');
+    });
+    return true;
+  }
+
+  bool _enterDestination(String destinationId) {
+    final controller = switch (destinationId) {
+      'search' => _searchFocusController,
+      'movies' => _moviesFocusController,
+      'series' => _seriesFocusController,
+      'settings' => _settingsFocusController,
+      _ => null,
+    };
+    if (controller == null) return false;
+    _selectDestination(destinationId);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) controller.requestFocus();
     });
     return true;
   }
@@ -297,6 +327,7 @@ class _TvHomeShellState extends State<TvHomeShell> with RestorationMixin {
                           autofocusId: _selectedDestinationId.value,
                           metrics: metrics,
                           onDestinationSelected: _selectDestination,
+                          onMoveRight: _enterDestination,
                         ),
                         SizedBox(width: metrics.railGap),
                         Expanded(
@@ -317,16 +348,19 @@ class _TvHomeShellState extends State<TvHomeShell> with RestorationMixin {
                                   TvSearchScreen(
                                     metrics: metrics,
                                     onOpenMedia: _openMedia,
+                                    focusController: _searchFocusController,
                                   ),
                                   TvCatalogScreen(
                                     kind: TvMediaKind.movie,
                                     metrics: metrics,
                                     onOpenMedia: _openMedia,
+                                    focusController: _moviesFocusController,
                                   ),
                                   TvCatalogScreen(
                                     kind: TvMediaKind.series,
                                     metrics: metrics,
                                     onOpenMedia: _openMedia,
+                                    focusController: _seriesFocusController,
                                   ),
                                   TvLiveScreen(metrics: metrics),
                                   TvLibraryScreen(
@@ -335,7 +369,10 @@ class _TvHomeShellState extends State<TvHomeShell> with RestorationMixin {
                                     onOpenMedia: _openMedia,
                                   ),
                                   TvProfileScreen(metrics: metrics),
-                                  TvSettingsScreen(metrics: metrics),
+                                  TvSettingsScreen(
+                                    metrics: metrics,
+                                    focusController: _settingsFocusController,
+                                  ),
                                 ];
                                 return IndexedStack(
                                   index: selectedIndex,

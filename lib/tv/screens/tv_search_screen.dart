@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -10,6 +11,7 @@ import '../../singleton/sharedpreferences_singleton.dart';
 import '../app/tv_design.dart';
 import '../controllers/tv_catalog_controller.dart';
 import '../controllers/tv_search_history_controller.dart';
+import '../focus/tv_screen_focus_controller.dart';
 import '../focus/tv_focusable.dart';
 import '../models/tv_media_item.dart';
 import '../widgets/tv_content_grid.dart';
@@ -20,11 +22,13 @@ class TvSearchScreen extends StatefulWidget {
   const TvSearchScreen({
     required this.metrics,
     required this.onOpenMedia,
+    this.focusController,
     super.key,
   });
 
   final TvShellMetrics metrics;
   final ValueChanged<TvMediaItem> onOpenMedia;
+  final TvScreenFocusController? focusController;
 
   @override
   State<TvSearchScreen> createState() => _TvSearchScreenState();
@@ -33,7 +37,9 @@ class TvSearchScreen extends StatefulWidget {
 class _TvSearchScreenState extends State<TvSearchScreen> {
   static const _controller = TvCatalogController();
   final TextEditingController _queryController = TextEditingController();
-  final FocusNode _queryFocusNode = FocusNode(debugLabel: 'TV search query');
+  late final FocusNode _queryFocusNode;
+  final FocusNode _searchActionFocusNode =
+      FocusNode(debugLabel: 'TV search action');
   Future<List<TvMediaItem>>? _results;
   String _submittedQuery = '';
   bool _queryHasFocus = false;
@@ -45,8 +51,68 @@ class _TvSearchScreenState extends State<TvSearchScreen> {
   @override
   void initState() {
     super.initState();
+    _queryFocusNode = FocusNode(
+      debugLabel: 'TV search query',
+      onKeyEvent: _handleQueryKeyEvent,
+    );
     _queryFocusNode.addListener(_handleQueryFocus);
+    widget.focusController?.attach(this, _requestEntryFocus);
     unawaited(_loadSearchHistory());
+  }
+
+  @override
+  void didUpdateWidget(TvSearchScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.focusController, widget.focusController)) {
+      oldWidget.focusController?.detach(this);
+      widget.focusController?.attach(this, _requestEntryFocus);
+    }
+  }
+
+  KeyEventResult _handleQueryKeyEvent(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
+      return KeyEventResult.ignored;
+    }
+    final key = event.logicalKey;
+    if (key == LogicalKeyboardKey.escape ||
+        key == LogicalKeyboardKey.goBack ||
+        key == LogicalKeyboardKey.browserBack) {
+      _searchActionFocusNode.requestFocus();
+      return KeyEventResult.handled;
+    }
+    final direction = switch (key) {
+      LogicalKeyboardKey.arrowUp => TraversalDirection.up,
+      LogicalKeyboardKey.arrowDown => TraversalDirection.down,
+      LogicalKeyboardKey.arrowLeft => TraversalDirection.left,
+      LogicalKeyboardKey.arrowRight => TraversalDirection.right,
+      _ => null,
+    };
+    if (direction == null) return KeyEventResult.ignored;
+    return node.focusInDirection(direction)
+        ? KeyEventResult.handled
+        : KeyEventResult.ignored;
+  }
+
+  void _requestEntryFocus() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted ||
+          _queryFocusNode.context == null ||
+          !_queryFocusNode.canRequestFocus) {
+        return;
+      }
+      _queryFocusNode.requestFocus();
+    });
+  }
+
+  void _requestSearchActionFocus() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted ||
+          _searchActionFocusNode.context == null ||
+          !_searchActionFocusNode.canRequestFocus) {
+        return;
+      }
+      _searchActionFocusNode.requestFocus();
+    });
   }
 
   Future<void> _loadSearchHistory() async {
@@ -96,6 +162,7 @@ class _TvSearchScreenState extends State<TvSearchScreen> {
         return items;
       });
     });
+    _requestSearchActionFocus();
   }
 
   Future<void> _rememberSearch(String query) async {
@@ -126,6 +193,7 @@ class _TvSearchScreenState extends State<TvSearchScreen> {
       _recentSearches = const <String>[];
       _historyIsLoading = false;
     });
+    _requestSearchActionFocus();
   }
 
   Future<void> _removeHistoryEntry(String query) async {
@@ -141,6 +209,7 @@ class _TvSearchScreenState extends State<TvSearchScreen> {
       _recentSearches = updated;
       _historyIsLoading = false;
     });
+    _requestSearchActionFocus();
   }
 
   void _showRecentSearches() {
@@ -148,14 +217,17 @@ class _TvSearchScreenState extends State<TvSearchScreen> {
       _results = null;
       _submittedQuery = '';
     });
+    _requestSearchActionFocus();
   }
 
   @override
   void dispose() {
+    widget.focusController?.detach(this);
     _queryFocusNode
       ..removeListener(_handleQueryFocus)
       ..dispose();
     _queryController.dispose();
+    _searchActionFocusNode.dispose();
     super.dispose();
   }
 
@@ -276,6 +348,7 @@ class _TvSearchScreenState extends State<TvSearchScreen> {
                 ),
                 const SizedBox(width: 18),
                 _SearchActionButton(
+                  focusNode: _searchActionFocusNode,
                   label: 'Search',
                   semanticLabel: 'Search FlixQuest',
                   icon: PhosphorIcons.magnifyingGlass(),
@@ -506,6 +579,7 @@ class _SearchActionButton extends StatelessWidget {
     required this.semanticLabel,
     required this.icon,
     required this.onActivate,
+    this.focusNode,
     this.primary = false,
   });
 
@@ -513,6 +587,7 @@ class _SearchActionButton extends StatelessWidget {
   final String semanticLabel;
   final IconData icon;
   final VoidCallback onActivate;
+  final FocusNode? focusNode;
   final bool primary;
 
   @override
@@ -520,6 +595,7 @@ class _SearchActionButton extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     final foreground = primary ? colors.onPrimary : colors.onSurface;
     return TvFocusable(
+      focusNode: focusNode,
       semanticLabel: semanticLabel,
       onActivate: onActivate,
       focusScale: 1.025,

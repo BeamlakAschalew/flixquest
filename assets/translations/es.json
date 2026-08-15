@@ -122,6 +122,7 @@
   "app_version": "FlixQuest v{version}",
   "endorsment": "Este producto utiliza la API de TMDB pero no está respaldado ni certificado por TMDB.",
   "bug_notice": "¿Ha notado algún error? Infórmeme en Telegram, haga clic aquí",
+  "report_issue": "Reportar un problema",
   "follow_cinemax": "Sigue a FlixQuest en varias plataformas",
   "made_with": "Hecho con ❤️ por Beamlak Aschalew",
   "year_range": "{startYear} EC, {endYear} GC",

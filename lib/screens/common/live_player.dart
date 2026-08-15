@@ -58,11 +58,13 @@ class LivePlayer extends StatefulWidget {
 }
 
 class _LivePlayerState extends State<LivePlayer> {
-  static const Duration _recoveryWindow = Duration(seconds: 60);
+  static const Duration _recoveryWindow = Duration(seconds: 90);
   static const List<Duration> _automaticRecoveryDelays = <Duration>[
     Duration(seconds: 8),
     Duration(seconds: 12),
     Duration(seconds: 15),
+    Duration(seconds: 20),
+    Duration(seconds: 25),
   ];
 
   late BetterPlayerController _betterPlayerController;
@@ -122,10 +124,10 @@ class _LivePlayerState extends State<LivePlayer> {
         const BetterPlayerBufferingConfiguration(
       // Favor a deeper forward buffer so slow and fluctuating links can
       // absorb sustained throughput drops. Bound history for Android TV RAM.
-      maxBufferMs: 180000,
-      minBufferMs: 30000,
-      bufferForPlaybackMs: 6000,
-      bufferForPlaybackAfterRebufferMs: 12000,
+      maxBufferMs: 240000,
+      minBufferMs: 60000,
+      bufferForPlaybackMs: 8000,
+      bufferForPlaybackAfterRebufferMs: 20000,
       backBufferDurationMs: 30000,
       retainBackBufferFromKeyframe: false,
     );
@@ -386,10 +388,10 @@ class _LivePlayerState extends State<LivePlayer> {
       );
       _trackPlayerEvent('reconnecting', error: error.toString());
     }
-    _playbackFailure.value = _LivePlaybackFailure(
-      message: friendlyLiveTvError(error),
-      retrying: true,
-    );
+    // Keep transient network failures invisible while native/player-level
+    // retries are running. A terminal message is shown only after the full
+    // recovery window expires.
+    _playbackFailure.value = null;
     // Keep playback alive. Better Player retries the current HLS source on
     // its own; the slower app-level attempts below also resolve fresh tokens.
     _betterPlayerController.setControlsEnabled(false);

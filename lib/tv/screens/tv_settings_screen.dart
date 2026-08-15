@@ -6,13 +6,19 @@ import '../../models/app_colors.dart';
 import '../../provider/settings_provider.dart';
 import '../../provider/app_dependency_provider.dart';
 import '../app/tv_design.dart';
+import '../focus/tv_screen_focus_controller.dart';
 import '../focus/tv_focusable.dart';
 import '../widgets/tv_dialog.dart';
 
 class TvSettingsScreen extends StatelessWidget {
-  const TvSettingsScreen({required this.metrics, super.key});
+  const TvSettingsScreen({
+    required this.metrics,
+    this.focusController,
+    super.key,
+  });
 
   final TvShellMetrics metrics;
+  final TvScreenFocusController? focusController;
 
   @override
   Widget build(BuildContext context) {
@@ -21,121 +27,135 @@ class TvSettingsScreen extends StatelessWidget {
     final appDependencies = context.watch<AppDependencyProvider>();
     final occasionalCatalog = appDependencies.occasionalThemeCatalog;
     final occasionalThemes = appDependencies.availableOccasionalThemes;
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        metrics.contentPadding,
-        0,
-        metrics.contentPadding,
-        metrics.contentPadding,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Icon(PhosphorIcons.gear(), color: colors.primary, size: 32),
-              const SizedBox(width: 13),
-              Text(
-                'Settings',
-                style: TextStyle(
-                  color: colors.onSurface,
-                  fontFamily: 'FigtreeSB',
-                  fontSize: 34,
+    return _TvSettingsFocusEntry(
+      focusController: focusController,
+      builder: (themeFocusNode) => Padding(
+        padding: EdgeInsets.fromLTRB(
+          metrics.contentPadding,
+          0,
+          metrics.contentPadding,
+          metrics.contentPadding,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Icon(PhosphorIcons.gear(), color: colors.primary, size: 32),
+                const SizedBox(width: 13),
+                Text(
+                  'Settings',
+                  style: TextStyle(
+                    color: colors.onSurface,
+                    fontFamily: 'FigtreeSB',
+                    fontSize: 34,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: metrics.compact ? 18 : 28),
+            Expanded(
+              child: SingleChildScrollView(
+                clipBehavior: Clip.hardEdge,
+                padding: const EdgeInsets.all(TvDesign.focusOutset),
+                child: Column(
+                  children: <Widget>[
+                    _TvSettingTile(
+                      key: const ValueKey<String>('theme-mode'),
+                      focusNode: themeFocusNode,
+                      label: 'Theme mode',
+                      value: _themeLabel(settings.appTheme),
+                      icon: PhosphorIcons.moonStars(),
+                      onActivate: () => _showThemeModePicker(context, settings),
+                    ),
+                    const SizedBox(height: 14),
+                    _TvSettingTile(
+                      key: const ValueKey<String>('ambient-mode'),
+                      label: 'Ambient mode',
+                      value: appDependencies.ambientModeEnabled ? 'On' : 'Off',
+                      icon: PhosphorIcons.imageSquare(),
+                      onActivate: () => appDependencies.ambientModeEnabled =
+                          !appDependencies.ambientModeEnabled,
+                    ),
+                    if (occasionalCatalog.enabled) ...<Widget>[
+                      const SizedBox(height: 14),
+                      _TvSettingTile(
+                        key: const ValueKey<String>('seasonal-themes'),
+                        label: 'Seasonal themes',
+                        value: appDependencies.occasionalThemeEnabled
+                            ? 'On'
+                            : 'Off',
+                        icon: PhosphorIcons.sparkle(),
+                        onActivate: () =>
+                            appDependencies.occasionalThemeEnabled =
+                                !appDependencies.occasionalThemeEnabled,
+                      ),
+                    ],
+                    if (occasionalCatalog.enabled &&
+                        appDependencies.occasionalThemeEnabled &&
+                        occasionalCatalog.allowUserSelection &&
+                        occasionalThemes.isNotEmpty) ...<Widget>[
+                      const SizedBox(height: 14),
+                      _TvSettingTile(
+                        key: const ValueKey<String>('seasonal-theme'),
+                        label: 'Seasonal theme',
+                        value: _occasionalThemeLabel(appDependencies),
+                        icon: PhosphorIcons.sparkle(),
+                        onActivate: () => _showOccasionalThemePicker(
+                          context,
+                          appDependencies,
+                        ),
+                      ),
+                    ],
+                    if (occasionalCatalog.enabled &&
+                        appDependencies.occasionalThemeEnabled &&
+                        occasionalCatalog.effectsEnabled &&
+                        occasionalCatalog.allowUserEffectsToggle) ...<Widget>[
+                      const SizedBox(height: 14),
+                      _TvSettingTile(
+                        key: const ValueKey<String>('seasonal-effects'),
+                        label: 'Seasonal effects',
+                        value: appDependencies.occasionalEffectsEnabled
+                            ? 'On'
+                            : 'Off',
+                        icon: PhosphorIcons.sparkle(),
+                        onActivate: () =>
+                            appDependencies.occasionalEffectsEnabled =
+                                !appDependencies.occasionalEffectsEnabled,
+                      ),
+                    ],
+                    const SizedBox(height: 14),
+                    _TvSettingTile(
+                      key: const ValueKey<String>('color-theme'),
+                      label: 'Color theme',
+                      value: _colorThemeLabel(settings.appColorIndex),
+                      icon: PhosphorIcons.palette(),
+                      onActivate: () => _showColorThemePicker(context),
+                    ),
+                    const SizedBox(height: 14),
+                    _TvSettingTile(
+                      key: const ValueKey<String>('tmdb-proxy'),
+                      label: 'TMDB proxy',
+                      value: settings.enableProxy ? 'On' : 'Off',
+                      icon: PhosphorIcons.globeHemisphereWest(),
+                      onActivate: () =>
+                          settings.enableProxy = !settings.enableProxy,
+                    ),
+                    const SizedBox(height: 14),
+                    _TvSettingTile(
+                      key: const ValueKey<String>('image-quality'),
+                      label: 'Image quality',
+                      value: _imageQualityLabel(settings.imageQuality),
+                      icon: PhosphorIcons.image(),
+                      onActivate: () =>
+                          _showImageQualityPicker(context, settings),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-          SizedBox(height: metrics.compact ? 18 : 28),
-          Expanded(
-            child: SingleChildScrollView(
-              clipBehavior: Clip.hardEdge,
-              padding: const EdgeInsets.all(TvDesign.focusOutset),
-              child: Column(
-                children: <Widget>[
-                  _TvSettingTile(
-                    label: 'Theme mode',
-                    value: _themeLabel(settings.appTheme),
-                    icon: PhosphorIcons.moonStars(),
-                    onActivate: () => _showThemeModePicker(context, settings),
-                  ),
-                  const SizedBox(height: 14),
-                  _TvSettingTile(
-                    label: 'Ambient mode',
-                    value: appDependencies.ambientModeEnabled ? 'On' : 'Off',
-                    icon: PhosphorIcons.imageSquare(),
-                    onActivate: () => appDependencies.ambientModeEnabled =
-                        !appDependencies.ambientModeEnabled,
-                  ),
-                  if (occasionalCatalog.enabled) ...<Widget>[
-                    const SizedBox(height: 14),
-                    _TvSettingTile(
-                      label: 'Seasonal themes',
-                      value:
-                          appDependencies.occasionalThemeEnabled ? 'On' : 'Off',
-                      icon: PhosphorIcons.sparkle(),
-                      onActivate: () => appDependencies.occasionalThemeEnabled =
-                          !appDependencies.occasionalThemeEnabled,
-                    ),
-                  ],
-                  if (occasionalCatalog.enabled &&
-                      appDependencies.occasionalThemeEnabled &&
-                      occasionalCatalog.allowUserSelection &&
-                      occasionalThemes.isNotEmpty) ...<Widget>[
-                    const SizedBox(height: 14),
-                    _TvSettingTile(
-                      label: 'Seasonal theme',
-                      value: _occasionalThemeLabel(appDependencies),
-                      icon: PhosphorIcons.sparkle(),
-                      onActivate: () => _showOccasionalThemePicker(
-                        context,
-                        appDependencies,
-                      ),
-                    ),
-                  ],
-                  if (occasionalCatalog.enabled &&
-                      appDependencies.occasionalThemeEnabled &&
-                      occasionalCatalog.effectsEnabled &&
-                      occasionalCatalog.allowUserEffectsToggle) ...<Widget>[
-                    const SizedBox(height: 14),
-                    _TvSettingTile(
-                      label: 'Seasonal effects',
-                      value: appDependencies.occasionalEffectsEnabled
-                          ? 'On'
-                          : 'Off',
-                      icon: PhosphorIcons.sparkle(),
-                      onActivate: () =>
-                          appDependencies.occasionalEffectsEnabled =
-                              !appDependencies.occasionalEffectsEnabled,
-                    ),
-                  ],
-                  const SizedBox(height: 14),
-                  _TvSettingTile(
-                    label: 'Color theme',
-                    value: _colorThemeLabel(settings.appColorIndex),
-                    icon: PhosphorIcons.palette(),
-                    onActivate: () => _showColorThemePicker(context),
-                  ),
-                  const SizedBox(height: 14),
-                  _TvSettingTile(
-                    label: 'TMDB proxy',
-                    value: settings.enableProxy ? 'On' : 'Off',
-                    icon: PhosphorIcons.globeHemisphereWest(),
-                    onActivate: () =>
-                        settings.enableProxy = !settings.enableProxy,
-                  ),
-                  const SizedBox(height: 14),
-                  _TvSettingTile(
-                    label: 'Image quality',
-                    value: _imageQualityLabel(settings.imageQuality),
-                    icon: PhosphorIcons.image(),
-                    onActivate: () =>
-                        _showImageQualityPicker(context, settings),
-                  ),
-                ],
-              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -295,6 +315,60 @@ class TvSettingsScreen extends StatelessWidget {
   }
 }
 
+class _TvSettingsFocusEntry extends StatefulWidget {
+  const _TvSettingsFocusEntry({
+    required this.builder,
+    this.focusController,
+  });
+
+  final Widget Function(FocusNode themeFocusNode) builder;
+  final TvScreenFocusController? focusController;
+
+  @override
+  State<_TvSettingsFocusEntry> createState() => _TvSettingsFocusEntryState();
+}
+
+class _TvSettingsFocusEntryState extends State<_TvSettingsFocusEntry> {
+  final FocusNode _themeFocusNode =
+      FocusNode(debugLabel: 'TV setting theme mode');
+
+  @override
+  void initState() {
+    super.initState();
+    widget.focusController?.attach(this, _requestFocus);
+  }
+
+  @override
+  void didUpdateWidget(_TvSettingsFocusEntry oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.focusController, widget.focusController)) {
+      oldWidget.focusController?.detach(this);
+      widget.focusController?.attach(this, _requestFocus);
+    }
+  }
+
+  void _requestFocus() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted ||
+          _themeFocusNode.context == null ||
+          !_themeFocusNode.canRequestFocus) {
+        return;
+      }
+      _themeFocusNode.requestFocus();
+    });
+  }
+
+  @override
+  void dispose() {
+    widget.focusController?.detach(this);
+    _themeFocusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.builder(_themeFocusNode);
+}
+
 class _TvColorThemePicker extends StatefulWidget {
   const _TvColorThemePicker();
 
@@ -403,17 +477,21 @@ class _TvSettingTile extends StatelessWidget {
     required this.value,
     required this.icon,
     required this.onActivate,
+    this.focusNode,
+    super.key,
   });
 
   final String label;
   final String value;
   final IconData icon;
   final VoidCallback onActivate;
+  final FocusNode? focusNode;
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     return TvFocusable(
+      focusNode: focusNode,
       semanticLabel: '$label, $value',
       onActivate: onActivate,
       focusScale: 1.015,

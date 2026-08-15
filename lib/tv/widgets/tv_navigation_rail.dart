@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../app/tv_design.dart';
 import '../focus/tv_focus_memory.dart';
@@ -26,6 +27,7 @@ class TvNavigationRail extends StatefulWidget {
     required this.onDestinationSelected,
     required this.metrics,
     this.autofocusId,
+    this.onMoveRight,
     super.key,
   });
 
@@ -34,6 +36,7 @@ class TvNavigationRail extends StatefulWidget {
   final ValueChanged<String> onDestinationSelected;
   final TvShellMetrics metrics;
   final String? autofocusId;
+  final bool Function(String destinationId)? onMoveRight;
 
   @override
   State<TvNavigationRail> createState() => TvNavigationRailState();
@@ -75,6 +78,23 @@ class TvNavigationRailState extends State<TvNavigationRail> {
 
   void requestFocus(String destinationId) {
     _focusNodes[destinationId]?.requestFocus();
+  }
+
+  bool get hasFocus => _focusNodes.values.any((node) => node.hasFocus);
+
+  KeyEventResult _handleDestinationKey(
+    String destinationId,
+    KeyEvent event,
+  ) {
+    if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
+      return KeyEventResult.ignored;
+    }
+    if (event.logicalKey != LogicalKeyboardKey.arrowRight) {
+      return KeyEventResult.ignored;
+    }
+    return widget.onMoveRight?.call(destinationId) == true
+        ? KeyEventResult.handled
+        : KeyEventResult.ignored;
   }
 
   @override
@@ -165,6 +185,8 @@ class TvNavigationRailState extends State<TvNavigationRail> {
                         autofocus: destination.id == initialFocusId,
                         selected: destination.id == widget.selectedId,
                         semanticLabel: destination.label,
+                        onKeyEvent: (_, event) =>
+                            _handleDestinationKey(destination.id, event),
                         onFocusChanged: (hasFocus) {
                           if (hasFocus) {
                             memory?.remember(

@@ -122,6 +122,7 @@
   "app_version": "FlixQuest v{version}",
   "endorsment": "هذا المنتج يستخدم واجهة برمجة تطبيقات TMDB ولكنه غير معتمد أو مصدق عليه من قبل TMDB.",
   "bug_notice": "هل لاحظت أي أخطاء؟ أبلغني على Telegram، انقر هنا",
+  "report_issue": "الإبلاغ عن مشكلة",
   "follow_cinemax": "تابع FlixQuest على المنصات المختلفة",
   "made_with": "صنع ب ❤️ بواسطة Beamlak Aschalew",
   "year_range": "{startYear} م، {endYear} م",

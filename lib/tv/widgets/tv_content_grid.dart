@@ -23,6 +23,7 @@ class TvContentGrid<T> extends StatefulWidget {
     required this.onItemActivated,
     required this.targetItemWidth,
     this.autofocus = false,
+    this.controller,
     this.padding = const EdgeInsets.all(TvDesign.focusOutset),
     this.horizontalSpacing = 22,
     this.verticalSpacing = 24,
@@ -37,12 +38,43 @@ class TvContentGrid<T> extends StatefulWidget {
   final ValueChanged<T> onItemActivated;
   final double targetItemWidth;
   final bool autofocus;
+  final TvContentGridController? controller;
   final EdgeInsets padding;
   final double horizontalSpacing;
   final double verticalSpacing;
 
   @override
   State<TvContentGrid<T>> createState() => _TvContentGridState<T>();
+}
+
+class TvContentGridController {
+  _TvContentGridState<dynamic>? _state;
+  bool _pendingRequest = false;
+
+  void requestFocus() {
+    final state = _state;
+    if (state == null) {
+      _pendingRequest = true;
+      return;
+    }
+    state._requestPreferredFocus();
+  }
+
+  void _attach(_TvContentGridState<dynamic> state) {
+    _state = state;
+    if (_pendingRequest) {
+      _pendingRequest = false;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (identical(_state, state) && state.mounted) {
+          state._requestPreferredFocus();
+        }
+      });
+    }
+  }
+
+  void _detach(_TvContentGridState<dynamic> state) {
+    if (identical(_state, state)) _state = null;
+  }
 }
 
 class _TvContentGridState<T> extends State<TvContentGrid<T>> {
@@ -54,6 +86,7 @@ class _TvContentGridState<T> extends State<TvContentGrid<T>> {
   void initState() {
     super.initState();
     _syncFocusNodes();
+    widget.controller?._attach(this);
   }
 
   @override
@@ -65,6 +98,10 @@ class _TvContentGridState<T> extends State<TvContentGrid<T>> {
   @override
   void didUpdateWidget(TvContentGrid<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.controller, widget.controller)) {
+      oldWidget.controller?._detach(this);
+      widget.controller?._attach(this);
+    }
     if (oldWidget.scopeId != widget.scopeId) {
       for (final node in _focusNodes.values) {
         node.dispose();
@@ -102,6 +139,13 @@ class _TvContentGridState<T> extends State<TvContentGrid<T>> {
     final rememberedId = memory?.recall(widget.scopeId);
     if (!widget.autofocus && rememberedId == null) return;
     _scheduledInitialFocus = true;
+    _requestPreferredFocus();
+  }
+
+  void _requestPreferredFocus() {
+    if (widget.items.isEmpty) return;
+    final memory = TvFocusMemoryScope.maybeOf(context);
+    final rememberedId = memory?.recall(widget.scopeId);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final firstId = widget.itemId(widget.items.first);
@@ -111,6 +155,7 @@ class _TvContentGridState<T> extends State<TvContentGrid<T>> {
 
   @override
   void dispose() {
+    widget.controller?._detach(this);
     for (final node in _focusNodes.values) {
       node.dispose();
     }
@@ -141,7 +186,13 @@ class _TvContentGridState<T> extends State<TvContentGrid<T>> {
         index + 1 < widget.items.length) {
       targetIndex = index + 1;
     }
-    if (targetIndex == null) return KeyEventResult.ignored;
+    if (targetIndex == null) {
+      if (key == LogicalKeyboardKey.arrowRight ||
+          key == LogicalKeyboardKey.arrowDown) {
+        return KeyEventResult.handled;
+      }
+      return KeyEventResult.ignored;
+    }
     unawaited(
       _revealAndFocus(
         targetIndex: targetIndex,

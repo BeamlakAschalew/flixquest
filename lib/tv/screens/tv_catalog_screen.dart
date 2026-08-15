@@ -6,6 +6,7 @@ import '../../provider/app_dependency_provider.dart';
 import '../../provider/settings_provider.dart';
 import '../app/tv_design.dart';
 import '../controllers/tv_catalog_controller.dart';
+import '../focus/tv_screen_focus_controller.dart';
 import '../models/tv_media_item.dart';
 import '../widgets/tv_content_grid.dart';
 import '../widgets/tv_media_card.dart';
@@ -16,12 +17,14 @@ class TvCatalogScreen extends StatefulWidget {
     required this.kind,
     required this.metrics,
     required this.onOpenMedia,
+    this.focusController,
     super.key,
   });
 
   final TvMediaKind kind;
   final TvShellMetrics metrics;
   final ValueChanged<TvMediaItem> onOpenMedia;
+  final TvScreenFocusController? focusController;
 
   @override
   State<TvCatalogScreen> createState() => _TvCatalogScreenState();
@@ -29,8 +32,31 @@ class TvCatalogScreen extends StatefulWidget {
 
 class _TvCatalogScreenState extends State<TvCatalogScreen> {
   static const _controller = TvCatalogController();
+  final TvContentGridController _gridFocusController =
+      TvContentGridController();
   Future<List<TvMediaItem>>? _items;
   String? _configurationKey;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.focusController?.attach(this, _gridFocusController.requestFocus);
+  }
+
+  @override
+  void didUpdateWidget(TvCatalogScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.focusController, widget.focusController)) {
+      oldWidget.focusController?.detach(this);
+      widget.focusController?.attach(this, _gridFocusController.requestFocus);
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.focusController?.detach(this);
+    super.dispose();
+  }
 
   @override
   void didChangeDependencies() {
@@ -103,6 +129,7 @@ class _TvCatalogScreenState extends State<TvCatalogScreen> {
                   );
                 }
                 return TvContentGrid<TvMediaItem>(
+                  controller: _gridFocusController,
                   scopeId: 'catalog-${widget.kind.name}',
                   items: items,
                   itemId: (item) => item.stableId,
