@@ -1,106 +1,279 @@
 <p align="center">
-    <img alt="Consumet" src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/main/cinemax/res/assets/images/logo.png" width="150">
+  <img alt="FlixQuest" src="assets/images/FlixQuest.png" width="180">
 </p>
-<h1 align="center">FlixQuest (Formerly Cinemax)</h1>
-<p align="center">Android app built using Flutter that let's you stream movies and TV shows for free!</p>
 
-### 📱 Screenshots (currently showing old screenshots, will update later)
+<h1 align="center">FlixQuest</h1>
 
-<table style={border:"none"}>
-  <tr>
-    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/2f0bb762cd53901c6234628d13816974a9caab3c/cinemax/res/assets/images/Screenshot_1676710325-min.png" alt="Screenshot 2"/></td>
-    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/2f0bb762cd53901c6234628d13816974a9caab3c/cinemax/res/assets/images/Screenshot_1676710346-min.png" alt="Screenshot 1"/></td>
-    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/2f0bb762cd53901c6234628d13816974a9caab3c/cinemax/res/assets/images/Screenshot_1676710394-min.png" alt="Screenshot 3"/></td>
-  </tr>
-  <tr>
-    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/2f0bb762cd53901c6234628d13816974a9caab3c/cinemax/res/assets/images/Screenshot_1676710412-min.png" alt="Screenshot 1"/></td>
-    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/2f0bb762cd53901c6234628d13816974a9caab3c/cinemax/res/assets/images/Screenshot_1676710433-min.png" alt="Screenshot 2"/></td>
-    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/2f0bb762cd53901c6234628d13816974a9caab3c/cinemax/res/assets/images/Screenshot_1676710453-min.png" alt="Screenshot 3"/></td>
-  </tr>
-  <tr>
-    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/2f0bb762cd53901c6234628d13816974a9caab3c/cinemax/res/assets/images/Screenshot_1676710474-min.png" alt="Screenshot 1"/></td>
-    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/2f0bb762cd53901c6234628d13816974a9caab3c/cinemax/res/assets/images/Screenshot_1676710502-min.png" alt="Screenshot 1"/></td>
-    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/2f0bb762cd53901c6234628d13816974a9caab3c/cinemax/res/assets/images/Screenshot_1676710527-min.png" alt="Screenshot 1"/></td>
-  </tr>
-   <tr>
-    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/2f0bb762cd53901c6234628d13816974a9caab3c/cinemax/res/assets/images/Screenshot_1676710766-min.png" alt="Screenshot 1"/></td>
-    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/2f0bb762cd53901c6234628d13816974a9caab3c/cinemax/res/assets/images/Screenshot_1676710771-min.png" alt="Screenshot 1"/></td>
-    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/2f0bb762cd53901c6234628d13816974a9caab3c/cinemax/res/assets/images/Screenshot_1676710777-min.png" alt="Screenshot 1"/></td>
-  </tr>
-</table>
+<p align="center">
+  <strong>A modern, open-source streaming application for Movies, TV Shows, and Live TV built with Flutter.</strong><br>
+  Optimized for <strong>Android Mobile, Tablets</strong>, and <strong>Android TV (10-Foot UI)</strong>.
+</p>
 
-### 🔐 Replacing API keys
-
-You need to use your own TMDB, Opensubtitles and Mixpanel API keys. Create a .env file in the root directory of the project and create fields TMDB_API_KEY, MIXPANEL_API_KEY and OPENSUBTITLES_API_KEY and assign a value to them with your own keys.
-
-Mixpanel is used for general analytics thus can be removed, same goes for opensutitles but TMDB API key is necessary.
-
-API keys can be found at:
-https://developer.themoviedb.org/v3/reference/intro/authentication#api-key-quick-start
-
-https://mixpanel.com
-
-https://www.opensubtitles.com/consumers
-
-### 🕷️ Using self-hosted scraper instances
-
-This repo uses the [Consumet API](https://github.com/consumet/api.consumet.org) and [FlixQuest API](https://github.com/BeamlakAschalew/flixquest-api) to scrape streaming links of movies and TV shows.<br>You need to have your own instance running on free services like [Vercel](https://vercel.com) or [Render](https://render.com)
-
-In the .env file you created (follow the above "Replacing API keys" section if you don't have an .env file), add `FLIXQUEST_API_URL` and `CONSUMET_URL` fields and add your FlixQuest API and Consumet API instances respectively.
-
-After that your env file should look like this:
-```env
-TMDB_API_KEY="your_tmdb_api_key"
-MIXPANEL_API_KEY="your_mixpanel_api_key"
-OPENSUBTITLES_API_KEY="your_opensubtitles_api_key"
-CONSUMET_URL="https://your-consumet-instance.someserver.com/"
-FLIXQUEST_API_URL="https://your-flixquest-api-instance.someserver.com/"
-```
-
-### 🔥 Firebase dependencies
-
-The repo uses Firebase remote config to update different URL's and general values that needs to be updated dynamically without updating the app. You can remove the code if you want static values for some of the fields. 
-
-This repo also uses Firebase Database to store data of registered users and to sync bookmarks between SQLite and well, you guessed it Firestore Database. You can also remove this code, it'll work just fine.
-
-### ▶️ Adding custom better_player package
-
-This repo uses customized better_player package which can be found at github.com/beamlakaschalew/flixquest-betterplayer
-
-Clone the repo to your machine and edit the location of the better_player package that is found in the project's pubspec.yaml to wherever the package is located.<br>
-Also alternatively you can just use the git url like so:
-```yaml
-better_player:
-    git:
-        url: https://github.com/BeamlakAschalew/flixquest-betterplayer.git
-```
-
-### 😇 Contributing
-
-Whether you have ideas, translations, design changes, code cleaning, or real heavy code changes, help is always welcome. The more is done the better it gets!
-
-If creating a pull request, please make sure to format your code.
-
-If opening an issue without following the issue template, we will ignore the issue and force close it.
-
-### ⚠️ Disclaimer
-
-The developers of this application does not have any affiliation with the content providers like TMDB or third party websites.
-
-FlixQuest does not host any content on the app, and has no control over what media is put up or taken down.
-
-In case of copyright infringement, please directly contact the responsible parties or the streaming websites.
-
-It merely scrapes 3rd-party websites that are publicly accessable via any regular web browser and third-party APIs
-
-<h3>Buy me a coffee if you like my work!</h3>
-<a href="https://www.buymeacoffee.com/cinemaxapp"><img src="https://i.ibb.co/Tr4sC5X/bmc-button.png" height="90" width="320.4" alt="buy me a coffee"></a>
-
-### 🙏 Credits
-Basic UI and TMDB API integration from: [Matinee](https://github.com/bimsina/Matinee-Flutter)
+<p align="center">
+  <img src="https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter&logoColor=white" alt="Flutter">
+  <img src="https://img.shields.io/badge/Dart-3.x-0175C2?logo=dart&logoColor=white" alt="Dart">
+  <img src="https://img.shields.io/badge/Platform-Android%20%7C%20Android%20TV-3DDC84?logo=android&logoColor=white" alt="Platform">
+  <img src="https://img.shields.io/badge/Version-4.0.0-blue" alt="Version">
+  <img src="https://img.shields.io/badge/License-GPL--3.0-green" alt="License">
+</p>
 
 ---
 
-<i>GNU, but for Entertainment</i>
+## ✨ Features
 
-<h4 align='center'> 2024 ツ BeamlakAschalew</h4>
+### 🎬 Extensive Movie & TV Show Catalog
+
+- **Discovery Feeds**: Categorized home feeds with shimmer loading effects — Trending, Top 10 This Week, New Releases, Upcoming, and Popular.
+- **Detailed Media Pages**: Media details featuring trailers, cast & crew filmographies, user reviews, and intelligent "More Like This" recommendations powered by TMDB.
+- **Explore & Filter**: Filter content by genre, release year, streaming provider, country, or sort order, alongside a random discovery tool.
+- **TV Seasons & Episodes**: Interactive episode browser with episode thumbnails, descriptions, air dates, and quick episode switcher sheets.
+
+### 📺 Android TV (10-Foot UI Experience)
+
+- **D-Pad Focus Navigation**: Native TV remote control navigation with directional keymaps and focus memory.
+- **TV Home Shell & Rail**: TV navigation rail, catalog screens, and hero banners designed specifically for large screens.
+- **TV Search & History**: Remote-friendly search interface with recent search query history.
+- **Automatic Presentation Detection**: Automatically detects TV devices and adapts the interface between mobile touch and TV 10-foot layout.
+
+### 📡 Free Live TV & Sports Streaming
+
+- **Live TV Integration**: Integrated DaddyLive service providing 24/7 TV channels and scheduled live sports events.
+- **Category Browsing & Search**: Search channels by name, filter by category, and view local time-formatted schedules.
+- **Stream Recovery & Buffering**: Smart playback recovery (90-second window), auto-reconnect, and optimized live buffering.
+- **Local Caching**: Fast SQLite caching for live channels and event schedules.
+
+### 🚀 Multi-Source Video Providers & Scraper API v2
+
+- **Dynamic Provider System**: Integrated with **FlixQuest Scraper API v2** for scraping high-quality streams.
+- **Live Provider Health Status**: Real-time provider uptime monitoring (`/providers/status`) with in-app status indicators.
+- **Direct Fallback Provider**: Built-in direct VixSrc provider fallback.
+- **Custom Provider Prioritization**: Reorder and prioritize your preferred streaming providers in Settings.
+- **Stream Formats**: Full support for HLS (.m3u8), DASH (.mpd), and direct MP4 streams with custom header support.
+
+### 💬 Comprehensive Subtitle Management
+
+- **Automatic External Subtitles**: Multi-language subtitle search and retrieval powered by Wyzie Subtitles API.
+- **Local Subtitle Upload**: Pick and load local `.srt` or `.vtt` subtitle files directly from your device storage.
+- **Subtitle Customization**: Adjust font size, text color, background color, and visual styling presets.
+- **Encoding & HI Support**: Smart character encoding handling (UTF-8, Latin1, ASCII) and Hearing-Impaired (HI) tags.
+
+### 📥 Offline Downloads
+
+- **Background Downloads**: Download movies and TV episodes with background download management and progress notifications.
+- **Aspect Ratio Normalization**: Built-in video exporter with square-pixel aspect ratio normalization.
+- **Subtitle Bundling**: Automatically export and bundle subtitles with downloaded videos for offline viewing.
+- **Offline Player**: Dedicated offline library and media player for downloaded files.
+
+### 🎨 Modern UI, Ambient Glow & Seasonal Themes
+
+- **Phosphor Icons**: Clean, consistent icon set using Phosphor Flutter icons across the entire app.
+- **Ambient Mode**: Dynamic color palette extraction from movie/show posters and backdrops for an immersive ambient background glow.
+- **Occasional & Seasonal Themes**: Dynamic holiday themes (Christmas, New Year, Halloween, Valentine's Day, Easter, Eid, Diwali, Ethiopian New Year, etc.) with animated vector particle overlays (snow, fireworks, bats, hearts, adey flowers, confetti, stars, sparkles). Configurable via Firebase Remote Config.
+- **Themes**: Light, Dark, AMOLED Pure Black, and Material 3 Dynamic Color palettes.
+
+### 🔐 User Profiles & Cloud Synchronization
+
+- **Firebase Authentication**: User accounts with email/password authentication, profile management, and account deletion.
+- **Cross-Device Bookmark Sync**: Dual-layer bookmark synchronization between local SQLite and Cloud Firestore.
+- **Recently Watched & Resume**: Track watch progress across movies and episodes with quick resume playback.
+
+### 🌍 Multi-Language Localization
+
+- Complete internationalization powered by `easy_localization` supporting multiple languages including English, Spanish, Arabic, Hindi, and more.
+
+---
+
+## 📱 Screenshots
+
+<table style="border: none;">
+  <tr>
+    <td><img src="new_ui/21_Light_home.png" alt="Home Screen" width="220"/></td>
+    <td><img src="new_ui/25_Light_explore.png" alt="Explore Screen" width="220"/></td>
+    <td><img src="new_ui/32_Light_movie details, trailers.png" alt="Movie Details" width="220"/></td>
+    <td><img src="new_ui/42_Light_series details.png" alt="Series Details" width="220"/></td>
+  </tr>
+  <tr>
+    <td><img src="new_ui/28_Light_search results list.png" alt="Search Results" width="220"/></td>
+    <td><img src="new_ui/29_Light_sort & filter.png" alt="Sort & Filter" width="220"/></td>
+    <td><img src="new_ui/46_Light_my list.png" alt="My Bookmarks" width="220"/></td>
+    <td><img src="new_ui/49_Light_profile & settings.png" alt="Settings Screen" width="220"/></td>
+  </tr>
+</table>
+
+---
+
+## ⚙️ Environment Variables & API Keys
+
+FlixQuest uses `flutter_dotenv` to load environment variables. Create a `.env` file in the root directory of the project:
+
+```env
+# Required: TMDB API Key for movie and TV show metadata
+TMDB_API_KEY="your_tmdb_api_key"
+
+# Required: FlixQuest Scraper API v2 instance URL
+FLIXQUEST_API_URL="https://your-flixquest-api-instance.com"
+
+# Optional: Mixpanel project token for general analytics
+MIXPANEL_API_KEY="your_mixpanel_api_key"
+```
+
+### Obtaining API Keys:
+
+- **TMDB API Key**: Register at [The Movie Database (TMDB)](https://developer.themoviedb.org/v3/reference/intro/authentication#api-key-quick-start) to get your free API key.
+- **FlixQuest Scraper API**: Deploy your own instance of the [FlixQuest API](https://github.com/BeamlakAschalew/flixquest-api) on services like Vercel, Render, or self-host via Docker.
+- **Mixpanel Token** _(Optional)_: Create a free account at [Mixpanel](https://mixpanel.com).
+
+---
+
+## 🕷️ FlixQuest Scraper API v2
+
+FlixQuest integrates with **FlixQuest Scraper API v2** for resolving streaming sources. The complete API contract is documented in [`openapi.json`](openapi.json).
+
+Key endpoints consumed by the app:
+
+- `GET /providers`: Discovers available and enabled video providers.
+- `GET /providers/status`: Fetches live provider health status, latency, and uptime.
+- `GET /stream-movie`: Scrapes streaming links for movies using TMDB ID.
+- `GET /stream-tv`: Scrapes streaming links for TV episodes using TMDB ID, season, and episode number.
+- `GET /api/v2/intro`: Retrieves branded intro video configuration.
+
+---
+
+## 🔥 Firebase Configuration
+
+FlixQuest uses Firebase for several services:
+
+| Service                       | Purpose                                                                                                                                                                             |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Firebase Authentication**   | User authentication, profile management, and session handling.                                                                                                                      |
+| **Cloud Firestore**           | Cloud bookmark synchronization across multiple devices.                                                                                                                             |
+| **Firebase Remote Config**    | Dynamic configuration for app logos, seasonal themes, and vector animation effects. See [`docs/firebase_remote_config.md`](docs/firebase_remote_config.md) for full schema details. |
+| **Firebase Cloud Messaging**  | Background notifications and alerts.                                                                                                                                                |
+| **Firebase In-App Messaging** | Dynamic in-app banners and update notices.                                                                                                                                          |
+| **Firebase Analytics**        | Usage and performance analytics.                                                                                                                                                    |
+
+> **Note**: To connect to your own Firebase project, place your `google-services.json` inside `android/app/`.
+
+---
+
+## ▶️ Custom `better_player` Package
+
+This repository uses a customized version of `better_player` (`better_player_plus`) located at [github.com/BeamlakAschalew/flixquest-betterplayer](https://github.com/BeamlakAschalew/flixquest-betterplayer).
+
+You can configure it in `pubspec.yaml` using a local path or git URL:
+
+```yaml
+better_player_plus:
+  git:
+    url: https://github.com/BeamlakAschalew/flixquest-betterplayer.git
+```
+
+Or reference a local sibling directory:
+
+```yaml
+better_player_plus:
+  path: ../flixquest-betterplayer
+```
+
+---
+
+## 🛠️ Getting Started & Build Instructions
+
+### Prerequisites
+
+- **Flutter SDK**: `>=3.0.0 <4.0.0`
+- **Dart SDK**: `^3.0.0`
+- **Android SDK / NDK**: Android SDK 34+, Java 17
+
+### Installation Steps
+
+1. **Clone the repository**:
+
+   ```bash
+   git clone https://github.com/BeamlakAschalew/flixquest.git
+   cd flixquest
+   ```
+
+2. **Clone the custom better_player repository** (if using local path):
+
+   ```bash
+   cd ..
+   git clone https://github.com/BeamlakAschalew/flixquest-betterplayer.git
+   cd flixquest
+   ```
+
+3. **Configure Environment Variables**:
+   Create a `.env` file in the project root:
+
+   ```bash
+   cp .env.example .env # or create a new .env file with your keys
+   ```
+
+4. **Install Dependencies**:
+
+   ```bash
+   flutter pub get
+   ```
+
+5. **Run the Application**:
+   - For Android Mobile / Tablet:
+     ```bash
+     flutter run
+     ```
+   - For Android TV (Emulator or connected TV device):
+     ```bash
+     flutter run -d <tv-device-id>
+     ```
+
+6. **Build Release APK**:
+   ```bash
+   flutter build apk --release
+   ```
+
+---
+
+## 🤝 Contributing
+
+Contributions, feature suggestions, design ideas, and translations are always welcome!
+
+- **Pull Requests**: Please ensure your code passes static analysis and is properly formatted:
+  ```bash
+  dart format .
+  flutter test
+  ```
+- **Issue Reports**: Please follow the provided issue templates when opening bugs or feature requests.
+
+---
+
+## ⚠️ Disclaimer
+
+- The developers of this application have no affiliation with content providers like TMDB, DaddyLive, or any third-party streaming websites.
+- FlixQuest **does not host or upload any video content**. All media is retrieved via public scrapers and third-party APIs.
+- In case of copyright infringement, please contact the responsible hosting services or source providers directly.
+
+---
+
+<div align="center">
+  <h3>Support the Project</h3>
+  <a href="https://www.buymeacoffee.com/cinemaxapp">
+    <img src="https://i.ibb.co/Tr4sC5X/bmc-button.png" height="60" alt="Buy Me A Coffee">
+  </a>
+</div>
+
+---
+
+### 🙏 Credits & Integrations
+
+- **TMDB API**: Media metadata, cast, crew, and artwork.
+- **FlixQuest Scraper API**: Multi-source streaming scrapers.
+- **DaddyLive**: Free Live TV channels and sports stream integration.
+- **Wyzie API**: Multi-language subtitle discovery.
+- **Phosphor Icons**: Beautiful, consistent icon pack (`phosphor_flutter`).
+- **Matinee Flutter**: Initial UI inspiration and base architecture (`bimsina/Matinee-Flutter`).
+
+---
+
+<p align="center">
+  <i>GNU, but for Entertainment</i><br><br>
+  <strong>© 2022–2026 Beamlak Aschalew</strong>
+</p>
