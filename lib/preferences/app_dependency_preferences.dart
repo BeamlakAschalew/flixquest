@@ -77,4 +77,38 @@ class AppDependencies {
   Future<bool> getAmbientModeEnabled() async {
     return sharedPrefsSingleton.getBool(AMBIENT_MODE_ENABLED) ?? false;
   }
+
+  static const IS_FORCED_UPDATE = 'is_forced_update';
+  static const LATEST_APP_VERSION = 'latest_app_version';
+  static const LATEST_BUILD_NUMBER = 'latest_build_number';
+  static const MINIMUM_BUILD_NUMBER = 'minimum_build_number';
+  static const APP_DOWNLOAD_URL = 'app_download_url';
+  static const CHANGE_LOG = 'change_log';
+
+  Future<void> setUpdateConfiguration({
+    required bool forced,
+    required String latestVersion,
+    required int latestBuild,
+    required int minimumBuild,
+    required String downloadUrl,
+    required String changeLog,
+  }) async {
+    await sharedPrefsSingleton.setBool(IS_FORCED_UPDATE, forced);
+    await sharedPrefsSingleton.setString(LATEST_APP_VERSION, latestVersion);
+    await sharedPrefsSingleton.setInt(LATEST_BUILD_NUMBER, latestBuild);
+    await sharedPrefsSingleton.setInt(MINIMUM_BUILD_NUMBER, minimumBuild);
+    await sharedPrefsSingleton.setString(APP_DOWNLOAD_URL, downloadUrl);
+    await sharedPrefsSingleton.setString(CHANGE_LOG, changeLog);
+  }
+
+  Map<String, dynamic> getUpdateConfiguration() {
+    return {
+      'forced': sharedPrefsSingleton.getBool(IS_FORCED_UPDATE) ?? false,
+      'latestVersion': sharedPrefsSingleton.getString(LATEST_APP_VERSION) ?? '',
+      'latestBuild': sharedPrefsSingleton.getInt(LATEST_BUILD_NUMBER) ?? 0,
+      'minimumBuild': sharedPrefsSingleton.getInt(MINIMUM_BUILD_NUMBER) ?? 0,
+      'downloadUrl': sharedPrefsSingleton.getString(APP_DOWNLOAD_URL) ?? '',
+      'changeLog': sharedPrefsSingleton.getString(CHANGE_LOG) ?? '',
+    };
+  }
 }

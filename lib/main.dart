@@ -113,6 +113,7 @@ Future<DevicePresentation> appInitialize({
   await appDependencyProvider.getAmbientMode();
   await appDependencyProvider.getFQUrl();
   await appDependencyProvider.getTmdbProxy();
+  await appDependencyProvider.getUpdateConfiguration();
 
   await BookmarkSyncService.instance.init();
 

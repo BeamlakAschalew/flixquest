@@ -129,6 +129,17 @@ class AppDependencyProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> getUpdateConfiguration() async {
+    final config = _preferences.getUpdateConfiguration();
+    _isForcedUpdate = config['forced'] as bool;
+    _latestAppVersion = config['latestVersion'] as String;
+    _latestBuildNumber = config['latestBuild'] as int;
+    _minimumBuildNumber = config['minimumBuild'] as int;
+    _appDownloadUrl = config['downloadUrl'] as String;
+    _changeLog = config['changeLog'] as String;
+    notifyListeners();
+  }
+
   void setUpdateConfiguration({
     required bool forced,
     required String latestVersion,
@@ -153,6 +164,14 @@ class AppDependencyProvider extends ChangeNotifier {
     _minimumBuildNumber = minimumBuild;
     _appDownloadUrl = normalizedDownloadUrl;
     _changeLog = changeLog;
+    _preferences.setUpdateConfiguration(
+      forced: forced,
+      latestVersion: normalizedVersion,
+      latestBuild: latestBuild,
+      minimumBuild: minimumBuild,
+      downloadUrl: normalizedDownloadUrl,
+      changeLog: changeLog,
+    );
     notifyListeners();
   }
 

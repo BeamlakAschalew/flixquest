@@ -1974,10 +1974,13 @@ h2 em {
     visibility: hidden;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     gap: 28px;
+    padding: 92px 24px 48px;
     background: rgba(13, 14, 13, 0.97);
     opacity: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
     pointer-events: none;
     transition: opacity 0.25s ease, visibility 0.25s ease;
   }
@@ -1987,6 +1990,11 @@ h2 em {
     opacity: 1;
     pointer-events: auto;
   }
+
+  /* Center the link group vertically, but fall back to top-aligned, scrollable
+     layout on short screens instead of clipping the top/bottom items. */
+  .nav-links > a:first-child { margin-top: auto; }
+  .nav-links > a:last-child { margin-bottom: auto; }
 
   .nav-links > a { font-size: 24px; }
   .nav-download { margin-top: 8px; font-size: 15px !important; }

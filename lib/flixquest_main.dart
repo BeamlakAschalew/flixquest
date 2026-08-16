@@ -1,13 +1,11 @@
 import 'dart:async';
 
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flixquest/models/app_colors.dart';
-import 'package:flixquest/screens/common/update_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -29,7 +27,6 @@ import 'provider/bookmark_provider.dart';
 import 'provider/offline_download_provider.dart';
 import 'services/in_app_messaging_service.dart';
 import 'services/app_session_state_store.dart';
-import 'services/app_update_service.dart';
 import 'services/app_remote_config.dart';
 import 'screens/common/downloads_screen.dart';
 import 'tv/platform/device_presentation.dart';
@@ -282,7 +279,6 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
               surface: 'standard',
               source: 'restored',
             );
-        checkForcedUpdate();
       },
     );
   }
@@ -314,28 +310,6 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
         .analytics
         .trackNavigation(destination: destinationId, surface: 'standard');
     unawaited(_sessionState.rememberHandheldDestination(destinationId));
-  }
-
-  void checkForcedUpdate() async {
-    final provider = Provider.of<AppDependencyProvider>(context, listen: false);
-    if (!provider.isForcedUpdate) return;
-
-    final packageInfo = await PackageInfo.fromPlatform();
-    final updateAvailable = AppUpdateService.isAvailable(
-      packageInfo: packageInfo,
-      remoteVersion: provider.latestAppVersion,
-      latestBuildNumber: provider.latestBuildNumber,
-      minimumBuildNumber: provider.minimumBuildNumber,
-    );
-    if (updateAvailable) {
-      if (mounted) {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return const UpdateScreen(
-            isForced: true,
-          );
-        }));
-      }
-    }
   }
 
   @override
