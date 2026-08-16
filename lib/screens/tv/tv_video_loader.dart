@@ -224,7 +224,6 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           );
           if (mounted) {
             setState(() {
-              currentProviderIndex = providerIndex;
               providerStates[providerIndex] =
                   providerStates[providerIndex].copyWith(
                 status: providerSucceeded
@@ -232,6 +231,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                     : ProviderStatus.failed,
                 errorMessage: result.errorMessage,
               );
+              currentProviderIndex = _firstLoadingProviderIndex();
             });
           }
         },
@@ -337,6 +337,17 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
         _showErrorSheet(tr('tv_vid_404'));
       }
     }
+  }
+
+  /// Focus the carousel on the first provider still being fetched so the
+  /// highlight does not linger on a provider that just failed or succeeded.
+  int _firstLoadingProviderIndex() {
+    for (var index = 0; index < providerStates.length; index++) {
+      if (providerStates[index].status == ProviderStatus.loading) {
+        return index;
+      }
+    }
+    return currentProviderIndex;
   }
 
   /// Leaves the loader screen and reports the failure in a bottom sheet that

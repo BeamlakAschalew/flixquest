@@ -783,11 +783,6 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       for (final source in sources.entries)
         source.key: _resolutionDisplayName(source.key),
     };
-    final resolutionDescriptions = <String, String>{
-      for (final source in sources.entries)
-        if (_resolutionDescription(source.key) case final description?)
-          source.key: description,
-    };
 
     return BetterPlayerDataSource(
       BetterPlayerDataSourceType.network,
@@ -799,8 +794,6 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       resolutionHeaders: sources.length > 1 ? resolutionHeaders : null,
       resolutionDisplayNames:
           sources.length > 1 ? resolutionDisplayNames : null,
-      resolutionDescriptions:
-          sources.length > 1 ? resolutionDescriptions : null,
       videoFormat: videoFormats?[selectedSource.key] ?? _inferVideoFormat(link),
       headers: resolvedHeaders,
       castConfiguration: widget.useTvControls
@@ -846,13 +839,6 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   String _resolutionDisplayName(String sourceKey) {
     final separator = sourceKey.indexOf(' · ');
     return separator < 0 ? sourceKey : sourceKey.substring(0, separator);
-  }
-
-  String? _resolutionDescription(String sourceKey) {
-    final separator = sourceKey.indexOf(' · ');
-    if (separator < 0) return null;
-    final description = sourceKey.substring(separator + 3).trim();
-    return description.isEmpty ? null : description;
   }
 
   String? _castArtworkUrl() {
@@ -2674,15 +2660,20 @@ class _SubtitleSwitcherSheet extends StatefulWidget {
 
 class _SubtitleSwitcherSheetState extends State<_SubtitleSwitcherSheet> {
   BetterPlayerSubtitlesSource? _loadingSource;
+  final Set<BetterPlayerSubtitlesSource> _failedSources = {};
 
   Future<void> _selectSubtitle(BetterPlayerSubtitlesSource source) async {
     if (_loadingSource != null) return;
-    setState(() => _loadingSource = source);
+    setState(() {
+      _loadingSource = source;
+      _failedSources.remove(source);
+    });
     try {
       await widget.controller.setupSubtitleSource(source);
       if (mounted) widget.onClose();
     } catch (error) {
       if (!mounted) return;
+      setState(() => _failedSources.add(source));
       ScaffoldMessenger.maybeOf(context)?.showSnackBar(
         SnackBar(
           content: Text(
@@ -2731,6 +2722,7 @@ class _SubtitleSwitcherSheetState extends State<_SubtitleSwitcherSheet> {
                 (isOff &&
                     selected?.type == BetterPlayerSubtitlesSourceType.none);
             final isLoading = identical(source, _loadingSource);
+            final hasFailed = _failedSources.contains(source);
             return PlayerChoiceCard(
               title: isOff
                   ? widget.controller.translations.generalNone
@@ -2757,7 +2749,18 @@ class _SubtitleSwitcherSheetState extends State<_SubtitleSwitcherSheet> {
                         child: CircularProgressIndicator(strokeWidth: 2.5),
                       ),
                     )
-                  : null,
+                  : hasFailed
+                      ? Semantics(
+                          liveRegion: true,
+                          label: tr('failed_load_subtitles'),
+                          child: Icon(
+                            PhosphorIcons.xCircle(PhosphorIconsStyle.fill),
+                            key: const Key('subtitle_selection_failed'),
+                            size: 24,
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                        )
+                      : null,
               onTap:
                   _loadingSource == null ? () => _selectSubtitle(source) : null,
             );
