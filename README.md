@@ -123,14 +123,16 @@ MIXPANEL_API_KEY="your_mixpanel_api_key"
 ### Obtaining API Keys:
 
 - **TMDB API Key**: Register at [The Movie Database (TMDB)](https://developer.themoviedb.org/v3/reference/intro/authentication#api-key-quick-start) to get your free API key.
-- **FlixQuest Scraper API**: Deploy your own instance of the [FlixQuest API](https://github.com/BeamlakAschalew/flixquest-api) on services like Vercel, Render, or self-host via Docker.
+- **FlixQuest Scraper API**: The scraper service is closed-source. For API access, self-hosting inquiries, or support, please reach out to [flixquestapp@gmail.com](mailto:flixquestapp@gmail.com).
 - **Mixpanel Token** _(Optional)_: Create a free account at [Mixpanel](https://mixpanel.com).
 
 ---
 
 ## 🕷️ FlixQuest Scraper API v2
 
-FlixQuest integrates with **FlixQuest Scraper API v2** for resolving streaming sources. The complete API contract is documented in [`openapi.json`](openapi.json).
+FlixQuest communicates with **FlixQuest Scraper API v2** for resolving streaming sources. The backend service is closed-source; please contact [flixquestapp@gmail.com](mailto:flixquestapp@gmail.com) for support or API instance access.
+
+The client-side API contract and payload schemas are documented in [`openapi.json`](openapi.json).
 
 Key endpoints consumed by the app:
 
