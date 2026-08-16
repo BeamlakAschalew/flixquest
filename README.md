@@ -87,16 +87,19 @@
 
 <table style="border: none;">
   <tr>
-    <td><img src="new_ui/21_Light_home.png" alt="Home Screen" width="220"/></td>
-    <td><img src="new_ui/25_Light_explore.png" alt="Explore Screen" width="220"/></td>
-    <td><img src="new_ui/32_Light_movie details, trailers.png" alt="Movie Details" width="220"/></td>
-    <td><img src="new_ui/42_Light_series details.png" alt="Series Details" width="220"/></td>
+    <td align="center"><b>Home & Discovery</b><br><img src="landing-page/assets/screens/movies-home.jpg" alt="Home Screen" width="220"/></td>
+    <td align="center"><b>Movie Details</b><br><img src="landing-page/assets/screens/movie-detail.jpg" alt="Movie Details" width="220"/></td>
+    <td align="center"><b>Series Details</b><br><img src="landing-page/assets/screens/series-detail.jpg" alt="Series Details" width="220"/></td>
+    <td align="center"><b>Seasons & Episodes</b><br><img src="landing-page/assets/screens/season-detail.jpg" alt="Seasons & Episodes" width="220"/></td>
   </tr>
   <tr>
-    <td><img src="new_ui/28_Light_search results list.png" alt="Search Results" width="220"/></td>
-    <td><img src="new_ui/29_Light_sort & filter.png" alt="Sort & Filter" width="220"/></td>
-    <td><img src="new_ui/46_Light_my list.png" alt="My Bookmarks" width="220"/></td>
-    <td><img src="new_ui/49_Light_profile & settings.png" alt="Settings Screen" width="220"/></td>
+    <td align="center"><b>Episode Browser</b><br><img src="landing-page/assets/screens/episodes.jpg" alt="Episode Browser" width="220"/></td>
+    <td align="center"><b>Watch & Download</b><br><img src="landing-page/assets/screens/episode-detail.jpg" alt="Episode Detail" width="220"/></td>
+    <td align="center"><b>Offline Downloads</b><br><img src="landing-page/assets/screens/downloads.jpg" alt="Offline Downloads" width="220"/></td>
+    <td align="center"><b>Live TV & Sports</b><br><img src="landing-page/assets/screens/live-tv.jpg" alt="Live TV" width="220"/></td>
+  </tr>
+  <tr>
+    <td colspan="4" align="center"><b>Immersive Video Player</b><br><img src="landing-page/assets/screens/player.jpg" alt="Video Player" width="800"/></td>
   </tr>
 </table>
 
