@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:better_player_plus/better_player_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -58,13 +59,15 @@ class LivePlayer extends StatefulWidget {
 }
 
 class _LivePlayerState extends State<LivePlayer> {
-  static const Duration _recoveryWindow = Duration(seconds: 90);
+  static const int _liveCacheSizeBytes = 256 * 1024 * 1024;
+  static const int _liveCacheFileSizeBytes = 32 * 1024 * 1024;
+  static const Duration _recoveryWindow = Duration(minutes: 5);
   static const List<Duration> _automaticRecoveryDelays = <Duration>[
+    Duration(seconds: 5),
     Duration(seconds: 8),
     Duration(seconds: 12),
-    Duration(seconds: 15),
     Duration(seconds: 20),
-    Duration(seconds: 25),
+    Duration(seconds: 30),
   ];
 
   late BetterPlayerController _betterPlayerController;
@@ -95,6 +98,7 @@ class _LivePlayerState extends State<LivePlayer> {
   bool _wasPlayingBeforeBuffering = false;
   bool _automaticRecoveryRunning = false;
   int _automaticRecoveryAttempt = 0;
+  int _recoveryGeneration = 0;
   DateTime? _recoveryStartedAt;
   Object? _lastPlaybackError;
   late String _currentVideoUrl;
@@ -125,11 +129,12 @@ class _LivePlayerState extends State<LivePlayer> {
       // Favor a deeper forward buffer so slow and fluctuating links can
       // absorb sustained throughput drops. Bound history for Android TV RAM.
       maxBufferMs: 240000,
-      minBufferMs: 60000,
-      bufferForPlaybackMs: 8000,
-      bufferForPlaybackAfterRebufferMs: 20000,
+      minBufferMs: 90000,
+      bufferForPlaybackMs: 12000,
+      bufferForPlaybackAfterRebufferMs: 30000,
       backBufferDurationMs: 30000,
       retainBackBufferFromKeyframe: false,
+      prioritizeTimeOverSizeThresholds: true,
     );
 
     betterPlayerControlsConfiguration =
@@ -216,8 +221,8 @@ class _LivePlayerState extends State<LivePlayer> {
         url.toString(),
         cacheConfiguration: const BetterPlayerCacheConfiguration(
           useCache: true,
-          maxCacheSize: 50 * 1024 * 1024,
-          maxCacheFileSize: 20 * 1024 * 1024,
+          maxCacheSize: _liveCacheSizeBytes,
+          maxCacheFileSize: _liveCacheFileSizeBytes,
         ),
       );
 
@@ -315,6 +320,14 @@ class _LivePlayerState extends State<LivePlayer> {
       url,
       liveStream: true,
       bufferingConfiguration: betterPlayerBufferingConfiguration,
+      // Media3 caches HLS media requests while ExoPlayer fills the forward
+      // buffer, so brief reconnects can replay already downloaded segments.
+      // The iOS HLS cache proxy does not preserve provider request headers.
+      cacheConfiguration: BetterPlayerCacheConfiguration(
+        useCache: defaultTargetPlatform == TargetPlatform.android,
+        maxCacheSize: _liveCacheSizeBytes,
+        maxCacheFileSize: _liveCacheFileSizeBytes,
+      ),
       headers: resolvedHeaders,
       videoFormat: BetterPlayerVideoFormat.hls,
       castConfiguration: widget.enableCast
@@ -382,16 +395,20 @@ class _LivePlayerState extends State<LivePlayer> {
     if (_recoveryStartedAt == null) {
       _recoveryStartedAt = DateTime.now();
       _automaticRecoveryAttempt = 0;
+      final generation = ++_recoveryGeneration;
       _recoveryDeadlineTimer = Timer(
         _recoveryWindow,
-        _showTerminalPlaybackError,
+        () => _showTerminalPlaybackError(generation),
       );
       _trackPlayerEvent('reconnecting', error: error.toString());
     }
-    // Keep transient network failures invisible while native/player-level
-    // retries are running. A terminal message is shown only after the full
-    // recovery window expires.
-    _playbackFailure.value = null;
+    // Native errors are transient for live streams until the recovery window
+    // expires. Cover the player's error surface with a loading state while
+    // native segment retries and slower source refreshes continue.
+    _playbackFailure.value = const _LivePlaybackFailure(
+      message: 'Waiting for enough live video to continue.',
+      retrying: true,
+    );
     // Keep playback alive. Better Player retries the current HLS source on
     // its own; the slower app-level attempts below also resolve fresh tokens.
     _betterPlayerController.setControlsEnabled(false);
@@ -401,11 +418,14 @@ class _LivePlayerState extends State<LivePlayer> {
   void _scheduleAutomaticRecovery() {
     if (_recoveryStartedAt == null ||
         _automaticRecoveryRunning ||
-        _recoveryAttemptTimer?.isActive == true ||
-        _automaticRecoveryAttempt >= _automaticRecoveryDelays.length) {
+        _recoveryAttemptTimer?.isActive == true) {
       return;
     }
-    final delay = _automaticRecoveryDelays[_automaticRecoveryAttempt];
+    final delayIndex = _automaticRecoveryAttempt.clamp(
+      0,
+      _automaticRecoveryDelays.length - 1,
+    );
+    final delay = _automaticRecoveryDelays[delayIndex];
     _recoveryAttemptTimer = Timer(
       delay,
       () => unawaited(_attemptAutomaticRecovery()),
@@ -418,6 +438,7 @@ class _LivePlayerState extends State<LivePlayer> {
       return;
     }
     _automaticRecoveryRunning = true;
+    final generation = _recoveryGeneration;
     final attempt = ++_automaticRecoveryAttempt;
     _trackPlayerEvent('auto_retry_$attempt');
     try {
@@ -425,7 +446,7 @@ class _LivePlayerState extends State<LivePlayer> {
       final channelId = _currentChannelId;
       if (service != null && channelId != null) {
         final stream = await service.getStream(channelId);
-        if (!mounted || _recoveryStartedAt == null) return;
+        if (!_isActiveRecovery(generation)) return;
         _currentVideoUrl = stream.url;
         _currentVideoHeaders = Map<String, String>.of(stream.headers);
         await _betterPlayerController.setupDataSource(
@@ -434,13 +455,15 @@ class _LivePlayerState extends State<LivePlayer> {
       } else {
         await _betterPlayerController.retryDataSource();
       }
-      if (!mounted || _recoveryStartedAt == null) return;
+      if (!_isActiveRecovery(generation)) return;
       if (_betterPlayerController.isPlaying() != true) {
         await _betterPlayerController.play();
       }
     } catch (error) {
-      _lastPlaybackError = error;
-      _trackPlayerEvent('auto_retry_error', error: error.toString());
+      if (_isActiveRecovery(generation)) {
+        _lastPlaybackError = error;
+        _trackPlayerEvent('auto_retry_error', error: error.toString());
+      }
     } finally {
       _automaticRecoveryRunning = false;
       if (mounted && _recoveryStartedAt != null) {
@@ -448,6 +471,11 @@ class _LivePlayerState extends State<LivePlayer> {
       }
     }
   }
+
+  bool _isActiveRecovery(int generation) =>
+      mounted &&
+      _recoveryStartedAt != null &&
+      generation == _recoveryGeneration;
 
   void _finishPlaybackRecovery() {
     if (_recoveryStartedAt != null) {
@@ -458,8 +486,8 @@ class _LivePlayerState extends State<LivePlayer> {
     _betterPlayerController.setControlsEnabled(true);
   }
 
-  void _showTerminalPlaybackError() {
-    if (!mounted || _recoveryStartedAt == null) return;
+  void _showTerminalPlaybackError(int generation) {
+    if (!_isActiveRecovery(generation)) return;
     final error = _lastPlaybackError ??
         'This channel did not recover after several attempts.';
     _cancelPlaybackRecovery();
@@ -470,6 +498,7 @@ class _LivePlayerState extends State<LivePlayer> {
   }
 
   void _cancelPlaybackRecovery() {
+    _recoveryGeneration++;
     _recoveryDeadlineTimer?.cancel();
     _recoveryDeadlineTimer = null;
     _recoveryAttemptTimer?.cancel();
@@ -1121,7 +1150,7 @@ class _LivePlayerErrorOverlay extends StatelessWidget {
                     ),
                     if (onChannels != null)
                       OutlinedButton.icon(
-                        onPressed: retrying ? null : onChannels,
+                        onPressed: onChannels,
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Colors.white,
                           side: const BorderSide(color: Colors.white38),
