@@ -270,9 +270,6 @@ Contributions, feature suggestions, design ideas, and translations are always we
 ### 🙏 Credits & Integrations
 
 - **TMDB API**: Media metadata, cast, crew, and artwork.
-- **FlixQuest Scraper API**: Multi-source streaming scrapers.
-- **DaddyLive**: Free Live TV channels and sports stream integration.
-- **Wyzie API**: Multi-language subtitle discovery.
 - **Phosphor Icons**: Beautiful, consistent icon pack (`phosphor_flutter`).
 - **Matinee Flutter**: Initial UI inspiration and base architecture (`bimsina/Matinee-Flutter`).
 
