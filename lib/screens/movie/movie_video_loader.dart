@@ -87,11 +87,10 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
     }
 
     // Keep the app's existing VixSrc implementation as an independent source,
-    // even if the scraper API also exposes a provider named "vixsrc".
+    // even if the scraper API also exposes a provider named "vixsrc". The
+    // user's configured order from "Change Providers Order" is respected as-is.
     providers.add(VideoProvider.directVixSrc);
-    final orderedProviders = VideoProviderOrder.directVixSrcLast(
-      settings.orderStreamProviders(providers),
-    );
+    final orderedProviders = settings.orderStreamProviders(providers);
     if (!mounted) return;
     setState(() {
       videoProviders = orderedProviders;

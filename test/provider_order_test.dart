@@ -77,18 +77,5 @@ void main() {
         ['scraper:alpha', 'scraper:beta'],
       );
     });
-
-    test('can keep direct VixSrc after all scraper providers', () {
-      final ordered = VideoProviderOrder.directVixSrcLast([
-        VideoProvider.directVixSrc,
-        beta,
-        alpha,
-      ]);
-
-      expect(
-        ordered.map((provider) => provider.codeName),
-        ['scraper:beta', 'scraper:alpha', 'direct:vixsrc'],
-      );
-    });
   });
 }

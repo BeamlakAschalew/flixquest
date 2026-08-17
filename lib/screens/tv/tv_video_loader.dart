@@ -88,9 +88,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
     }
 
     providers.add(VideoProvider.directVixSrc);
-    final orderedProviders = VideoProviderOrder.directVixSrcLast(
-      settings.orderStreamProviders(providers),
-    );
+    final orderedProviders = settings.orderStreamProviders(providers);
     if (!mounted) return;
     setState(() {
       videoProviders = orderedProviders;
