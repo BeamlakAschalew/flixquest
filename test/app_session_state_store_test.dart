@@ -5,19 +5,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() {
   test('restores valid handheld and television destinations', () async {
     SharedPreferences.setMockInitialValues({
-      AppSessionStateStore.handheldDestinationKey: 'downloads',
+      AppSessionStateStore.handheldDestinationKey: 'bookmarks',
       AppSessionStateStore.televisionDestinationKey: 'library',
     });
     final preferences = await SharedPreferences.getInstance();
     final store = AppSessionStateStore(preferences);
 
-    expect(store.handheldDestination, 'downloads');
+    expect(store.handheldDestination, 'bookmarks');
     expect(store.televisionDestination, 'library');
   });
 
   test('ignores stale destination values', () async {
     SharedPreferences.setMockInitialValues({
-      AppSessionStateStore.handheldDestinationKey: 'removed-tab',
+      AppSessionStateStore.handheldDestinationKey: 'downloads',
       AppSessionStateStore.televisionDestinationKey: 'removed-screen',
     });
     final preferences = await SharedPreferences.getInstance();

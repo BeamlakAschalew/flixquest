@@ -192,7 +192,9 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             tvId: widget.metadata.tvId!,
             seasonNumber: widget.metadata.seasonNumber!,
             episodeNumber: widget.metadata.episodeNumber!,
-            scraperApiUrl: _scraperApiUrl,
+            scraperApiUrl:
+                Provider.of<AppDependencyProvider>(context, listen: false)
+                    .flixquestAPIURL,
           );
         },
         onResult: (index, provider, result) {
@@ -301,7 +303,9 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                     videoProviders, // Pass provider list for lazy loading
                 currentProviderCode:
                     firstWorkingProviderCode, // Current provider
-                scraperApiUrl: _scraperApiUrl,
+                scraperApiUrl:
+                    Provider.of<AppDependencyProvider>(context, listen: false)
+                        .flixquestAPIURL,
                 videoFormats: videoFormats,
                 videoHeaders: videoHeaders,
                 prefetchedProviderResults: selection?.batchResults ?? const {},

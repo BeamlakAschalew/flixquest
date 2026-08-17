@@ -53,10 +53,12 @@ import 'app_logo.dart';
 class MainMoviesDisplay extends StatefulWidget {
   const MainMoviesDisplay({
     this.onSearchPressed,
+    this.onDownloadsPressed,
     super.key,
   });
 
   final VoidCallback? onSearchPressed;
+  final VoidCallback? onDownloadsPressed;
 
   @override
   State<MainMoviesDisplay> createState() => _MainMoviesDisplayState();
@@ -114,6 +116,7 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
                 discoverType: 'discover',
                 onSearchPressed: widget.onSearchPressed,
                 onLiveTVPressed: showLiveTV ? openLiveTV : null,
+                onDownloadsPressed: widget.onDownloadsPressed,
               ),
             ),
             SliverList(
@@ -183,6 +186,9 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
                   actionLabel: showLiveTV ? tr('live_tv') : null,
                   actionIcon: showLiveTV ? PhosphorIcons.broadcast() : null,
                   onActionPressed: showLiveTV ? openLiveTV : null,
+                  utilityIcon: PhosphorIcons.downloadSimple(),
+                  utilityTooltip: 'Downloads',
+                  onUtilityPressed: widget.onDownloadsPressed,
                 ),
               ),
             ),
@@ -199,11 +205,13 @@ class DiscoverMovies extends StatefulWidget {
       required this.includeAdult,
       required this.discoverType,
       this.onSearchPressed,
-      this.onLiveTVPressed});
+      this.onLiveTVPressed,
+      this.onDownloadsPressed});
   final bool includeAdult;
   final String discoverType;
   final VoidCallback? onSearchPressed;
   final VoidCallback? onLiveTVPressed;
+  final VoidCallback? onDownloadsPressed;
   @override
   DiscoverMoviesState createState() => DiscoverMoviesState();
 }
@@ -451,6 +459,14 @@ class DiscoverMoviesState extends State<DiscoverMovies>
                                     const SizedBox(width: 8),
                                   ],
                                   _HeroIconButton(
+                                    key: const ValueKey(
+                                        'movie_downloads_shortcut'),
+                                    icon: PhosphorIcons.downloadSimple(),
+                                    tooltip: 'Downloads',
+                                    onPressed: widget.onDownloadsPressed,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  _HeroIconButton(
                                     icon: PhosphorIcons.magnifyingGlass(),
                                     onPressed: widget.onSearchPressed,
                                   ),
@@ -568,10 +584,16 @@ class DiscoverMoviesState extends State<DiscoverMovies>
 }
 
 class _HeroIconButton extends StatelessWidget {
-  const _HeroIconButton({required this.icon, required this.onPressed});
+  const _HeroIconButton({
+    required this.icon,
+    required this.onPressed,
+    this.tooltip,
+    super.key,
+  });
 
   final IconData icon;
   final VoidCallback? onPressed;
+  final String? tooltip;
 
   @override
   Widget build(BuildContext context) {
@@ -579,6 +601,7 @@ class _HeroIconButton extends StatelessWidget {
       color: Colors.black.withValues(alpha: .22),
       shape: const CircleBorder(),
       child: IconButton(
+        tooltip: tooltip,
         onPressed: onPressed,
         icon: Icon(icon, color: Colors.white),
       ),

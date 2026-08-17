@@ -229,6 +229,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           enableVolumeSwipe: !widget.useTvControls,
           enableBrightnessSwipe: !widget.useTvControls,
           enableSeekSwipe: !widget.useTvControls,
+          enableDoubleTapSeek: !widget.useTvControls,
           volumeSwipeSensitivity: 0.5,
           brightnessSwipeSensitivity: 0.5,
           seekSwipeSensitivity: 1.0,
@@ -443,6 +444,14 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     // });
   }
 
+  String _resolveScraperApiUrl() {
+    if (widget.scraperApiUrl.trim().isNotEmpty) {
+      return widget.scraperApiUrl.trim();
+    }
+    return Provider.of<AppDependencyProvider>(context, listen: false)
+        .flixquestAPIURL;
+  }
+
   Future<void> _setupInitialDataSource(
       BetterPlayerDataSource dataSource) async {
     final initialPosition = widget.initialPlaybackPosition ??
@@ -454,7 +463,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     try {
       StreamIntroConfig intro = const StreamIntroConfig.disabled();
       try {
-        intro = await _introService.fetch(widget.scraperApiUrl);
+        intro = await _introService.fetch(_resolveScraperApiUrl());
       } catch (error) {
         debugPrint('[Player] Branded intro unavailable: $error');
       }
@@ -1776,14 +1785,14 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                 ? ProviderLoader.loadMovieFromProvider(
                     provider: provider,
                     movieId: widget.movieMetadata!.movieId!,
-                    scraperApiUrl: widget.scraperApiUrl,
+                    scraperApiUrl: _resolveScraperApiUrl(),
                   )
                 : ProviderLoader.loadTVFromProvider(
                     provider: provider,
                     tvId: widget.tvMetadata!.tvId!,
                     seasonNumber: widget.tvMetadata!.seasonNumber!,
                     episodeNumber: widget.tvMetadata!.episodeNumber!,
-                    scraperApiUrl: widget.scraperApiUrl,
+                    scraperApiUrl: _resolveScraperApiUrl(),
                   );
         final result = await resultFuture;
         if (!result.success || result.videoLinks?.isEmpty != false) {

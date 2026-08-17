@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 
 import '../provider/app_dependency_provider.dart';
@@ -8,6 +10,8 @@ class AppRemoteConfig {
   static const occasionalThemeKey = 'occasional_theme';
   static const appLogoKey = 'app_logo_url';
   static const legacyAppLogoKey = 'cinemax_logo';
+  static const flixquestApiInstancesKey = 'flixquest_api_instances';
+  static const flixquestApiUrlKey = 'flixquest_api_url_v2';
 
   static Future<void> configure(FirebaseRemoteConfig remoteConfig) async {
     await remoteConfig.setConfigSettings(
@@ -26,7 +30,33 @@ class AppRemoteConfig {
       'min_build_number': 0,
       'app_download_url': '',
       'change_log': '',
+      flixquestApiInstancesKey: '',
+      flixquestApiUrlKey: '',
     });
+  }
+
+  static List<String> parseApiInstances(String rawJson) {
+    final trimmed = rawJson.trim();
+    if (trimmed.isEmpty) return const [];
+    try {
+      final decoded = jsonDecode(trimmed);
+      if (decoded is Map<String, dynamic> && decoded['instances'] is List) {
+        return (decoded['instances'] as List)
+            .whereType<String>()
+            .map((e) => e.trim())
+            .where((e) => e.isNotEmpty)
+            .toList(growable: false);
+      } else if (decoded is List) {
+        return decoded
+            .whereType<String>()
+            .map((e) => e.trim())
+            .where((e) => e.isNotEmpty)
+            .toList(growable: false);
+      }
+    } catch (_) {
+      // Malformed JSON falls back gracefully.
+    }
+    return const [];
   }
 
   static void apply(
@@ -52,7 +82,15 @@ class AppRemoteConfig {
     }
     provider.displayWatchNowButton = remoteConfig.getBool('enable_stream');
     provider.displayOTTDrawer = remoteConfig.getBool('enable_ott');
-    provider.flixquestAPIURL = remoteConfig.getString('flixquest_api_url_v2');
+
+    final instancesRaw = remoteConfig.getString(flixquestApiInstancesKey);
+    final parsedInstances = parseApiInstances(instancesRaw);
+    final legacyUrl = remoteConfig.getString(flixquestApiUrlKey).trim();
+    provider.setFlixquestApiConfig(
+      instances: parsedInstances,
+      url: legacyUrl.isNotEmpty ? legacyUrl : null,
+    );
+
     provider.setUpdateConfiguration(
       forced: remoteConfig.getBool('forced_update'),
       latestVersion: remoteConfig.getString('latest_version'),

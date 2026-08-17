@@ -13,7 +13,6 @@ class AppSessionStateStore {
     'series',
     'discover',
     'bookmarks',
-    'downloads',
     'profile',
   };
 

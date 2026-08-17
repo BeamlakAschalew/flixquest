@@ -188,7 +188,9 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           return ProviderLoader.loadMovieFromProvider(
             provider: provider,
             movieId: widget.metadata.movieId!,
-            scraperApiUrl: _scraperApiUrl,
+            scraperApiUrl:
+                Provider.of<AppDependencyProvider>(context, listen: false)
+                    .flixquestAPIURL,
           );
         },
         onResult: (index, provider, result) {
@@ -295,7 +297,9 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
                     videoProviders, // Pass provider list for lazy loading
                 currentProviderCode:
                     firstWorkingProviderCode, // Current provider
-                scraperApiUrl: _scraperApiUrl,
+                scraperApiUrl:
+                    Provider.of<AppDependencyProvider>(context, listen: false)
+                        .flixquestAPIURL,
                 videoFormats: videoFormats,
                 videoHeaders: videoHeaders,
                 prefetchedProviderResults: selection?.batchResults ?? const {},

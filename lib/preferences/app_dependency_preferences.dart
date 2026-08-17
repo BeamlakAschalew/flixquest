@@ -6,6 +6,7 @@ import '../constants/app_constants.dart';
 class AppDependencies {
   static const FLIXQUEST_LOGO_URL = 'flixquestLogoUrl';
   static const FLIXQUEST_API_URL = 'flixquestAPIURL';
+  static const FLIXQUEST_API_INSTANCES = 'flixquestAPIInstances';
   static const TMDB_PROXY = 'tmdb_proxy';
   static const OCCASIONAL_THEME = 'occasionalTheme';
   static const OCCASIONAL_THEME_SELECTION = 'occasionalThemeSelection';
@@ -23,6 +24,15 @@ class AppDependencies {
 
   Future<void> setFlixquestAPIUrl(String value) async {
     await sharedPrefsSingleton.setString(FLIXQUEST_API_URL, value);
+  }
+
+  Future<List<String>> getFQInstances() async {
+    return sharedPrefsSingleton.getStringList(FLIXQUEST_API_INSTANCES) ??
+        const [];
+  }
+
+  Future<void> setFlixquestAPIInstances(List<String> values) async {
+    await sharedPrefsSingleton.setStringList(FLIXQUEST_API_INSTANCES, values);
   }
 
   Future<String> getFlixQuestLogo() async {

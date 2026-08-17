@@ -246,7 +246,6 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
     'series',
     'discover',
     'bookmarks',
-    'downloads',
     'profile',
   ];
 
@@ -384,13 +383,6 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
                       label: tr('bookmarks'),
                     ),
                     NavigationDestination(
-                      icon: Icon(PhosphorIcons.downloadSimple()),
-                      selectedIcon: Icon(
-                          PhosphorIcons.downloadSimple(PhosphorIconsStyle.fill),
-                          color: colorScheme.primary),
-                      label: 'Downloads',
-                    ),
-                    NavigationDestination(
                       icon: Icon(PhosphorIcons.user()),
                       selectedIcon: Icon(
                           PhosphorIcons.user(PhosphorIconsStyle.fill),
@@ -411,6 +403,13 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
             index: selectedIndex,
             children: <Widget>[
               MainMoviesDisplay(
+                onDownloadsPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const DownloadsScreen(),
+                    ),
+                  );
+                },
                 onSearchPressed: () {
                   showSearch(
                     context: context,
@@ -424,6 +423,13 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
                 },
               ),
               MainTVDisplay(
+                onDownloadsPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const DownloadsScreen(),
+                    ),
+                  );
+                },
                 onSearchPressed: () {
                   showSearch(
                     context: context,
@@ -438,7 +444,6 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
               ),
               const DiscoverPage(),
               const BookmarkScreen(embedded: true),
-              const DownloadsScreen(embedded: true),
               const UserInfo()
             ],
           ),

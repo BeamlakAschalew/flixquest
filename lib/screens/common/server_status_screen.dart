@@ -38,7 +38,7 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
 
     try {
       final scraperApiUrl =
-          context.read<AppDependencyProvider>().flixquestAPIURL;
+          context.read<AppDependencyProvider>().flixquestAPIURLV2;
       final snapshot =
           await ScraperApi(scraperApiUrl).getProviderHealthStatus();
       if (!mounted) return;

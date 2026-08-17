@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../constants/api_constants.dart';
@@ -8,9 +10,29 @@ import '../preferences/app_dependency_preferences.dart';
 
 class AppDependencyProvider extends ChangeNotifier {
   final AppDependencies _preferences = AppDependencies();
+  final math.Random _random = math.Random();
+
+  List<String> _flixquestApiInstances = const <String>[];
+  List<String> get flixquestAPIInstances =>
+      List<String>.unmodifiable(_flixquestApiInstances);
 
   String _flixquestAPIUrl = flixquestApiUrl;
-  String get flixquestAPIURL => _flixquestAPIUrl;
+  String get configuredFlixquestAPIURL =>
+      _flixquestAPIUrl.trim().isNotEmpty ? _flixquestAPIUrl.trim() : flixquestApiUrl;
+  String get flixquestAPIURLV2 => configuredFlixquestAPIURL;
+
+  String get flixquestAPIURL {
+    if (_flixquestApiInstances.isNotEmpty) {
+      if (_flixquestApiInstances.length == 1) {
+        return _flixquestApiInstances.first;
+      }
+      return _flixquestApiInstances[
+          _random.nextInt(_flixquestApiInstances.length)];
+    }
+    return _flixquestAPIUrl.trim().isNotEmpty
+        ? _flixquestAPIUrl.trim()
+        : flixquestApiUrl;
+  }
 
   String _flixQuestLogo = 'default';
   String get flixQuestLogo => _flixQuestLogo;
@@ -93,13 +115,63 @@ class AppDependencyProvider extends ChangeNotifier {
   }
 
   Future<void> getFQUrl() async {
-    flixquestAPIURL = await _preferences.getFQURL();
+    final instances = await _preferences.getFQInstances();
+    final url = await _preferences.getFQURL();
+    _flixquestApiInstances = instances
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList(growable: false);
+    _flixquestAPIUrl = url.trim().isNotEmpty ? url.trim() : flixquestApiUrl;
+    notifyListeners();
   }
 
   set flixquestAPIURL(String value) {
-    _flixquestAPIUrl = value;
-    _preferences.setFlixquestAPIUrl(value);
+    final normalized = value.trim().isEmpty ? flixquestApiUrl : value.trim();
+    if (_flixquestAPIUrl == normalized) return;
+    _flixquestAPIUrl = normalized;
+    _preferences.setFlixquestAPIUrl(normalized);
     notifyListeners();
+  }
+
+  set flixquestAPIInstances(List<String> values) {
+    final normalized = values
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList(growable: false);
+    if (listEquals(_flixquestApiInstances, normalized)) return;
+    _flixquestApiInstances = normalized;
+    _preferences.setFlixquestAPIInstances(normalized);
+    notifyListeners();
+  }
+
+  void setFlixquestApiConfig({
+    List<String>? instances,
+    String? url,
+  }) {
+    var changed = false;
+    if (instances != null) {
+      final normalizedInstances = instances
+          .map((e) => e.trim())
+          .where((e) => e.isNotEmpty)
+          .toList(growable: false);
+      if (!listEquals(_flixquestApiInstances, normalizedInstances)) {
+        _flixquestApiInstances = normalizedInstances;
+        _preferences.setFlixquestAPIInstances(normalizedInstances);
+        changed = true;
+      }
+    }
+    if (url != null) {
+      final normalizedUrl =
+          url.trim().isEmpty ? flixquestApiUrl : url.trim();
+      if (_flixquestAPIUrl != normalizedUrl) {
+        _flixquestAPIUrl = normalizedUrl;
+        _preferences.setFlixquestAPIUrl(normalizedUrl);
+        changed = true;
+      }
+    }
+    if (changed) {
+      notifyListeners();
+    }
   }
 
   Future<void> getFlixQuestLogo() async {

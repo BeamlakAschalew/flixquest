@@ -364,6 +364,9 @@ class AppFeedOverlayHeader extends StatelessWidget {
     this.actionLabel,
     this.actionIcon,
     this.onActionPressed,
+    this.utilityIcon,
+    this.utilityTooltip,
+    this.onUtilityPressed,
     super.key,
   });
 
@@ -372,6 +375,9 @@ class AppFeedOverlayHeader extends StatelessWidget {
   final String? actionLabel;
   final IconData? actionIcon;
   final VoidCallback? onActionPressed;
+  final IconData? utilityIcon;
+  final String? utilityTooltip;
+  final VoidCallback? onUtilityPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -403,6 +409,12 @@ class AppFeedOverlayHeader extends StatelessWidget {
                     onPressed: onActionPressed,
                     icon: Icon(actionIcon, size: 19),
                     label: Text(actionLabel ?? ''),
+                  ),
+                if (onUtilityPressed != null)
+                  IconButton(
+                    tooltip: utilityTooltip,
+                    onPressed: onUtilityPressed,
+                    icon: Icon(utilityIcon),
                   ),
                 IconButton(
                   onPressed: onSearchPressed,
