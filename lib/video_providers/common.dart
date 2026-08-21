@@ -5,6 +5,7 @@ class RegularVideoLinks {
   bool? isM3U8;
   bool? isDash;
   Map<String, String>? headers;
+  String? sizeToken;
 
   RegularVideoLinks({
     this.url,
@@ -13,6 +14,7 @@ class RegularVideoLinks {
     this.isM3U8,
     this.isDash,
     this.headers,
+    this.sizeToken,
   });
 
   RegularVideoLinks.fromJson(Map<String, dynamic> json) {
@@ -25,6 +27,7 @@ class RegularVideoLinks {
     }
     isM3U8 = json['isM3U8'];
     isDash = json['isDASH'];
+    sizeToken = json['sizeToken']?.toString();
     final rawHeaders = json['headers'];
     if (rawHeaders is Map) {
       headers = {

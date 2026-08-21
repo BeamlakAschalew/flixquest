@@ -263,6 +263,16 @@ class SettingsPreferences {
     return sharedPrefsSingleton.getBool(ENABLE_NEXT_EPISODE_BUTTON) ?? false;
   }
 
+  static const PLAYER_AMBIENT_GLOW_ENABLED = 'player_ambient_glow_enabled';
+
+  setPlayerAmbientGlowEnabled(bool value) {
+    sharedPrefsSingleton.setBool(PLAYER_AMBIENT_GLOW_ENABLED, value);
+  }
+
+  Future<bool> getPlayerAmbientGlowEnabled() async {
+    return sharedPrefsSingleton.getBool(PLAYER_AMBIENT_GLOW_ENABLED) ?? false;
+  }
+
   static const RECENT_SEARCHES = 'recent_searches';
 
   Future<List<String>> getRecentSearches() async {

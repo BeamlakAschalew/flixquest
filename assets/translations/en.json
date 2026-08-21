@@ -169,6 +169,8 @@
   "text_color": "Text color",
   "background_color": "Background color",
   "auto_full_screen": "Auto full screen",
+  "player_ambient_glow": "Ambient glow",
+  "player_ambient_glow_description": "Fill side bars with a blurred version of the video on Android",
   "seek_second": "Seek second",
   "buffer_amount": "Buffer amount",
   "video_resolution": "Video resolution",

@@ -8,6 +8,7 @@ import 'package:flixquest/models/provider_video_source.dart';
 import 'package:flixquest/constants/app_constants.dart' show MediaType;
 import 'package:flixquest/models/provider_load_state.dart';
 import 'package:flixquest/services/globle_method.dart';
+import 'package:flixquest/services/stream_size_estimator.dart';
 import 'package:flixquest/video_providers/provider_loader.dart';
 import 'package:flixquest/video_providers/scraper_api.dart';
 import 'package:flixquest/widgets/provider_loading_widget.dart';
@@ -62,6 +63,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   final Map<String, Stopwatch> _providerStopwatches = {};
   int currentProviderIndex = 0;
   String _scraperApiUrl = '';
+  final Map<String, int?> _streamSizeCacheByToken = {};
 
   Map<String, String> videos = {};
   List<BetterPlayerSubtitlesSource> subs = [];
@@ -190,9 +192,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             tvId: widget.metadata.tvId!,
             seasonNumber: widget.metadata.seasonNumber!,
             episodeNumber: widget.metadata.episodeNumber!,
-            scraperApiUrl:
-                Provider.of<AppDependencyProvider>(context, listen: false)
-                    .flixquestAPIURL,
+            scraperApiUrl: _scraperApiUrl,
           );
         },
         onResult: (index, provider, result) {
@@ -261,6 +261,9 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
       final videoHeaders = VideoUtils.reverseVideoQualityMap(
         VideoUtils.convertVideoHeadersToMap(tvVideoLinks ?? const []),
       );
+      final videoSizeTokens = VideoUtils.reverseVideoQualityMap(
+        VideoUtils.convertVideoSizeTokensToMap(tvVideoLinks ?? const []),
+      );
 
       if (firstWorkingProviderCode != null && mounted) {
         if (widget.download) {
@@ -268,6 +271,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             sources: reversedVids,
             videoFormats: videoFormats,
             videoHeaders: videoHeaders,
+            videoSizeTokens: videoSizeTokens,
             providerName: selection?.provider.displayName,
           );
           return;
@@ -301,11 +305,10 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                     videoProviders, // Pass provider list for lazy loading
                 currentProviderCode:
                     firstWorkingProviderCode, // Current provider
-                scraperApiUrl:
-                    Provider.of<AppDependencyProvider>(context, listen: false)
-                        .flixquestAPIURL,
+                scraperApiUrl: _scraperApiUrl,
                 videoFormats: videoFormats,
                 videoHeaders: videoHeaders,
+                videoSizeTokens: videoSizeTokens,
                 prefetchedProviderResults: selection?.batchResults ?? const {},
                 subtitleStyle:
                     Provider.of<SettingsProvider>(context).subtitleTextStyle,
@@ -381,12 +384,20 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
     required Map<String, String> sources,
     required Map<String, BetterPlayerVideoFormat?> videoFormats,
     required Map<String, Map<String, String>> videoHeaders,
+    required Map<String, String> videoSizeTokens,
     String? providerName,
   }) async {
+    final estimatedSizes = await StreamSizeEstimator.load(
+      scraperApiUrl: _scraperApiUrl,
+      tokens: videoSizeTokens,
+      cacheByToken: _streamSizeCacheByToken,
+    );
+    if (!mounted) return;
     final quality = await DownloadSelectionSheets.showResolution(
       context,
       resolutions: sources.keys.toList(),
       providerName: providerName,
+      estimatedSizes: estimatedSizes,
     );
     if (!mounted) return;
     if (quality == null) {

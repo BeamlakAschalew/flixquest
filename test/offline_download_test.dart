@@ -243,6 +243,10 @@ void main() {
                       context,
                       resolutions: const ['1080p', '720p'],
                       providerName: 'Provider Alpha',
+                      estimatedSizes: const {
+                        '1080p': 1610612736,
+                        '720p': null,
+                      },
                     );
                   },
                   child: const Text('Select resolution'),
@@ -263,6 +267,8 @@ void main() {
     await tester.tap(find.text('Select resolution'));
     await tester.pumpAndSettle();
     expect(find.text('Downloading from Provider Alpha'), findsOneWidget);
+    expect(find.text('~1.5 GB'), findsOneWidget);
+    expect(find.text('Size undetermined'), findsOneWidget);
     await tester.tap(find.text('720p'));
     await tester.pumpAndSettle();
     expect(selectedResolution, '720p');

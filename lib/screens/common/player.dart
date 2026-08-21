@@ -25,6 +25,7 @@ import '../../provider/app_dependency_provider.dart';
 import '../../constants/api_constants.dart';
 import '../../ui_components/app_ui_components.dart';
 import '../../services/stream_intro_service.dart';
+import '../../services/stream_size_estimator.dart';
 import '../movie/movie_video_loader.dart';
 import '../tv/tv_video_loader.dart';
 import 'player/player_data_management.dart';
@@ -54,6 +55,7 @@ class PlayerOne extends StatefulWidget {
       this.scraperApiUrl = '',
       this.videoFormats,
       this.videoHeaders = const {},
+      this.videoSizeTokens = const {},
       this.prefetchedProviderResults = const {},
       this.useTvControls = false,
       this.onTvPlayerExit,
@@ -75,6 +77,7 @@ class PlayerOne extends StatefulWidget {
   final String scraperApiUrl;
   final Map<String, BetterPlayerVideoFormat?>? videoFormats;
   final Map<String, Map<String, String>> videoHeaders;
+  final Map<String, String> videoSizeTokens;
   final Map<String, Future<ProviderLoaderResult>> prefetchedProviderResults;
   final bool useTvControls;
   final VoidCallback? onTvPlayerExit;
@@ -144,6 +147,8 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   late List<BetterPlayerSubtitlesSource> _activeSubtitles;
   late Map<String, BetterPlayerVideoFormat?>? _activeVideoFormats;
   late Map<String, Map<String, String>> _activeVideoHeaders;
+  late Map<String, String> _activeVideoSizeTokens;
+  final Map<String, int?> _streamSizeCacheByToken = {};
   final Set<String> _loadingProviders =
       {}; // Track which providers are being loaded
   final Map<String, String> _providerErrors = {};
@@ -173,6 +178,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     _activeVideoFormats =
         widget.videoFormats == null ? null : Map.of(widget.videoFormats!);
     _activeVideoHeaders = Map.of(widget.videoHeaders);
+    _activeVideoSizeTokens = Map.of(widget.videoSizeTokens);
     _contentMenuRecommendations = List<MovieRecommendation>.of(
       widget.movieMetadata?.recommendations ?? const <MovieRecommendation>[],
     );
@@ -398,6 +404,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                 widget.useTvControls ? false : widget.settings.defaultViewMode,
             autoPlay: true,
             fit: BoxFit.contain,
+            enableAmbientGlow: true,
             autoDispose: true,
             controlsConfiguration: betterPlayerControlsConfiguration,
             showPlaceholderUntilPlay: true,
@@ -420,6 +427,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       videoHeaders: _activeVideoHeaders,
     );
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
+    settings.addListener(_syncAmbientGlowSetting);
     _betterPlayerController.setBetterPlayerGlobalKey(_betterPlayerKey);
     _betterPlayerController.addEventsListener(_onAnalyticsPlayerEvent);
     // Attach listeners before setup so native initialization and pre-roll
@@ -450,6 +458,12 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     }
     return Provider.of<AppDependencyProvider>(context, listen: false)
         .flixquestAPIURL;
+  }
+
+  void _syncAmbientGlowSetting() {
+    _betterPlayerController.setAmbientGlowEnabled(
+      settings.playerAmbientGlowEnabled,
+    );
   }
 
   Future<void> _setupInitialDataSource(
@@ -1139,6 +1153,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    settings.removeListener(_syncAmbientGlowSetting);
     final suppressionId = _occasionalEffectsSuppressionId;
     if (suppressionId != null) {
       _occasionalEffectsSuppressionId = null;
@@ -1822,6 +1837,9 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           videoHeaders: VideoUtils.reverseVideoQualityMap(
             VideoUtils.convertVideoHeadersToMap(result.videoLinks!),
           ),
+          videoSizeTokens: VideoUtils.reverseVideoQualityMap(
+            VideoUtils.convertVideoSizeTokensToMap(result.videoLinks!),
+          ),
           subtitles: subtitles,
         );
         _loadedProviders[providerCode] = source;
@@ -1850,6 +1868,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         _activeSubtitles = List.of(nextSource.subtitles);
         _activeVideoFormats = Map.of(nextSource.videoFormats);
         _activeVideoHeaders = Map.of(nextSource.videoHeaders);
+        _activeVideoSizeTokens = Map.of(nextSource.videoSizeTokens);
         final switchedDuration = _betterPlayerController
             .videoPlayerController?.value.duration?.inSeconds;
         if (switchedDuration != null) duration = switchedDuration;
@@ -2031,10 +2050,17 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         ? <String, BetterPlayerVideoFormat?>{}
         : Map<String, BetterPlayerVideoFormat?>.of(_activeVideoFormats!);
     final headers = Map<String, Map<String, String>>.of(_activeVideoHeaders);
+    final estimatedSizes = await StreamSizeEstimator.load(
+      scraperApiUrl: _resolveScraperApiUrl(),
+      tokens: _activeVideoSizeTokens,
+      cacheByToken: _streamSizeCacheByToken,
+    );
+    if (!mounted) return;
     final resolution = await DownloadSelectionSheets.showResolution(
       context,
       resolutions: sources.keys.toList(),
       providerName: providerName,
+      estimatedSizes: estimatedSizes,
     );
     if (!mounted || resolution == null) return;
 

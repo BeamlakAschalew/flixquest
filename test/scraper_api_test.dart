@@ -137,6 +137,7 @@ void main() {
               'links': [
                 {
                   'url': 'https://scraper.example/proxy?token=first',
+                  'sizeToken': 'signed-size-token-1080',
                   'server': 'ShowBox 2',
                   'quality': '1080p',
                   'isM3U8': true,
@@ -183,6 +184,7 @@ void main() {
       expect(result.success, isTrue);
       expect(result.videoLinks, hasLength(2));
       expect(result.videoLinks!.first.isM3U8, isTrue);
+      expect(result.videoLinks!.first.sizeToken, 'signed-size-token-1080');
       expect(result.videoLinks!.first.server, 'ShowBox 2');
       expect(result.videoLinks!.first.headers, {
         'Referer': 'https://provider.example/',
@@ -235,6 +237,63 @@ void main() {
         'episode': '3',
         'provider': 'vidsrc',
       });
+    });
+
+    test('posts a signed token and maps a stream size estimate', () async {
+      late http.Request request;
+      final api = ScraperApi(
+        'https://scraper.example',
+        client: MockClient((incoming) async {
+          request = incoming;
+          return http.Response(
+            jsonEncode({
+              'success': true,
+              'estimatedBytes': 1500000000,
+              'confidence': 'high',
+              'method': 'hls-bandwidth',
+              'format': 'hls',
+              'bitrate': 4200000,
+              'initBytes': 0,
+              'segmentCount': 1500,
+            }),
+            200,
+          );
+        }),
+      );
+
+      final estimate = await api.estimateStreamSize('signed-size-token');
+
+      expect(request.method, 'POST');
+      expect(request.url.path, '/api/v2/stream-size');
+      expect(request.headers['content-type'], contains('application/json'));
+      expect(jsonDecode(request.body), {'token': 'signed-size-token'});
+      expect(estimate?.estimatedBytes, 1500000000);
+    });
+
+    test('maps an unavailable stream size response', () async {
+      final api = ScraperApi(
+        'https://scraper.example',
+        client: MockClient(
+          (_) async => http.Response(
+            jsonEncode({
+              'success': true,
+              'estimatedBytes': null,
+              'confidence': 'unknown',
+              'method': 'unavailable',
+              'format': 'unknown',
+              'bitrate': null,
+              'initBytes': 0,
+              'segmentCount': 0,
+            }),
+            200,
+          ),
+        ),
+      );
+
+      final estimate = await api.estimateStreamSize('signed-size-token');
+
+      expect(estimate, isNotNull);
+      expect(estimate?.estimatedBytes, isNull);
     });
   });
 }

@@ -103,12 +103,14 @@ void main() {
         quality: '720p H.264 | AAC',
         server: 'ShowBox 1',
         isM3U8: true,
+        sizeToken: 'token-server-1-720',
       ),
       RegularVideoLinks(
         url: 'https://showbox.example/server-2-720.m3u8',
         quality: '720p H.264 | AAC',
         server: 'ShowBox 2',
         isM3U8: true,
+        sizeToken: 'token-server-2-720',
       ),
       RegularVideoLinks(
         url: 'https://showbox.example/server-1-360.mpd',
@@ -141,6 +143,7 @@ void main() {
     test('keeps formats and headers aligned with unique source keys', () {
       final formats = VideoUtils.convertVideoFormatsToMap(showboxLinks);
       final headers = VideoUtils.convertVideoHeadersToMap(showboxLinks);
+      final sizeTokens = VideoUtils.convertVideoSizeTokensToMap(showboxLinks);
 
       expect(
         formats['720p H.264 | AAC · ShowBox 2'],
@@ -153,6 +156,14 @@ void main() {
       expect(headers['360p H.264 | AAC · ShowBox 1'], {
         'Referer': 'https://showbox.example/',
       });
+      expect(
+        sizeTokens['720p H.264 | AAC · ShowBox 1'],
+        'token-server-1-720',
+      );
+      expect(
+        sizeTokens['720p H.264 | AAC · ShowBox 2'],
+        'token-server-2-720',
+      );
     });
 
     test('keeps default quality matching based on the quality prefix', () {

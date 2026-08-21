@@ -246,6 +246,20 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                         });
                       }),
                     ),
+                    SwitchListTile(
+                      value: settingValues.playerAmbientGlowEnabled,
+                      inactiveThumbColor: Colors.white,
+                      inactiveTrackColor: const Color(0xFF9B9B9B),
+                      secondary: Icon(
+                        PhosphorIcons.sparkle(),
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      title: Text(tr('player_ambient_glow')),
+                      subtitle: Text(tr('player_ambient_glow_description')),
+                      onChanged: (value) {
+                        settingValues.playerAmbientGlowEnabled = value;
+                      },
+                    ),
                     _PlayerChoiceTile<int>(
                       icon: PhosphorIcons.arrowsClockwise(),
                       title: tr('seek_second'),

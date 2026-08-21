@@ -7,6 +7,7 @@ class ProviderVideoSource {
   final Map<String, String> videoSources; // Quality -> URL
   final Map<String, BetterPlayerVideoFormat?> videoFormats;
   final Map<String, Map<String, String>> videoHeaders;
+  final Map<String, String> videoSizeTokens;
   final List<BetterPlayerSubtitlesSource> subtitles;
 
   ProviderVideoSource({
@@ -15,6 +16,7 @@ class ProviderVideoSource {
     required this.videoSources,
     required this.videoFormats,
     required this.videoHeaders,
+    this.videoSizeTokens = const {},
     required this.subtitles,
   });
 }

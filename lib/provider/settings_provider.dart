@@ -102,6 +102,9 @@ class SettingsProvider with ChangeNotifier {
   bool _enableNextEpisodeButton = false;
   bool get enableNextEpisodeButton => _enableNextEpisodeButton;
 
+  bool _playerAmbientGlowEnabled = false;
+  bool get playerAmbientGlowEnabled => _playerAmbientGlowEnabled;
+
   // theme change
   Future<void> getCurrentThemeMode() async {
     appTheme = await _settingsPreferences.getThemeMode();
@@ -404,6 +407,19 @@ class SettingsProvider with ChangeNotifier {
     _enableNextEpisodeButton = value;
     _settingsPreferences.setEnableNextEpisodeButton(value);
     _trackSetting('Next Episode Button', value);
+    notifyListeners();
+  }
+
+  Future<void> getPlayerAmbientGlowEnabled() async {
+    playerAmbientGlowEnabled =
+        await _settingsPreferences.getPlayerAmbientGlowEnabled();
+  }
+
+  set playerAmbientGlowEnabled(bool value) {
+    if (_playerAmbientGlowEnabled == value) return;
+    _playerAmbientGlowEnabled = value;
+    _settingsPreferences.setPlayerAmbientGlowEnabled(value);
+    _trackSetting('Player Ambient Glow', value);
     notifyListeners();
   }
 }

@@ -102,6 +102,30 @@ class ScraperApi {
     );
   }
 
+  /// Estimates the source bytes represented by an API-issued signed token.
+  /// A failed or unavailable estimate is intentionally represented as null so
+  /// callers can keep the resolution selectable.
+  Future<StreamSizeEstimate?> estimateStreamSize(String token) async {
+    try {
+      final uri = _endpoint('/stream-size');
+      _logRequest(uri, method: 'POST');
+      final response = await _post(
+        uri,
+        {'token': token},
+        timeout: const Duration(seconds: 10),
+      );
+      _logResponse(uri, response);
+      final body = _decodeObject(response.body);
+      if (response.statusCode < 200 || response.statusCode >= 300) return null;
+      if (body['success'] != true) return null;
+      return StreamSizeEstimate.fromJson(body);
+    } catch (_) {
+      return null;
+    } finally {
+      if (_ownsClient) _client.close();
+    }
+  }
+
   Map<String, String> _buildQueryParams(
     String providerId,
     Map<String, String> baseParams,
@@ -151,6 +175,7 @@ class ScraperApi {
               isM3U8: link['isM3U8'] == true,
               isDash: link['isDASH'] == true,
               headers: linkHeaders,
+              sizeToken: link['sizeToken']?.toString(),
             ),
           );
 
@@ -202,9 +227,23 @@ class ScraperApi {
     return _client.get(uri).timeout(timeout);
   }
 
-  void _logRequest(Uri uri) {
+  Future<http.Response> _post(
+    Uri uri,
+    Map<String, dynamic> body, {
+    Duration timeout = const Duration(seconds: 30),
+  }) {
+    return _client
+        .post(
+          uri,
+          headers: const {'content-type': 'application/json'},
+          body: jsonEncode(body),
+        )
+        .timeout(timeout);
+  }
+
+  void _logRequest(Uri uri, {String method = 'GET'}) {
     if (!kDebugMode) return;
-    debugPrint('[ScraperApi] GET $uri');
+    debugPrint('[ScraperApi] $method $uri');
   }
 
   void _logResponse(Uri uri, http.Response response) {
@@ -260,6 +299,19 @@ class ScraperApiException implements Exception {
 
   @override
   String toString() => message;
+}
+
+class StreamSizeEstimate {
+  const StreamSizeEstimate({this.estimatedBytes});
+
+  final int? estimatedBytes;
+
+  factory StreamSizeEstimate.fromJson(Map<String, dynamic> json) {
+    final rawBytes = json['estimatedBytes'];
+    return StreamSizeEstimate(
+      estimatedBytes: rawBytes is num ? rawBytes.toInt() : null,
+    );
+  }
 }
 
 class ProviderHealthSnapshot {

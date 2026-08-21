@@ -153,6 +153,21 @@ class VideoUtils {
     return headers;
   }
 
+  /// Keep signed stream-size tokens aligned with the URL, format, and header
+  /// maps, including duplicate qualities returned by different servers.
+  static Map<String, String> convertVideoSizeTokensToMap(
+    List<RegularVideoLinks> vids,
+  ) {
+    final tokens = <String, String>{};
+    final keys = _videoSourceKeys(vids);
+    for (var index = 0; index < vids.length; index++) {
+      final token = vids[index].sizeToken?.trim();
+      if (token == null || token.isEmpty) continue;
+      tokens[keys[index]] = token;
+    }
+    return tokens;
+  }
+
   /// Build stable display keys without collapsing same-quality links returned
   /// by different servers. All source metadata maps use this same key list so
   /// URLs, formats, and headers remain aligned.

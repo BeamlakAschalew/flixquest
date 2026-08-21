@@ -169,6 +169,8 @@
   "text_color": "لون النص",
   "background_color": "لون الخلفية",
   "auto_full_screen": "وضع ملء الشاشة التلقائي",
+  "player_ambient_glow": "توهج محيطي",
+  "player_ambient_glow_description": "املأ الأشرطة الجانبية بنسخة ضبابية من الفيديو على أندرويد",
   "seek_second": "الانتقال إلى ثانية",
   "buffer_amount": "مقدار التخزين المؤقت",
   "video_resolution": "دقة الفيديو",

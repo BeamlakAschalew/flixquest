@@ -36,6 +36,7 @@ abstract final class DownloadSelectionSheets {
     BuildContext context, {
     required List<String> resolutions,
     String? providerName,
+    Map<String, int?> estimatedSizes = const {},
   }) {
     return showModalBottomSheet<String>(
       context: context,
@@ -53,6 +54,7 @@ abstract final class DownloadSelectionSheets {
             _DownloadChoice(
               value: resolution,
               title: resolution,
+              titleDetail: _sizeDescription(estimatedSizes, resolution),
               subtitle: _resolutionDescription(resolution),
               icon: PhosphorIcons.monitorPlay(),
             ),
@@ -71,18 +73,37 @@ abstract final class DownloadSelectionSheets {
     if (height >= 720) return 'HD • balanced quality and size';
     return 'Smaller download';
   }
+
+  static String _sizeDescription(
+    Map<String, int?> estimatedSizes,
+    String resolution,
+  ) {
+    final bytes = estimatedSizes[resolution];
+    return bytes == null ? 'Size undetermined' : '~${_formatBytes(bytes)}';
+  }
+
+  static String _formatBytes(int bytes) {
+    if (bytes < 1024) return '$bytes B';
+    final kb = bytes / 1024;
+    if (kb < 1024) return '${kb.toStringAsFixed(1)} KB';
+    final mb = kb / 1024;
+    if (mb < 1024) return '${mb.toStringAsFixed(1)} MB';
+    return '${(mb / 1024).toStringAsFixed(1)} GB';
+  }
 }
 
 class _DownloadChoice<T> {
   const _DownloadChoice({
     required this.value,
     required this.title,
+    this.titleDetail,
     required this.subtitle,
     required this.icon,
   });
 
   final T value;
   final String title;
+  final String? titleDetail;
   final String subtitle;
   final IconData icon;
 }
@@ -179,12 +200,37 @@ class _DownloadChoiceSheet<T> extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  choice.title,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleSmall
-                                      ?.copyWith(fontWeight: FontWeight.w700),
+                                Row(
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        choice.title,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleSmall
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                      ),
+                                    ),
+                                    if (choice.titleDetail != null) ...[
+                                      const SizedBox(width: 8),
+                                      Flexible(
+                                        child: Text(
+                                          choice.titleDetail!,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.copyWith(
+                                                color: colors.primary,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                        ),
+                                      ),
+                                    ],
+                                  ],
                                 ),
                                 const SizedBox(height: 2),
                                 Text(

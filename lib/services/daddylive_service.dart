@@ -182,7 +182,13 @@ class DaddyLiveService {
     final json = await _getJson(
       _uri('/api/v2/dlhd/channels/${Uri.encodeComponent(channelId)}/stream'),
     );
-    final apiStream = DaddyLiveStream.fromJson(json);
+    final resolvedStream = DaddyLiveStream.fromJson(json);
+    final apiStream = DaddyLiveStream(
+      url: resolvedStream.url,
+      headers: _playbackHeaders(resolvedStream.headers),
+      embedUrl: resolvedStream.embedUrl,
+      expiresAt: resolvedStream.expiresAt,
+    );
     if (apiStream.embedUrl.isNotEmpty) {
       final deviceStream = await _resolveFromEmbed(apiStream);
       if (deviceStream != null) return deviceStream;
@@ -192,6 +198,22 @@ class DaddyLiveService {
           'The channel returned no playable stream.');
     }
     return apiStream;
+  }
+
+  Map<String, String> _playbackHeaders(Map<String, String> headers) {
+    const allowedNames = <String, String>{
+      'accept': 'Accept',
+      'origin': 'Origin',
+      'referer': 'Referer',
+      'user-agent': 'User-Agent',
+    };
+    final result = <String, String>{};
+    for (final entry in headers.entries) {
+      final name = allowedNames[entry.key.trim().toLowerCase()];
+      final value = entry.value.trim();
+      if (name != null && value.isNotEmpty) result[name] = value;
+    }
+    return result;
   }
 
   Future<DaddyLiveStream?> _resolveFromEmbed(
