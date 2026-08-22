@@ -27,6 +27,7 @@ dependencies:
   firebase_analytics: ^12.4.6
   firebase_auth: ^6.5.7
   firebase_core: ^4.13.0
+  firebase_crashlytics: ^5.2.7
   firebase_in_app_messaging: ^0.9.2+7
   firebase_messaging: ^16.5.0
   firebase_remote_config: ^6.5.6
@@ -61,6 +62,7 @@ dependencies:
   shimmer: ^3.0.0
   sqflite: ^2.4.0
   url_launcher: ^6.3.2
+  wakelock_plus: ^1.4.0
   xml: ^6.6.1
 
 dev_dependencies:

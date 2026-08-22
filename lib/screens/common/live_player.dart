@@ -184,6 +184,7 @@ class _LivePlayerState extends State<LivePlayer> {
 
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
     _settings.addListener(_syncAmbientGlowSetting);
+    _syncAmbientGlowSetting();
     _betterPlayerController.addEventsListener(_onPlayerEvent);
     unawaited(_setupInitialStream());
     _betterPlayerController.setBetterPlayerGlobalKey(_betterPlayerKey);

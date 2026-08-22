@@ -80,6 +80,7 @@ class PlayerNextEpisodeWidget {
                       builder: (_) => TVVideoLoader(
                         download: false,
                         useTvPlayer: useTvPlayer,
+                        forceAutoLoad: true,
                         metadata: _metadataForEpisode(
                           nextEpisode,
                           tvMetadata,
@@ -110,6 +111,11 @@ class PlayerNextEpisodeWidget {
     var dismissed = false;
     final navigator = Navigator.of(context);
 
+    debugPrint(
+      '[Player] Opening next-episode countdown for '
+      'S${nextEpisode.seasonNumber}E${nextEpisode.episodeNumber}',
+    );
+
     void play(BuildContext dialogContext) {
       if (dismissed) return;
       dismissed = true;
@@ -122,6 +128,7 @@ class PlayerNextEpisodeWidget {
           builder: (_) => TVVideoLoader(
             download: false,
             useTvPlayer: useTvPlayer,
+            forceAutoLoad: true,
             metadata: _metadataForEpisode(nextEpisode, tvMetadata),
           ),
         ),

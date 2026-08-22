@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flixquest/models/custom_exceptions.dart';
+import 'package:flutter/foundation.dart';
 import '../constants/app_constants.dart';
 import '/models/images.dart';
 import '/models/person.dart';
@@ -14,18 +15,70 @@ import '/models/genres.dart';
 import '/models/movie.dart';
 
 Future<List<Movie>> fetchMovies(
-    String api, bool isProxyEnabled, String proxyUrl) async {
+  String api,
+  bool isProxyEnabled,
+  String proxyUrl, {
+  String? debugLabel,
+}) async {
   MovieList movieList;
+  final startedAt = Stopwatch()..start();
   try {
+    final originalUri = Uri.parse(api);
     if (isProxyEnabled && proxyUrl.isNotEmpty) {
       api = '$proxyUrl?destination=$api';
     }
-    var res = await retryOptions.retry(
+    if (debugLabel != null) {
+      final proxyHost = Uri.tryParse(proxyUrl)?.host;
+      debugPrint(
+        '[$debugLabel][HTTP_REQUEST] '
+        'host=${originalUri.host} path=${originalUri.path} '
+        'language=${originalUri.queryParameters['language']} '
+        'page=${originalUri.queryParameters['page']} '
+        'proxyEnabled=$isProxyEnabled '
+        'proxyConfigured=${proxyUrl.isNotEmpty} '
+        'proxyHost=${proxyHost?.isNotEmpty == true ? proxyHost : 'none'}',
+      );
+    }
+    final res = await retryOptions.retry(
       (() => http.get(Uri.parse(api)).timeout(timeOut)),
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
-    var decodeRes = jsonDecode(res.body);
-    movieList = MovieList.fromJson(decodeRes);
+    final decoded = jsonDecode(res.body);
+    if (debugLabel != null) {
+      final decodedMap = decoded is Map<String, dynamic> ? decoded : null;
+      debugPrint(
+        '[$debugLabel][HTTP_RESPONSE] '
+        'status=${res.statusCode} elapsedMs=${startedAt.elapsedMilliseconds} '
+        'contentType=${res.headers['content-type']} bytes=${res.bodyBytes.length} '
+        'keys=${decodedMap?.keys.join(',') ?? decoded.runtimeType} '
+        'tmdbSuccess=${decodedMap?['success']} '
+        'tmdbStatusCode=${decodedMap?['status_code']} '
+        'tmdbStatusMessage=${decodedMap?['status_message']}',
+      );
+    }
+    if (decoded is! Map<String, dynamic>) {
+      throw const FormatException('Expected a JSON object from movie API');
+    }
+    movieList = MovieList.fromJson(decoded);
+    if (debugLabel != null) {
+      debugPrint(
+        '[$debugLabel][PARSED] '
+        'page=${movieList.page} totalResults=${movieList.totalMovies} '
+        'totalPages=${movieList.totalPages} '
+        'parsedMovies=${movieList.movies?.length ?? 0}',
+      );
+    }
+  } catch (error, stackTrace) {
+    if (debugLabel != null) {
+      debugPrint(
+        '[$debugLabel][HTTP_ERROR] '
+        'elapsedMs=${startedAt.elapsedMilliseconds} '
+        'type=${error.runtimeType} error=$error',
+      );
+      debugPrintStack(
+          label: '[$debugLabel][HTTP_STACK]', stackTrace: stackTrace);
+    }
+    rethrow;
   } finally {
     client.close();
   }

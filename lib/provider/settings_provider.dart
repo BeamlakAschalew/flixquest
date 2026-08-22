@@ -89,6 +89,9 @@ class SettingsProvider with ChangeNotifier {
   int _appColorIndex = -1;
   int get appColorIndex => _appColorIndex;
 
+  int _customAppColor = 0;
+  int get customAppColor => _customAppColor;
+
   List<String> _streamProviderOrder = const [];
   List<String> get streamProviderOrder =>
       List.unmodifiable(_streamProviderOrder);
@@ -104,6 +107,9 @@ class SettingsProvider with ChangeNotifier {
 
   bool _playerAmbientGlowEnabled = false;
   bool get playerAmbientGlowEnabled => _playerAmbientGlowEnabled;
+
+  bool _autoLoadSources = true;
+  bool get autoLoadSources => _autoLoadSources;
 
   // theme change
   Future<void> getCurrentThemeMode() async {
@@ -331,6 +337,20 @@ class SettingsProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> getCustomAppColor() async {
+    final stored = await _settingsPreferences.getAppCustomColor();
+    if (stored != null) {
+      _customAppColor = stored;
+    }
+  }
+
+  set customAppColor(int value) {
+    _customAppColor = value;
+    _settingsPreferences.setAppCustomColor(value);
+    _trackSetting('Custom App Color', value.toRadixString(16));
+    notifyListeners();
+  }
+
   Future<void> getStreamProviderOrder() async {
     _streamProviderOrder = await _settingsPreferences.getStreamProviderOrder();
   }
@@ -420,6 +440,17 @@ class SettingsProvider with ChangeNotifier {
     _playerAmbientGlowEnabled = value;
     _settingsPreferences.setPlayerAmbientGlowEnabled(value);
     _trackSetting('Player Ambient Glow', value);
+    notifyListeners();
+  }
+
+  Future<void> getAutoLoadSources() async {
+    autoLoadSources = await _settingsPreferences.getAutoLoadSources();
+  }
+
+  set autoLoadSources(bool value) {
+    _autoLoadSources = value;
+    _settingsPreferences.setAutoLoadSources(value);
+    _trackSetting('Auto Load Sources', value);
     notifyListeners();
   }
 }

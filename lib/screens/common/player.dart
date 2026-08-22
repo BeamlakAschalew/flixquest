@@ -18,6 +18,7 @@ import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:better_player_plus/better_player_plus.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../functions/function.dart';
 import '../../provider/settings_provider.dart';
 import '../../provider/offline_download_provider.dart';
@@ -87,7 +88,9 @@ class PlayerOne extends StatefulWidget {
 }
 
 class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
-  static const int _tvMaxBufferDurationMs = 120000;
+  // Halved from the mobile cap: TVs are RAM-constrained and buffered HLS
+  // segments at high bitrate were a low-memory-kill risk during movies.
+  static const int _tvMaxBufferDurationMs = 60000;
   static const int _mobileBackBufferDurationMs = 120000;
   static const int _tvBackBufferDurationMs = 30000;
   static const int _bufferForPlaybackMs = 6000;
@@ -126,8 +129,10 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   bool _nextEpisodeButtonDismissed = false;
   bool _preRollActive = false;
   bool _playbackCompletionHandled = false;
-  final PlayerCompletionDetector _completionDetector =
-      PlayerCompletionDetector();
+  final PlayerCompletionDetector _completionDetector = PlayerCompletionDetector(
+    stalledEndTolerance: const Duration(seconds: 12),
+    requiredStableSamples: 3,
+  );
   Timer? _progressCheckTimer;
   OverlayEntry? _nextEpisodeOverlay;
   Timer? _tvNextEpisodeTimer;
@@ -182,6 +187,16 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     _contentMenuRecommendations = List<MovieRecommendation>.of(
       widget.movieMetadata?.recommendations ?? const <MovieRecommendation>[],
     );
+    if (widget.mediaType == MediaType.movie) {
+      debugPrint(
+        '[MovieRecommendationsDebug][PLAYER_INIT] '
+        'movieId=${widget.movieMetadata?.movieId} '
+        'title=${widget.movieMetadata?.movieName} '
+        'metadataCount=${widget.movieMetadata?.recommendations?.length ?? 0} '
+        'snapshotCount=${_contentMenuRecommendations.length} '
+        'ids=${_contentMenuRecommendations.map((movie) => movie.movieId).join(',')}',
+      );
+    }
     _contentMenuEpisodes = List<EpisodeMetadata>.of(
       widget.tvMetadata?.seasonEpisodes ?? const <EpisodeMetadata>[],
     );
@@ -201,6 +216,10 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     _episodeSelection = PlayerEpisodeSelection(widget.tvMetadata?.seasonNumber);
 
     WidgetsBinding.instance.addObserver(this);
+    // Playback owns the screen for the whole session on both surfaces. Better
+    // Player only holds a wakelock inside its own fullscreen route, which TV
+    // playback never enters.
+    unawaited(WakelockPlus.enable());
     final configuredMaxBufferMs = widget.settings.defaultMaxBufferDuration;
     final maxBufferMs =
         widget.useTvControls && configuredMaxBufferMs > _tvMaxBufferDurationMs
@@ -428,6 +447,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     );
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
     settings.addListener(_syncAmbientGlowSetting);
+    _syncAmbientGlowSetting();
     _betterPlayerController.setBetterPlayerGlobalKey(_betterPlayerKey);
     _betterPlayerController.addEventsListener(_onAnalyticsPlayerEvent);
     // Attach listeners before setup so native initialization and pre-roll
@@ -604,6 +624,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         }
         break;
       case BetterPlayerEventType.finished:
+        debugPrint('[Player] BetterPlayer reported finished');
         _handlePlaybackCompleted(source: 'native');
         break;
       case BetterPlayerEventType.setupDataSource:
@@ -628,6 +649,15 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
             : source?.name ?? 'default';
         settings.analytics.trackSubtitleLanguageChanged(language: language);
         _trackPlaybackEvent('subtitle_changed', value: language);
+        break;
+      case BetterPlayerEventType.hideFullscreen:
+        // Leaving Better Player's fullscreen route unconditionally clears the
+        // screen-on flag. The route pop completes the awaiting fullscreen
+        // continuation in a microtask, so re-asserting on the next frame lands
+        // after that cleanup and restores the player-lifetime hold.
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          unawaited(WakelockPlus.enable());
+        });
         break;
       default:
         break;
@@ -725,17 +755,32 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   }
 
   bool _hasNextEpisode() {
-    if (widget.tvMetadata?.seasonEpisodes == null ||
-        widget.tvMetadata!.seasonEpisodes!.isEmpty) {
+    final episodes = widget.tvMetadata?.seasonEpisodes;
+    if (episodes == null || episodes.isEmpty) {
       return false;
     }
 
-    final currentIndex = widget.tvMetadata!.seasonEpisodes!.indexWhere(
-      (e) => e.episodeNumber == widget.tvMetadata!.episodeNumber,
-    );
+    final currentIndex = _currentEpisodeIndex();
 
-    return currentIndex != -1 &&
-        currentIndex < widget.tvMetadata!.seasonEpisodes!.length - 1;
+    return currentIndex >= 0 && currentIndex < episodes.length - 1;
+  }
+
+  int _currentEpisodeIndex() {
+    final metadata = widget.tvMetadata;
+    final episodes = metadata?.seasonEpisodes;
+    if (metadata == null || episodes == null || episodes.isEmpty) return -1;
+
+    final bySeasonAndNumber = episodes.indexWhere(
+      (episode) =>
+          episode.episodeNumber == metadata.episodeNumber &&
+          (metadata.seasonNumber == null ||
+              episode.seasonNumber == metadata.seasonNumber),
+    );
+    if (bySeasonAndNumber >= 0) return bySeasonAndNumber;
+
+    final episodeId = metadata.episodeId;
+    if (episodeId == null) return -1;
+    return episodes.indexWhere((episode) => episode.episodeId == episodeId);
   }
 
   void _showNextEpisodeOverlay() {
@@ -1170,6 +1215,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
 
     // Restore original brightness before disposing
     BetterPlayerBrightnessManager.restoreOriginalBrightness();
+    unawaited(WakelockPlus.disable());
 
     _betterPlayerController.removeEventsListener(_onAnalyticsPlayerEvent);
     _stopAnalyticsWatchClock();
@@ -1208,19 +1254,22 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   }
 
   void _handleVideoFinished() {
+    debugPrint(
+      '[MovieRecommendationsDebug][VIDEO_FINISHED_ENTER] '
+      'mediaType=${widget.mediaType} mounted=$mounted '
+      'useTvControls=${widget.useTvControls} '
+      'movieId=${widget.movieMetadata?.movieId} '
+      'recommendations=${widget.movieMetadata?.recommendations?.length ?? 0}',
+    );
     if (widget.mediaType == MediaType.tvShow &&
         widget.tvMetadata?.seasonEpisodes != null &&
         widget.tvMetadata!.seasonEpisodes!.isNotEmpty) {
-      // Find current episode index
-      final currentIndex = widget.tvMetadata!.seasonEpisodes!.indexWhere(
-        (e) => e.episodeNumber == widget.tvMetadata!.episodeNumber,
-      );
+      final episodes = widget.tvMetadata!.seasonEpisodes!;
+      final currentIndex = _currentEpisodeIndex();
 
       // Check if there's a next episode
-      if (currentIndex != -1 &&
-          currentIndex < widget.tvMetadata!.seasonEpisodes!.length - 1) {
-        final nextEpisode =
-            widget.tvMetadata!.seasonEpisodes![currentIndex + 1];
+      if (currentIndex >= 0 && currentIndex < episodes.length - 1) {
+        final nextEpisode = episodes[currentIndex + 1];
 
         if (widget.useTvControls) {
           if (_nextEpisodeButtonDismissed) {
@@ -1231,7 +1280,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         } else {
           // Show countdown dialog for next episode
           _nextEpisodeWidget.showNextEpisodeCountdown(
-            context: context,
+            context: _playerModalContext,
             nextEpisode: nextEpisode,
             colors: widget.colors,
             tvMetadata: widget.tvMetadata!,
@@ -1249,15 +1298,31 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       }
     } else if (widget.mediaType == MediaType.movie) {
       debugPrint(
-          'Movie finished. Recommendations: ${widget.movieMetadata?.recommendations?.length ?? 0}');
+        '[MovieRecommendationsDebug][MOVIE_FINISHED] '
+        'movieId=${widget.movieMetadata?.movieId} '
+        'recommendations=${widget.movieMetadata?.recommendations?.length ?? 0} '
+        'ids=${widget.movieMetadata?.recommendations?.map((movie) => movie.movieId).join(',') ?? 'none'}',
+      );
       if (widget.movieMetadata?.recommendations != null &&
           widget.movieMetadata!.recommendations!.isNotEmpty) {
         if (widget.useTvControls) {
+          debugPrint(
+            '[MovieRecommendationsDebug][PRESENT] target=tv_menu',
+          );
           _showTvMovieRecommendationsMenu();
         } else {
           // Show recommended movie countdown
+          final modalContext = _playerModalContext;
+          final navigator = Navigator.of(modalContext, rootNavigator: true);
+          debugPrint(
+            '[MovieRecommendationsDebug][PRESENT] '
+            'target=countdown contextMounted=${modalContext.mounted} '
+            'fullscreen=${_betterPlayerController.isFullScreen} '
+            'rootCanPop=${navigator.canPop()} '
+            'overlay=${identityHashCode(navigator.overlay)}',
+          );
           _movieRecommendations.showRecommendedMovieCountdown(
-            context: context,
+            context: modalContext,
             colors: widget.colors,
             movieMetadata: widget.movieMetadata!,
             onSaveProgress: _handleContentSwitch,
@@ -1265,13 +1330,44 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           );
         }
       } else {
-        debugPrint('No recommendations available for this movie');
+        debugPrint(
+          '[MovieRecommendationsDebug][PRESENT_SKIPPED] '
+          'reason=no_recommendations movieId=${widget.movieMetadata?.movieId}',
+        );
       }
     }
   }
 
   void _handlePlaybackCompleted({required String source}) {
-    if (!mounted || _preRollActive || _playbackCompletionHandled) return;
+    final value = _betterPlayerController.videoPlayerController?.value;
+    debugPrint(
+      '[MovieRecommendationsDebug][COMPLETION_ENTER] '
+      'source=$source mounted=$mounted preRoll=$_preRollActive '
+      'handled=$_playbackCompletionHandled '
+      'position=${value?.position.inMilliseconds} '
+      'duration=${value?.duration?.inMilliseconds} '
+      'playing=${value?.isPlaying} buffering=${value?.isBuffering}',
+    );
+    if (!mounted) {
+      debugPrint(
+        '[MovieRecommendationsDebug][COMPLETION_BLOCKED] reason=unmounted',
+      );
+      return;
+    }
+    if (_preRollActive) {
+      debugPrint(
+        '[MovieRecommendationsDebug][COMPLETION_BLOCKED] reason=pre_roll',
+      );
+      return;
+    }
+    if (_playbackCompletionHandled) {
+      debugPrint(
+        '[MovieRecommendationsDebug][COMPLETION_BLOCKED] '
+        'reason=already_handled',
+      );
+      return;
+    }
+    debugPrint('[Player] Playback completed via $source');
     _playbackCompletionHandled = true;
     _stopAnalyticsWatchClock();
     _trackPlaybackEvent('finished', value: source);
@@ -1412,9 +1508,18 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   void _showTvMovieRecommendationsMenu() {
     final metadata = widget.movieMetadata;
     final recommendations = metadata?.recommendations;
+    debugPrint(
+      '[MovieRecommendationsDebug][TV_MENU_ENTER] '
+      'mounted=$mounted movieId=${metadata?.movieId} '
+      'recommendations=${recommendations?.length ?? 0}',
+    );
     if (metadata == null ||
         recommendations == null ||
         recommendations.isEmpty) {
+      debugPrint(
+        '[MovieRecommendationsDebug][TV_MENU_SKIPPED] '
+        'reason=missing_metadata_or_recommendations',
+      );
       return;
     }
     _openTvMenu(
@@ -1558,6 +1663,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           download: false,
           useTvPlayer: true,
           onTvPlayerExit: widget.onTvPlayerExit,
+          forceAutoLoad: true,
           metadata: _metadataForTvEpisode(episode),
         ),
       ),
@@ -1574,6 +1680,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           download: false,
           useTvPlayer: true,
           onTvPlayerExit: widget.onTvPlayerExit,
+          forceAutoLoad: true,
           metadata: MovieStreamMetadata(
             movieId: movie.movieId,
             movieName: movie.title,

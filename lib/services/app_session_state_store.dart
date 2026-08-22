@@ -12,7 +12,7 @@ class AppSessionStateStore {
     'movies',
     'series',
     'discover',
-    'bookmarks',
+    'downloads',
     'profile',
   };
 
@@ -51,6 +51,11 @@ class AppSessionStateStore {
 
   String? _validatedDestination(String key, Set<String> validDestinations) {
     final destinationId = _preferences.getString(key);
+    // Keep users on the same fourth tab after the navbar destination swap.
+    if (destinationId == 'bookmarks' &&
+        validDestinations.contains('downloads')) {
+      return 'downloads';
+    }
     return validDestinations.contains(destinationId) ? destinationId : null;
   }
 }

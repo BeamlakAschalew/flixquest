@@ -230,6 +230,22 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                       },
                     ),
                     SwitchListTile(
+                      value: settingValues.autoLoadSources,
+                      inactiveThumbColor: Colors.white,
+                      inactiveTrackColor: const Color(0xFF9B9B9B),
+                      secondary: Icon(
+                        PhosphorIcons.lightning(),
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      title: Text(tr('auto_load_sources')),
+                      subtitle: Text(tr('auto_load_sources_description')),
+                      onChanged: ((value) {
+                        setState(() {
+                          settingValues.autoLoadSources = value;
+                        });
+                      }),
+                    ),
+                    SwitchListTile(
                       value: settingValues.defaultViewMode,
                       inactiveThumbColor: Colors.white,
                       inactiveTrackColor: const Color(0xFF9B9B9B),

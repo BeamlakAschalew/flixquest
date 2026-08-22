@@ -66,6 +66,36 @@ void main() {
       }
     });
 
+    test('can recover a malformed stream stalled several seconds from the end',
+        () {
+      final detector = PlayerCompletionDetector(
+        stalledEndTolerance: const Duration(seconds: 12),
+        requiredStableSamples: 3,
+      );
+
+      for (var index = 0; index < 3; index++) {
+        expect(
+          detector.observe(
+            position: const Duration(seconds: 93),
+            duration: const Duration(seconds: 100),
+            isPlaying: true,
+            isBuffering: false,
+          ),
+          isFalse,
+        );
+      }
+
+      expect(
+        detector.observe(
+          position: const Duration(seconds: 93),
+          duration: const Duration(seconds: 100),
+          isPlaying: true,
+          isBuffering: false,
+        ),
+        isTrue,
+      );
+    });
+
     test('reports completion once and can be reset for another source', () {
       final detector = PlayerCompletionDetector();
 

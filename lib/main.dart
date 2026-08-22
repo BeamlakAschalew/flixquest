@@ -1,9 +1,11 @@
 import 'dart:io';
+import 'dart:ui' show PlatformDispatcher;
 import 'package:flixquest/flixquest_main.dart';
 import '../models/translation.dart';
 import '../provider/app_dependency_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
@@ -50,6 +52,14 @@ Future<DevicePresentation> appInitialize({
   // Firebase-dependent services and providers must not be accessed until the
   // default app has finished initializing.
   await _initialization;
+
+  // Surface uncaught Dart and platform errors to Crashlytics. Installed only
+  // after Firebase initialization so the recorder is always ready.
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+  PlatformDispatcher.instance.onError = (error, stackTrace) {
+    FirebaseCrashlytics.instance.recordError(error, stackTrace, fatal: true);
+    return true;
+  };
 
   final devicePresentation = await resolveDevicePresentation(
     detector: devicePresentationDetector,
@@ -99,12 +109,14 @@ Future<DevicePresentation> appInitialize({
   await settingsProvider.getBackgroundSubtitleColor();
   await settingsProvider.getAppLanguage();
   await settingsProvider.getAppColorIndex();
+  await settingsProvider.getCustomAppColor();
   await settingsProvider.getStreamProviderOrder();
   await settingsProvider.getPlayerTimeStyle();
   await settingsProvider.getUseProxyMode();
   await settingsProvider.getSubtitleStyle();
   await settingsProvider.getEnableNextEpisodeButton();
   await settingsProvider.getPlayerAmbientGlowEnabled();
+  await settingsProvider.getAutoLoadSources();
   settingsProvider.completeHydration();
   await recentProvider.fetchMovies();
   await recentProvider.fetchEpisodes();

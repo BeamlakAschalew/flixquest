@@ -53,6 +53,7 @@ class PlayerMovieRecommendations {
             builder: (context) => MovieVideoLoader(
               download: false,
               useTvPlayer: useTvPlayer,
+              forceAutoLoad: true,
               metadata: newMetadata,
             ),
           ),
@@ -87,8 +88,7 @@ class PlayerMovieRecommendations {
       'recommendations=${recommendations?.length ?? 0}',
     );
     if (recommendations == null || recommendations.isEmpty) {
-      debugPrint(
-          '[PlayerContentMenu] recommendations sheet skipped: no items');
+      debugPrint('[PlayerContentMenu] recommendations sheet skipped: no items');
       return Future.value();
     }
     final playerContext = context;
@@ -109,53 +109,53 @@ class PlayerMovieRecommendations {
           behavior: HitTestBehavior.opaque,
           onPointerDown: (_) {},
           child: DraggableScrollableSheet(
-          initialChildSize: .8,
-          minChildSize: .55,
-          maxChildSize: .95,
-          expand: false,
-          snap: true,
-          snapSizes: const [.55, .8, .95],
-          builder: (context, scrollController) => PlayerSheetScaffold(
-            icon: PhosphorIcons.sparkle(),
-            title: tr('recommended_movies'),
-            subtitle: tr('more_recommendations'),
-            actions: [
-              IconButton(
-                onPressed: () => Navigator.pop(sheetContext),
-                icon: Icon(PhosphorIcons.x()),
+            initialChildSize: .8,
+            minChildSize: .55,
+            maxChildSize: .95,
+            expand: false,
+            snap: true,
+            snapSizes: const [.55, .8, .95],
+            builder: (context, scrollController) => PlayerSheetScaffold(
+              icon: PhosphorIcons.sparkle(),
+              title: tr('recommended_movies'),
+              subtitle: tr('more_recommendations'),
+              actions: [
+                IconButton(
+                  onPressed: () => Navigator.pop(sheetContext),
+                  icon: Icon(PhosphorIcons.x()),
+                ),
+              ],
+              child: ListView.separated(
+                controller: scrollController,
+                padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+                itemCount: recommendations.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 4),
+                itemBuilder: (context, index) {
+                  final movie = recommendations[index];
+                  return PlayerChoiceCard(
+                    title: movie.title,
+                    subtitle: _movieSubtitle(movie),
+                    description: movie.overview,
+                    thumbnail: _RecommendationThumbnail(
+                      path: movie.backdropPath ?? movie.posterPath,
+                      width: 112,
+                      height: 68,
+                    ),
+                    onTap: () {
+                      Navigator.pop(sheetContext);
+                      loadRecommendedMovie(
+                        context: playerContext,
+                        movieId: movie.movieId,
+                        movieMetadata: movieMetadata,
+                        onSaveProgress: onSaveProgress,
+                        closePlayer: closePlayer,
+                        useTvPlayer: useTvPlayer,
+                      );
+                    },
+                  );
+                },
               ),
-            ],
-            child: ListView.separated(
-              controller: scrollController,
-              padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
-              itemCount: recommendations.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 4),
-              itemBuilder: (context, index) {
-                final movie = recommendations[index];
-                return PlayerChoiceCard(
-                  title: movie.title,
-                  subtitle: _movieSubtitle(movie),
-                  description: movie.overview,
-                  thumbnail: _RecommendationThumbnail(
-                    path: movie.backdropPath ?? movie.posterPath,
-                    width: 112,
-                    height: 68,
-                  ),
-                  onTap: () {
-                    Navigator.pop(sheetContext);
-                    loadRecommendedMovie(
-                      context: playerContext,
-                      movieId: movie.movieId,
-                      movieMetadata: movieMetadata,
-                      onSaveProgress: onSaveProgress,
-                      closePlayer: closePlayer,
-                      useTvPlayer: useTvPlayer,
-                    );
-                  },
-                );
-              },
             ),
-          ),
           ),
         );
       },
@@ -171,178 +171,214 @@ class PlayerMovieRecommendations {
     bool useTvPlayer = false,
   }) {
     final recommendations = movieMetadata.recommendations;
-    if (recommendations == null || recommendations.isEmpty) return;
+    debugPrint(
+      '[MovieRecommendationsDebug][COUNTDOWN_ENTER] '
+      'contextMounted=${context.mounted} movieId=${movieMetadata.movieId} '
+      'recommendations=${recommendations?.length ?? 0} '
+      'ids=${recommendations?.map((movie) => movie.movieId).join(',') ?? 'none'}',
+    );
+    if (recommendations == null || recommendations.isEmpty) {
+      debugPrint(
+        '[MovieRecommendationsDebug][COUNTDOWN_SKIPPED] '
+        'reason=no_recommendations',
+      );
+      return;
+    }
     var selectedIndex = 0;
 
-    showDialog<void>(
+    final dialog = showDialog<void>(
       context: context,
       useRootNavigator: true,
-      builder: (dialogContext) => StatefulBuilder(
-        builder: (context, setDialogState) {
-          final selected = recommendations[selectedIndex];
-          return Dialog(
-            insetPadding: const EdgeInsets.all(20),
-            clipBehavior: Clip.antiAlias,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 720),
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          width: 46,
-                          height: 46,
-                          decoration: BoxDecoration(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .primary
-                                .withValues(alpha: .12),
-                            shape: BoxShape.circle,
+      builder: (dialogContext) {
+        debugPrint(
+          '[MovieRecommendationsDebug][COUNTDOWN_BUILDER] '
+          'dialogMounted=${dialogContext.mounted} '
+          'dialogContext=${identityHashCode(dialogContext)}',
+        );
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            final selected = recommendations[selectedIndex];
+            return Dialog(
+              insetPadding: const EdgeInsets.all(20),
+              clipBehavior: Clip.antiAlias,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 720),
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            width: 46,
+                            height: 46,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primary
+                                  .withValues(alpha: .12),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              PhosphorIcons.sparkle(),
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
                           ),
-                          child: Icon(
-                            PhosphorIcons.sparkle(),
-                            color: Theme.of(context).colorScheme.primary,
+                          const SizedBox(width: 13),
+                          Expanded(
+                            child: Text(
+                              tr('recommended_movies'),
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 13),
-                        Expanded(
-                          child: Text(
-                            tr('recommended_movies'),
-                            style: Theme.of(context).textTheme.titleLarge,
+                          IconButton(
+                            onPressed: () => Navigator.pop(dialogContext),
+                            icon: Icon(PhosphorIcons.x()),
                           ),
-                        ),
-                        IconButton(
-                          onPressed: () => Navigator.pop(dialogContext),
-                          icon: Icon(PhosphorIcons.x()),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 18),
-                    PlayerChoiceCard(
-                      title: selected.title,
-                      subtitle: _movieSubtitle(selected),
-                      description: selected.overview,
-                      selected: true,
-                      thumbnail: _RecommendationThumbnail(
-                        path: selected.backdropPath ?? selected.posterPath,
-                        width: 128,
-                        height: 76,
+                        ],
                       ),
-                      trailing: Icon(
-                        PhosphorIcons.playCircle(
-                          PhosphorIconsStyle.fill,
+                      const SizedBox(height: 18),
+                      PlayerChoiceCard(
+                        title: selected.title,
+                        subtitle: _movieSubtitle(selected),
+                        description: selected.overview,
+                        selected: true,
+                        thumbnail: _RecommendationThumbnail(
+                          path: selected.backdropPath ?? selected.posterPath,
+                          width: 128,
+                          height: 76,
                         ),
-                        color: Theme.of(context).colorScheme.primary,
+                        trailing: Icon(
+                          PhosphorIcons.playCircle(
+                            PhosphorIconsStyle.fill,
+                          ),
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        onTap: null,
                       ),
-                      onTap: null,
-                    ),
-                    if (recommendations.length > 1) ...[
-                      const SizedBox(height: 20),
-                      Text(
-                        tr('more_recommendations'),
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
-                      const SizedBox(height: 10),
-                      SizedBox(
-                        height: 122,
-                        child: ListView.separated(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: recommendations.length,
-                          separatorBuilder: (_, __) => const SizedBox(width: 6),
-                          itemBuilder: (context, index) {
-                            final movie = recommendations[index];
-                            final isSelected = index == selectedIndex;
-                            return Material(
-                              color: isSelected
-                                  ? Theme.of(context)
-                                      .colorScheme
-                                      .primaryContainer
-                                  : Theme.of(context)
-                                      .colorScheme
-                                      .surfaceContainerLow,
-                              borderRadius: BorderRadius.circular(14),
-                              clipBehavior: Clip.antiAlias,
-                              child: InkWell(
-                                onTap: () => setDialogState(
-                                  () => selectedIndex = index,
-                                ),
-                                child: SizedBox(
-                                  width: 210,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8),
-                                    child: Row(
-                                      children: [
-                                        _RecommendationThumbnail(
-                                          path: movie.backdropPath ??
-                                              movie.posterPath,
-                                          width: 96,
-                                          height: 58,
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Expanded(
-                                          child: Text(
-                                            movie.title,
-                                            maxLines: 3,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleSmall
-                                                ?.copyWith(
-                                                  color: isSelected
-                                                      ? Theme.of(context)
-                                                          .colorScheme
-                                                          .primary
-                                                      : null,
-                                                ),
+                      if (recommendations.length > 1) ...[
+                        const SizedBox(height: 20),
+                        Text(
+                          tr('more_recommendations'),
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          height: 122,
+                          child: ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: recommendations.length,
+                            separatorBuilder: (_, __) =>
+                                const SizedBox(width: 6),
+                            itemBuilder: (context, index) {
+                              final movie = recommendations[index];
+                              final isSelected = index == selectedIndex;
+                              return Material(
+                                color: isSelected
+                                    ? Theme.of(context)
+                                        .colorScheme
+                                        .primaryContainer
+                                    : Theme.of(context)
+                                        .colorScheme
+                                        .surfaceContainerLow,
+                                borderRadius: BorderRadius.circular(14),
+                                clipBehavior: Clip.antiAlias,
+                                child: InkWell(
+                                  onTap: () => setDialogState(
+                                    () => selectedIndex = index,
+                                  ),
+                                  child: SizedBox(
+                                    width: 210,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8),
+                                      child: Row(
+                                        children: [
+                                          _RecommendationThumbnail(
+                                            path: movie.backdropPath ??
+                                                movie.posterPath,
+                                            width: 96,
+                                            height: 58,
                                           ),
-                                        ),
-                                      ],
+                                          const SizedBox(width: 10),
+                                          Expanded(
+                                            child: Text(
+                                              movie.title,
+                                              maxLines: 3,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .titleSmall
+                                                  ?.copyWith(
+                                                    color: isSelected
+                                                        ? Theme.of(context)
+                                                            .colorScheme
+                                                            .primary
+                                                        : null,
+                                                  ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(dialogContext),
-                          child: Text(tr('cancel')),
-                        ),
-                        const SizedBox(width: 8),
-                        FilledButton.icon(
-                          onPressed: () {
-                            Navigator.pop(dialogContext);
-                            loadRecommendedMovie(
-                              context: context,
-                              movieId: selected.movieId,
-                              movieMetadata: movieMetadata,
-                              onSaveProgress: onSaveProgress,
-                              closePlayer: closePlayer,
-                              useTvPlayer: useTvPlayer,
-                            );
-                          },
-                          icon: Icon(PhosphorIcons.play()),
-                          label: Text(tr('play_now')),
+                              );
+                            },
+                          ),
                         ),
                       ],
-                    ),
-                  ],
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(dialogContext),
+                            child: Text(tr('cancel')),
+                          ),
+                          const SizedBox(width: 8),
+                          FilledButton.icon(
+                            onPressed: () {
+                              Navigator.pop(dialogContext);
+                              loadRecommendedMovie(
+                                context: context,
+                                movieId: selected.movieId,
+                                movieMetadata: movieMetadata,
+                                onSaveProgress: onSaveProgress,
+                                closePlayer: closePlayer,
+                                useTvPlayer: useTvPlayer,
+                              );
+                            },
+                            icon: Icon(PhosphorIcons.play()),
+                            label: Text(tr('play_now')),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        );
+      },
+    );
+    dialog.then(
+      (_) => debugPrint(
+        '[MovieRecommendationsDebug][COUNTDOWN_CLOSED] '
+        'movieId=${movieMetadata.movieId}',
       ),
+      onError: (Object error, StackTrace stackTrace) {
+        debugPrint(
+          '[MovieRecommendationsDebug][COUNTDOWN_ERROR] '
+          'type=${error.runtimeType} error=$error',
+        );
+        debugPrintStack(
+          label: '[MovieRecommendationsDebug][COUNTDOWN_STACK]',
+          stackTrace: stackTrace,
+        );
+      },
     );
   }
 

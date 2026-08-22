@@ -5,15 +5,32 @@ class AppColor {
   int index;
   AppColor({required this.cs, required this.index});
 
-  static ColorScheme colorGetter(Color color, bool isDark) {
-    return ColorScheme.fromSeed(
-        seedColor: color,
-        brightness: isDark ? Brightness.dark : Brightness.light);
+  static const int defaultIndex = -1;
+  static const int customIndex = -2;
+
+  static ColorScheme colorGetter(
+    Color color,
+    bool isDark, {
+    bool useExactPrimary = false,
+  }) {
+    final scheme = ColorScheme.fromSeed(
+      seedColor: color,
+      brightness: isDark ? Brightness.dark : Brightness.light,
+    );
+
+    if (!useExactPrimary) return scheme;
+
+    return scheme.copyWith(
+      primary: color,
+      onPrimary: ThemeData.estimateBrightnessForColor(color) == Brightness.dark
+          ? Colors.white
+          : Colors.black,
+    );
   }
 }
 
 class AppColorsList {
-  List<AppColor> appColors(bool isDark) {
+  List<AppColor> appColors(bool isDark, {int? customColor}) {
     // Curated color palette with modern, vibrant colors
     final List<Color> baseColors = [
       const Color(0xFF6366F1), // Indigo - Modern purple-blue
@@ -42,7 +59,7 @@ class AppColorsList {
     return [
       AppColor(
         cs: AppColor.colorGetter(const Color(0xFFF97316), isDark),
-        index: -1,
+        index: AppColor.defaultIndex,
       ),
       ...List.generate(
         baseColors.length,
@@ -51,6 +68,15 @@ class AppColorsList {
           index: index + 1,
         ),
       ),
+      if (customColor != null && customColor > 0)
+        AppColor(
+          cs: AppColor.colorGetter(
+            Color(customColor),
+            isDark,
+            useExactPrimary: true,
+          ),
+          index: AppColor.customIndex,
+        ),
     ];
   }
 }

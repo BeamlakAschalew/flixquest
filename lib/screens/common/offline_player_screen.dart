@@ -47,6 +47,7 @@ class _OfflinePlayerScreenState extends State<OfflinePlayerScreen> {
         enableVolumeSwipe: true,
         enableBrightnessSwipe: true,
         enableSeekSwipe: true,
+        enableDoubleTapSeek: true,
         volumeSwipeSensitivity: 0.5,
         brightnessSwipeSensitivity: 0.5,
         seekSwipeSensitivity: 1.0,

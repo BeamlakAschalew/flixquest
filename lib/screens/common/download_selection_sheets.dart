@@ -7,6 +7,9 @@ abstract final class DownloadSelectionSheets {
   static Future<VideoProvider?> showProvider(
     BuildContext context, {
     required List<VideoProvider> providers,
+    String title = 'Choose download provider',
+    String subtitle =
+        'Select the source that should provide the offline video.',
   }) {
     return showModalBottomSheet<VideoProvider>(
       context: context,
@@ -15,8 +18,8 @@ abstract final class DownloadSelectionSheets {
       isScrollControlled: true,
       builder: (context) => _DownloadChoiceSheet<VideoProvider>(
         icon: PhosphorIcons.hardDrives(),
-        title: 'Choose download provider',
-        subtitle: 'Select the source that should provide the offline video.',
+        title: title,
+        subtitle: subtitle,
         choices: [
           for (final provider in providers)
             _DownloadChoice(

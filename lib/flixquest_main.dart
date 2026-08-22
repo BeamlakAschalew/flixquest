@@ -171,6 +171,9 @@ class _FlixQuestState extends State<FlixQuest>
                         settingsProvider.appTheme == 'amoled';
                     final palette = AppColorsList().appColors(
                       isDarkTheme,
+                      customColor: settingsProvider.customAppColor > 0
+                          ? settingsProvider.customAppColor
+                          : null,
                     );
                     final selectedAppColor = palette.firstWhere(
                       (color) => color.index == settingsProvider.appColorIndex,
@@ -245,7 +248,7 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
     'movies',
     'series',
     'discover',
-    'bookmarks',
+    'downloads',
     'profile',
   ];
 
@@ -376,11 +379,11 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
                       label: tr('discover'),
                     ),
                     NavigationDestination(
-                      icon: Icon(PhosphorIcons.bookmarkSimple()),
+                      icon: Icon(PhosphorIcons.downloadSimple()),
                       selectedIcon: Icon(
-                          PhosphorIcons.bookmarkSimple(PhosphorIconsStyle.fill),
+                          PhosphorIcons.downloadSimple(PhosphorIconsStyle.fill),
                           color: colorScheme.primary),
-                      label: tr('bookmarks'),
+                      label: 'Downloads',
                     ),
                     NavigationDestination(
                       icon: Icon(PhosphorIcons.user()),
@@ -403,10 +406,10 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
             index: selectedIndex,
             children: <Widget>[
               MainMoviesDisplay(
-                onDownloadsPressed: () {
+                onBookmarksPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute<void>(
-                      builder: (_) => const DownloadsScreen(),
+                      builder: (_) => const BookmarkScreen(),
                     ),
                   );
                 },
@@ -423,10 +426,10 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
                 },
               ),
               MainTVDisplay(
-                onDownloadsPressed: () {
+                onBookmarksPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute<void>(
-                      builder: (_) => const DownloadsScreen(),
+                      builder: (_) => const BookmarkScreen(),
                     ),
                   );
                 },
@@ -443,7 +446,7 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
                 },
               ),
               const DiscoverPage(),
-              const BookmarkScreen(embedded: true),
+              const DownloadsScreen(embedded: true),
               const UserInfo()
             ],
           ),

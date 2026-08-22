@@ -150,6 +150,15 @@ class TvSettingsScreen extends StatelessWidget {
                       onActivate: () =>
                           _showImageQualityPicker(context, settings),
                     ),
+                    const SizedBox(height: 14),
+                    _TvSettingTile(
+                      key: const ValueKey<String>('auto-load-sources'),
+                      label: 'Auto load sources',
+                      value: settings.autoLoadSources ? 'On' : 'Off',
+                      icon: PhosphorIcons.lightning(),
+                      onActivate: () =>
+                          settings.autoLoadSources = !settings.autoLoadSources,
+                    ),
                   ],
                 ),
               ),
@@ -188,6 +197,7 @@ class TvSettingsScreen extends StatelessWidget {
 
   static String _colorThemeLabel(int index) => switch (index) {
         -1 => 'FlixQuest',
+        AppColor.customIndex => 'Custom',
         1 => 'Indigo',
         2 => 'Pink',
         3 => 'Emerald',
@@ -404,7 +414,9 @@ class _TvColorThemePickerState extends State<_TvColorThemePicker> {
     final settings = context.watch<SettingsProvider>();
     final colors = Theme.of(context).colorScheme;
     final isDark = settings.appTheme == 'dark' || settings.appTheme == 'amoled';
-    final palette = AppColorsList().appColors(isDark);
+    final palette = AppColorsList().appColors(isDark,
+        customColor:
+            settings.customAppColor > 0 ? settings.customAppColor : null);
     final selectedIndex =
         palette.any((color) => color.index == settings.appColorIndex)
             ? settings.appColorIndex

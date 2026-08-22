@@ -7,6 +7,7 @@ import '/models/app_languages.dart';
 import '/screens/common/language_choose.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '/provider/settings_provider.dart';
 import '/provider/app_dependency_provider.dart';
@@ -49,6 +50,65 @@ class _SettingsState extends State<Settings> {
   void initState() {
     androidVersionCheck();
     super.initState();
+  }
+
+  Widget _paletteSwatch({
+    required Color color,
+    required Color onColor,
+    required bool selected,
+    required VoidCallback onTap,
+    EdgeInsetsGeometry margin = const EdgeInsets.only(right: 14),
+    Widget? iconOverride,
+  }) {
+    return Padding(
+      padding: margin,
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          width: 50,
+          height: 50,
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: selected ? color : Colors.transparent,
+              width: 2.5,
+            ),
+          ),
+          child: DecoratedBox(
+            decoration:
+                BoxDecoration(color: color, shape: BoxShape.circle),
+            child: Center(
+              child: iconOverride ??
+                  (selected
+                      ? Icon(PhosphorIcons.check(), color: onColor)
+                      : null),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _pickCustomColor(SettingsProvider settingsValues) async {
+    final picked = await showModalBottomSheet<Color>(
+      context: context,
+      useSafeArea: true,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (_) => _CustomColorPickerSheet(
+        initialColor: settingsValues.customAppColor > 0
+            ? Color(settingsValues.customAppColor)
+            : Theme.of(context).colorScheme.primary,
+      ),
+    );
+    if (picked == null) return;
+    setState(() {
+      settingsValues.customAppColor = picked.toARGB32();
+      settingsValues.appColorIndex = AppColor.customIndex;
+    });
   }
 
   @override
@@ -371,54 +431,129 @@ class _SettingsState extends State<Settings> {
                   width: double.infinity,
                   height: 68,
                   child: ListView(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      scrollDirection: Axis.horizontal,
-                      children: appColors
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 8),
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      ...appColors
                           .appColors(settingsValues.appTheme == 'dark' ||
                                   settingsValues.appTheme == 'amoled'
                               ? true
                               : false)
-                          .map((AppColor appColor) {
-                        final selected =
-                            settingsValues.appColorIndex == appColor.index;
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 14),
-                          child: InkWell(
-                            customBorder: const CircleBorder(),
-                            onTap: () => setState(() {
-                              settingsValues.appColorIndex =
-                                  selected ? -1 : appColor.index;
-                            }),
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 180),
-                              width: 50,
-                              height: 50,
-                              padding: const EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: selected
-                                      ? appColor.cs.primary
-                                      : Colors.transparent,
-                                  width: 2.5,
-                                ),
-                              ),
-                              child: DecoratedBox(
-                                decoration: BoxDecoration(
-                                    color: appColor.cs.primary,
-                                    shape: BoxShape.circle),
-                                child: selected
-                                    ? Icon(PhosphorIcons.check(),
-                                        color: appColor.cs.onPrimary)
-                                    : null,
-                              ),
-                            ),
-                          ),
-                        );
-                      }).toList()),
+                          .map((AppColor appColor) => _paletteSwatch(
+                                color: appColor.cs.primary,
+                                onColor: appColor.cs.onPrimary,
+                                selected: settingsValues.appColorIndex ==
+                                    appColor.index,
+                                onTap: () {
+                                  final selected =
+                                      settingsValues.appColorIndex ==
+                                          appColor.index;
+                                  setState(() {
+                                    settingsValues.appColorIndex = selected
+                                        ? AppColor.defaultIndex
+                                        : appColor.index;
+                                  });
+                                },
+                              )),
+                      if (settingsValues.customAppColor > 0)
+                        _paletteSwatch(
+                          color: Color(settingsValues.customAppColor),
+                          onColor: ThemeData.estimateBrightnessForColor(
+                                      Color(settingsValues.customAppColor)) ==
+                                  Brightness.dark
+                              ? Colors.white
+                              : Colors.black,
+                          selected: settingsValues.appColorIndex ==
+                              AppColor.customIndex,
+                          onTap: () {
+                            final selected = settingsValues.appColorIndex ==
+                                AppColor.customIndex;
+                            setState(() {
+                              settingsValues.appColorIndex = selected
+                                  ? AppColor.defaultIndex
+                                  : AppColor.customIndex;
+                            });
+                          },
+                        ),
+                      _paletteSwatch(
+                        color:
+                            Theme.of(context).colorScheme.surfaceContainerHighest,
+                        onColor: Theme.of(context).colorScheme.onSurfaceVariant,
+                        selected: false,
+                        margin: EdgeInsets.zero,
+                        iconOverride: Icon(
+                          PhosphorIcons.plus(),
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                        onTap: () => _pickCustomColor(settingsValues),
+                      ),
+                    ],
+                  ),
                 ),
               ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CustomColorPickerSheet extends StatefulWidget {
+  const _CustomColorPickerSheet({required this.initialColor});
+
+  final Color initialColor;
+
+  @override
+  State<_CustomColorPickerSheet> createState() =>
+      _CustomColorPickerSheetState();
+}
+
+class _CustomColorPickerSheetState extends State<_CustomColorPickerSheet> {
+  late Color _pickerColor = widget.initialColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 4, 24, 8),
+              child: Text(
+                tr('custom_color'),
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ),
+            ColorPicker(
+              pickerColor: _pickerColor,
+              onColorChanged: (color) => _pickerColor = color,
+              enableAlpha: false,
+              hexInputBar: true,
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(tr('cancel')),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: () => Navigator.pop(context, _pickerColor),
+                      child: Text(tr('save')),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

@@ -53,12 +53,12 @@ import 'app_logo.dart';
 class MainMoviesDisplay extends StatefulWidget {
   const MainMoviesDisplay({
     this.onSearchPressed,
-    this.onDownloadsPressed,
+    this.onBookmarksPressed,
     super.key,
   });
 
   final VoidCallback? onSearchPressed;
-  final VoidCallback? onDownloadsPressed;
+  final VoidCallback? onBookmarksPressed;
 
   @override
   State<MainMoviesDisplay> createState() => _MainMoviesDisplayState();
@@ -116,7 +116,7 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
                 discoverType: 'discover',
                 onSearchPressed: widget.onSearchPressed,
                 onLiveTVPressed: showLiveTV ? openLiveTV : null,
-                onDownloadsPressed: widget.onDownloadsPressed,
+                onBookmarksPressed: widget.onBookmarksPressed,
               ),
             ),
             SliverList(
@@ -186,9 +186,9 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
                   actionLabel: showLiveTV ? tr('live_tv') : null,
                   actionIcon: showLiveTV ? PhosphorIcons.broadcast() : null,
                   onActionPressed: showLiveTV ? openLiveTV : null,
-                  utilityIcon: PhosphorIcons.downloadSimple(),
-                  utilityTooltip: 'Downloads',
-                  onUtilityPressed: widget.onDownloadsPressed,
+                  utilityIcon: PhosphorIcons.bookmarkSimple(),
+                  utilityTooltip: 'Bookmarks',
+                  onUtilityPressed: widget.onBookmarksPressed,
                 ),
               ),
             ),
@@ -206,12 +206,12 @@ class DiscoverMovies extends StatefulWidget {
       required this.discoverType,
       this.onSearchPressed,
       this.onLiveTVPressed,
-      this.onDownloadsPressed});
+      this.onBookmarksPressed});
   final bool includeAdult;
   final String discoverType;
   final VoidCallback? onSearchPressed;
   final VoidCallback? onLiveTVPressed;
-  final VoidCallback? onDownloadsPressed;
+  final VoidCallback? onBookmarksPressed;
   @override
   DiscoverMoviesState createState() => DiscoverMoviesState();
 }
@@ -460,10 +460,10 @@ class DiscoverMoviesState extends State<DiscoverMovies>
                                   ],
                                   _HeroIconButton(
                                     key: const ValueKey(
-                                        'movie_downloads_shortcut'),
-                                    icon: PhosphorIcons.downloadSimple(),
-                                    tooltip: 'Downloads',
-                                    onPressed: widget.onDownloadsPressed,
+                                        'movie_bookmarks_shortcut'),
+                                    icon: PhosphorIcons.bookmarkSimple(),
+                                    tooltip: 'Bookmarks',
+                                    onPressed: widget.onBookmarksPressed,
                                   ),
                                   const SizedBox(width: 8),
                                   _HeroIconButton(

@@ -92,9 +92,6 @@
             android:name="flutterEmbedding"
             android:value="2" />
         <service
-        android:name=".BetterPlayerService"
-        android:stopWithTask="false" />
-        <service
             android:name=".downloads.StreamDownloadService"
             android:exported="false"
             android:foregroundServiceType="dataSync">

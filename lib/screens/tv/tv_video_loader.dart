@@ -30,6 +30,7 @@ import '../../widgets/common_widgets.dart';
 import 'package:flutter/material.dart';
 import '../../screens/common/player.dart';
 import '../../screens/common/download_selection_sheets.dart';
+import '../../screens/common/manual_source_picker.dart';
 import '../../tv/player/tv_player_screen.dart';
 
 class TVVideoLoader extends StatefulWidget {
@@ -38,12 +39,18 @@ class TVVideoLoader extends StatefulWidget {
       required this.download,
       this.useTvPlayer = false,
       this.onTvPlayerExit,
+      this.forceAutoLoad = false,
       super.key});
 
   final TVStreamMetadata metadata;
   final bool download;
   final bool useTvPlayer;
   final VoidCallback? onTvPlayerExit;
+
+  /// Bypasses the "Auto load sources" prompt. Used by in-player transitions
+  /// (next episode, episode switching) so binge-watching stays automatic even
+  /// when the setting is off.
+  final bool forceAutoLoad;
 
   @override
   State<TVVideoLoader> createState() => _TVVideoLoaderState();
@@ -162,80 +169,41 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             tr('episode_may_not_be_available'), context);
       }
 
-      if (mounted) {
-        setState(() {
-          for (var index = 0; index < providerStates.length; index++) {
-            providerStates[index] = providerStates[index].copyWith(
-              status: selectedDownloadProvider == null ||
-                      providerStates[index].codeName ==
-                          selectedDownloadProvider.codeName
-                  ? ProviderStatus.loading
-                  : ProviderStatus.pending,
-            );
-          }
-        });
-      }
+      final manualPickRequired = !widget.download &&
+          !widget.forceAutoLoad &&
+          !settings.autoLoadSources;
 
-      final selection = await ProviderLoader.loadFirstSuccessful(
-        providers: selectedDownloadProvider == null
-            ? videoProviders
-            : [selectedDownloadProvider],
-        load: (provider) {
-          _providerStopwatches[provider.codeName] = Stopwatch()..start();
-          debugPrint(
-            '[TVVideoLoader] Request provider=${provider.displayName} '
-            '(${provider.codeName}), tmdbId=${widget.metadata.tvId}, '
-            'season=${widget.metadata.seasonNumber}, episode=${widget.metadata.episodeNumber}',
+      ProviderSelection? selection;
+      if (manualPickRequired) {
+        // "Auto load sources" is off: let the user pick a provider and only
+        // fetch that one. Re-prompt after a failed attempt so they can simply
+        // choose another source.
+        while (true) {
+          if (!mounted) return;
+          final picked = await showPlaybackProviderPicker(
+            context: context,
+            providers: videoProviders,
+            useTvPlayer: widget.useTvPlayer,
           );
-          return ProviderLoader.loadTVFromProvider(
-            provider: provider,
-            tvId: widget.metadata.tvId!,
-            seasonNumber: widget.metadata.seasonNumber!,
-            episodeNumber: widget.metadata.episodeNumber!,
-            scraperApiUrl: _scraperApiUrl,
-          );
-        },
-        onResult: (index, provider, result) {
-          final durationMs = _providerStopwatches
-                  .remove(provider.codeName)
-                  ?.elapsedMilliseconds ??
-              0;
-          final providerSucceeded =
-              result.success && result.videoLinks?.isNotEmpty == true;
-          settings.analytics.trackProviderAttempt(
-            mediaType: 'tv',
-            contentId: widget.metadata.tvId,
-            contentTitle: widget.metadata.seriesName,
-            provider: provider.displayName,
-            purpose: widget.download ? 'download' : 'playback',
-            success: providerSucceeded,
-            durationMs: durationMs,
-            sourceCount: result.videoLinks?.length ?? 0,
-            subtitleCount: result.subtitleLinks?.length ?? 0,
-            error: result.errorMessage,
-          );
-          final providerIndex = videoProviders.indexWhere(
-            (candidate) => candidate.codeName == provider.codeName,
-          );
-          debugPrint(
-            '[TVVideoLoader] Response provider=${provider.displayName} '
-            'success=${result.success}, links=${result.videoLinks?.length ?? 0}, '
-            'subtitles=${result.subtitleLinks?.length ?? 0}, error=${result.errorMessage}',
-          );
-          if (mounted) {
-            setState(() {
-              providerStates[providerIndex] =
-                  providerStates[providerIndex].copyWith(
-                status: providerSucceeded
-                    ? ProviderStatus.success
-                    : ProviderStatus.failed,
-                errorMessage: result.errorMessage,
-              );
-              currentProviderIndex = _firstLoadingProviderIndex();
-            });
+          if (!mounted) return;
+          if (picked == null) {
+            // Dismissed the picker: leave without playing anything.
+            Navigator.pop(context);
+            return;
           }
-        },
-      );
+          _markLoadingStatuses(only: picked);
+          selection = await _fetchSelection(providers: [picked]);
+          if (selection != null || !mounted) break;
+        }
+      } else {
+        _markLoadingStatuses(only: selectedDownloadProvider);
+        // Start all sources together and use the first playable response.
+        selection = await _fetchSelection(
+          providers: selectedDownloadProvider == null
+              ? videoProviders
+              : [selectedDownloadProvider],
+        );
+      }
 
       final firstWorkingProviderCode = selection?.provider.codeName;
       if (selection != null) {
@@ -355,6 +323,91 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
     return currentProviderIndex;
   }
 
+  /// Marks every provider pending, with [only] (when given) as the single
+  /// provider being loaded.
+  void _markLoadingStatuses({VideoProvider? only}) {
+    if (!mounted) return;
+    setState(() {
+      if (only != null) {
+        currentProviderIndex = videoProviders.indexWhere(
+          (provider) => provider.codeName == only.codeName,
+        );
+      }
+      for (var index = 0; index < providerStates.length; index++) {
+        providerStates[index] = providerStates[index].copyWith(
+          status:
+              only == null || providerStates[index].codeName == only.codeName
+                  ? ProviderStatus.loading
+                  : ProviderStatus.pending,
+        );
+      }
+    });
+  }
+
+  /// Races [providers] (in configured order) until one returns playable links.
+  Future<ProviderSelection?> _fetchSelection({
+    required List<VideoProvider> providers,
+  }) {
+    return ProviderLoader.loadFirstSuccessful(
+      providers: providers,
+      load: (provider) {
+        _providerStopwatches[provider.codeName] = Stopwatch()..start();
+        debugPrint(
+          '[TVVideoLoader] Request provider=${provider.displayName} '
+          '(${provider.codeName}), tmdbId=${widget.metadata.tvId}, '
+          'season=${widget.metadata.seasonNumber}, episode=${widget.metadata.episodeNumber}',
+        );
+        return ProviderLoader.loadTVFromProvider(
+          provider: provider,
+          tvId: widget.metadata.tvId!,
+          seasonNumber: widget.metadata.seasonNumber!,
+          episodeNumber: widget.metadata.episodeNumber!,
+          scraperApiUrl: _scraperApiUrl,
+        );
+      },
+      onResult: (index, provider, result) {
+        final durationMs = _providerStopwatches
+                .remove(provider.codeName)
+                ?.elapsedMilliseconds ??
+            0;
+        final providerSucceeded =
+            result.success && result.videoLinks?.isNotEmpty == true;
+        settings.analytics.trackProviderAttempt(
+          mediaType: 'tv',
+          contentId: widget.metadata.tvId,
+          contentTitle: widget.metadata.seriesName,
+          provider: provider.displayName,
+          purpose: widget.download ? 'download' : 'playback',
+          success: providerSucceeded,
+          durationMs: durationMs,
+          sourceCount: result.videoLinks?.length ?? 0,
+          subtitleCount: result.subtitleLinks?.length ?? 0,
+          error: result.errorMessage,
+        );
+        final providerIndex = videoProviders.indexWhere(
+          (candidate) => candidate.codeName == provider.codeName,
+        );
+        debugPrint(
+          '[TVVideoLoader] Response provider=${provider.displayName} '
+          'success=${result.success}, links=${result.videoLinks?.length ?? 0}, '
+          'subtitles=${result.subtitleLinks?.length ?? 0}, error=${result.errorMessage}',
+        );
+        if (mounted) {
+          setState(() {
+            providerStates[providerIndex] =
+                providerStates[providerIndex].copyWith(
+              status: providerSucceeded
+                  ? ProviderStatus.success
+                  : ProviderStatus.failed,
+              errorMessage: result.errorMessage,
+            );
+            currentProviderIndex = _firstLoadingProviderIndex();
+          });
+        }
+      },
+    );
+  }
+
   /// Leaves the loader screen and reports the failure in a bottom sheet that
   /// can push a fresh loader when the user retries.
   void _showErrorSheet(String message) {
@@ -363,6 +416,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
     final download = widget.download;
     final useTvPlayer = widget.useTvPlayer;
     final onTvPlayerExit = widget.onTvPlayerExit;
+    final forceAutoLoad = widget.forceAutoLoad;
     navigator.pop();
     ReportErrorWidget.show(
       navigator.context,
@@ -374,6 +428,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             download: download,
             useTvPlayer: useTvPlayer,
             onTvPlayerExit: onTvPlayerExit,
+            forceAutoLoad: forceAutoLoad,
           ),
         ),
       ),

@@ -183,6 +183,16 @@ class SettingsPreferences {
     return sharedPrefsSingleton.getInt(APP_COLOR_INDEX) ?? -1;
   }
 
+  static const APP_CUSTOM_COLOR = 'appCustomColor';
+
+  setAppCustomColor(int value) async {
+    sharedPrefsSingleton.setInt(APP_CUSTOM_COLOR, value);
+  }
+
+  Future<int?> getAppCustomColor() async {
+    return sharedPrefsSingleton.getInt(APP_CUSTOM_COLOR);
+  }
+
   static const STREAM_PROVIDER_ORDER = 'stream_provider_order_v1';
   static const _LEGACY_PROVIDER_PRECEDENCE = 'providerPrecedence-v14';
 
@@ -271,6 +281,16 @@ class SettingsPreferences {
 
   Future<bool> getPlayerAmbientGlowEnabled() async {
     return sharedPrefsSingleton.getBool(PLAYER_AMBIENT_GLOW_ENABLED) ?? false;
+  }
+
+  static const AUTO_LOAD_SOURCES = 'auto_load_sources_v1';
+
+  setAutoLoadSources(bool value) {
+    sharedPrefsSingleton.setBool(AUTO_LOAD_SOURCES, value);
+  }
+
+  Future<bool> getAutoLoadSources() async {
+    return sharedPrefsSingleton.getBool(AUTO_LOAD_SOURCES) ?? true;
   }
 
   static const RECENT_SEARCHES = 'recent_searches';

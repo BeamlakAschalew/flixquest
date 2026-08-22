@@ -61,12 +61,12 @@ import 'app_logo.dart';
 class MainTVDisplay extends StatefulWidget {
   const MainTVDisplay({
     this.onSearchPressed,
-    this.onDownloadsPressed,
+    this.onBookmarksPressed,
     super.key,
   });
 
   final VoidCallback? onSearchPressed;
-  final VoidCallback? onDownloadsPressed;
+  final VoidCallback? onBookmarksPressed;
 
   @override
   State<MainTVDisplay> createState() => _MainTVDisplayState();
@@ -123,7 +123,7 @@ class _MainTVDisplayState extends State<MainTVDisplay> {
                 includeAdult: Provider.of<SettingsProvider>(context).isAdult,
                 onSearchPressed: widget.onSearchPressed,
                 onLiveTVPressed: showLiveTV ? openLiveTV : null,
-                onDownloadsPressed: widget.onDownloadsPressed,
+                onBookmarksPressed: widget.onBookmarksPressed,
               ),
             ),
             SliverList(
@@ -192,9 +192,9 @@ class _MainTVDisplayState extends State<MainTVDisplay> {
                   actionLabel: showLiveTV ? tr('live_tv') : null,
                   actionIcon: showLiveTV ? PhosphorIcons.broadcast() : null,
                   onActionPressed: showLiveTV ? openLiveTV : null,
-                  utilityIcon: PhosphorIcons.downloadSimple(),
-                  utilityTooltip: 'Downloads',
-                  onUtilityPressed: widget.onDownloadsPressed,
+                  utilityIcon: PhosphorIcons.bookmarkSimple(),
+                  utilityTooltip: 'Bookmarks',
+                  onUtilityPressed: widget.onBookmarksPressed,
                 ),
               ),
             ),
@@ -212,14 +212,14 @@ class DiscoverTV extends StatefulWidget {
     required this.discoverType,
     this.onSearchPressed,
     this.onLiveTVPressed,
-    this.onDownloadsPressed,
+    this.onBookmarksPressed,
     super.key,
   });
 
   final String discoverType;
   final VoidCallback? onSearchPressed;
   final VoidCallback? onLiveTVPressed;
-  final VoidCallback? onDownloadsPressed;
+  final VoidCallback? onBookmarksPressed;
   @override
   DiscoverTVState createState() => DiscoverTVState();
 }
@@ -466,10 +466,10 @@ class DiscoverTVState extends State<DiscoverTV>
                                   ],
                                   _TVHeroIconButton(
                                     key:
-                                        const ValueKey('tv_downloads_shortcut'),
-                                    icon: PhosphorIcons.downloadSimple(),
-                                    tooltip: 'Downloads',
-                                    onPressed: widget.onDownloadsPressed,
+                                        const ValueKey('tv_bookmarks_shortcut'),
+                                    icon: PhosphorIcons.bookmarkSimple(),
+                                    tooltip: 'Bookmarks',
+                                    onPressed: widget.onBookmarksPressed,
                                   ),
                                   const SizedBox(width: 8),
                                   _TVHeroIconButton(
