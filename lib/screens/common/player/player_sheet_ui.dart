@@ -126,6 +126,9 @@ class PlayerChoiceCard extends StatelessWidget {
     this.selected = false,
     this.progress,
     this.trailing,
+    this.backgroundColor,
+    this.textColor,
+    this.secondaryTextColor,
     super.key,
   });
 
@@ -137,13 +140,18 @@ class PlayerChoiceCard extends StatelessWidget {
   final bool selected;
   final double? progress;
   final Widget? trailing;
+  final Color? backgroundColor;
+  final Color? textColor;
+  final Color? secondaryTextColor;
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final titleColor = textColor ?? (selected ? colors.primary : null);
+    final detailColor = secondaryTextColor ?? colors.onSurfaceVariant;
     return Material(
-      color:
-          selected ? colors.primary.withValues(alpha: .1) : Colors.transparent,
+      color: backgroundColor ??
+          (selected ? colors.primary.withValues(alpha: .1) : Colors.transparent),
       borderRadius: BorderRadius.circular(16),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -189,7 +197,7 @@ class PlayerChoiceCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
                             fontFamily: 'FigtreeSB',
-                            color: selected ? colors.primary : null,
+                            color: titleColor,
                           ),
                     ),
                     if (subtitle != null) ...[
@@ -199,7 +207,7 @@ class PlayerChoiceCard extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: colors.onSurfaceVariant,
+                              color: detailColor,
                             ),
                       ),
                     ],
@@ -210,7 +218,7 @@ class PlayerChoiceCard extends StatelessWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: colors.onSurfaceVariant,
+                              color: detailColor,
                               height: 1.3,
                             ),
                       ),
@@ -226,7 +234,8 @@ class PlayerChoiceCard extends StatelessWidget {
                             PhosphorIconsStyle.fill,
                           )
                         : PhosphorIcons.caretRight(),
-                    color: selected ? colors.primary : colors.onSurfaceVariant,
+                    color:
+                        selected ? colors.primary : textColor ?? colors.onSurfaceVariant,
                   ),
             ],
           ),

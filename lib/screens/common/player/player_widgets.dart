@@ -14,6 +14,7 @@ class PlayerNextEpisodeWidget {
     required BuildContext context,
     required TVStreamMetadata tvMetadata,
     required bool showNextEpisodeButton,
+    required bool controlsVisible,
     required List<Color> colors,
     required Function() onSaveProgress,
     required Function() closePlayer,
@@ -31,10 +32,13 @@ class PlayerNextEpisodeWidget {
     }
     final nextEpisode = episodes[currentIndex + 1];
     final navigator = Navigator.of(context);
+    final safeBottom = MediaQuery.viewPaddingOf(context).bottom;
 
-    return Positioned(
+    return AnimatedPositioned(
       right: 16,
-      bottom: 92,
+      bottom: safeBottom + (controlsVisible ? 124 : 16),
+      duration: const Duration(milliseconds: 220),
+      curve: Curves.easeOutCubic,
       child: IgnorePointer(
         ignoring: !showNextEpisodeButton,
         child: AnimatedSlide(
@@ -48,6 +52,10 @@ class PlayerNextEpisodeWidget {
               width:
                   (MediaQuery.sizeOf(context).width * .48).clamp(220.0, 330.0),
               child: PlayerChoiceCard(
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                textColor: Theme.of(context).colorScheme.onPrimary,
+                secondaryTextColor:
+                    Theme.of(context).colorScheme.onPrimary.withValues(alpha: .82),
                 title:
                     '${nextEpisode.episodeNumber}. ${nextEpisode.episodeName}',
                 subtitle: tr('next_episode'),
@@ -70,7 +78,7 @@ class PlayerNextEpisodeWidget {
                 ),
                 trailing: Icon(
                   PhosphorIcons.playCircle(PhosphorIconsStyle.fill),
-                  color: Theme.of(context).colorScheme.primary,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
                 onTap: () {
                   onSaveProgress();

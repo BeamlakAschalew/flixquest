@@ -105,6 +105,9 @@ class SettingsProvider with ChangeNotifier {
   bool _enableNextEpisodeButton = false;
   bool get enableNextEpisodeButton => _enableNextEpisodeButton;
 
+  bool _enableIntroDbSkipButtons = true;
+  bool get enableIntroDbSkipButtons => _enableIntroDbSkipButtons;
+
   bool _playerAmbientGlowEnabled = false;
   bool get playerAmbientGlowEnabled => _playerAmbientGlowEnabled;
 
@@ -427,6 +430,18 @@ class SettingsProvider with ChangeNotifier {
     _enableNextEpisodeButton = value;
     _settingsPreferences.setEnableNextEpisodeButton(value);
     _trackSetting('Next Episode Button', value);
+    notifyListeners();
+  }
+
+  Future<void> getIntroDbSettings() async {
+    enableIntroDbSkipButtons =
+        await _settingsPreferences.getEnableIntroDbSkipButtons();
+  }
+
+  set enableIntroDbSkipButtons(bool value) {
+    _enableIntroDbSkipButtons = value;
+    _settingsPreferences.setEnableIntroDbSkipButtons(value);
+    _trackSetting('IntroDB Skip Buttons', value);
     notifyListeners();
   }
 

@@ -115,6 +115,7 @@ Future<DevicePresentation> appInitialize({
   await settingsProvider.getUseProxyMode();
   await settingsProvider.getSubtitleStyle();
   await settingsProvider.getEnableNextEpisodeButton();
+  await settingsProvider.getIntroDbSettings();
   await settingsProvider.getPlayerAmbientGlowEnabled();
   await settingsProvider.getAutoLoadSources();
   settingsProvider.completeHydration();

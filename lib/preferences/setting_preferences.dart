@@ -273,6 +273,14 @@ class SettingsPreferences {
     return sharedPrefsSingleton.getBool(ENABLE_NEXT_EPISODE_BUTTON) ?? false;
   }
 
+  static const ENABLE_INTRODB_SKIP_BUTTONS = 'enable_introdb_skip_buttons';
+
+  setEnableIntroDbSkipButtons(bool value) =>
+      sharedPrefsSingleton.setBool(ENABLE_INTRODB_SKIP_BUTTONS, value);
+
+  Future<bool> getEnableIntroDbSkipButtons() async =>
+      sharedPrefsSingleton.getBool(ENABLE_INTRODB_SKIP_BUTTONS) ?? true;
+
   static const PLAYER_AMBIENT_GLOW_ENABLED = 'player_ambient_glow_enabled';
 
   setPlayerAmbientGlowEnabled(bool value) {

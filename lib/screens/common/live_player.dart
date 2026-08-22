@@ -118,8 +118,11 @@ class _LivePlayerState extends State<LivePlayer> {
     _appDependencies =
         Provider.of<AppDependencyProvider>(context, listen: false);
     _settings = Provider.of<SettingsProvider>(context, listen: false);
-    _occasionalEffectsSuppressionId =
-        _appDependencies.suppressOccasionalEffects();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _occasionalEffectsSuppressionId != null) return;
+      _occasionalEffectsSuppressionId =
+          _appDependencies.suppressOccasionalEffects();
+    });
     _sessionStartedAt = DateTime.now();
     _sessionId =
         '${_sessionStartedAt.microsecondsSinceEpoch}-${identityHashCode(this)}';

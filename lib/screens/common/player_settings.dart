@@ -18,6 +18,24 @@ class PlayerSettings extends StatefulWidget {
 }
 
 class _PlayerSettingsState extends State<PlayerSettings> {
+  Future<void> _pickSubtitleColor({
+    required Color initialColor,
+    required String title,
+    required ValueChanged<Color> onSaved,
+  }) async {
+    final picked = await showModalBottomSheet<Color>(
+      context: context,
+      useSafeArea: true,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (_) => _SubtitleColorPickerSheet(
+        initialColor: initialColor,
+        title: title,
+      ),
+    );
+    if (picked != null) onSaved(picked);
+  }
+
   @override
   Widget build(BuildContext context) {
     final settingValues = Provider.of<SettingsProvider>(context);
@@ -32,40 +50,6 @@ class _PlayerSettingsState extends State<PlayerSettings> {
     );
 
     String st = settingValues.subtitleTextStyle;
-
-    void colorPickerDialog(int type) {
-      var selectedColor = type == 1 ? foregroundColor : backgroundColor;
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            content: SingleChildScrollView(
-              child: ColorPicker(
-                pickerColor: selectedColor,
-                onColorChanged: (color) => selectedColor = color,
-                hexInputBar: true,
-                enableAlpha: true,
-              ),
-            ),
-            actions: <Widget>[
-              ElevatedButton(
-                child: Text(
-                  tr('save'),
-                ),
-                onPressed: () {
-                  type == 1
-                      ? settingValues.subtitleForegroundColor =
-                          serializeSubtitleColor(selectedColor)
-                      : settingValues.subtitleBackgroundColor =
-                          serializeSubtitleColor(selectedColor);
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -150,7 +134,13 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                             style: kTextSmallBodyStyle,
                           ),
                           GestureDetector(
-                            onTap: () => colorPickerDialog(1),
+                            onTap: () => _pickSubtitleColor(
+                              initialColor: foregroundColor,
+                              title: tr('text_color'),
+                              onSaved: (color) =>
+                                  settingValues.subtitleForegroundColor =
+                                      serializeSubtitleColor(color),
+                            ),
                             child: Container(
                               height: 30,
                               width: 60,
@@ -170,7 +160,13 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                             style: kTextSmallBodyStyle,
                           ),
                           GestureDetector(
-                            onTap: () => colorPickerDialog(2),
+                            onTap: () => _pickSubtitleColor(
+                              initialColor: backgroundColor,
+                              title: tr('background_color'),
+                              onSaved: (color) =>
+                                  settingValues.subtitleBackgroundColor =
+                                      serializeSubtitleColor(color),
+                            ),
                             child: Container(
                               height: 30,
                               width: 60,
@@ -361,7 +357,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                       inactiveThumbColor: Colors.white,
                       inactiveTrackColor: const Color(0xFF9B9B9B),
                       secondary: Icon(
-                        PhosphorIcons.fastForward(),
+                        PhosphorIcons.skipForward(),
                         color: Theme.of(context).colorScheme.primary,
                       ),
                       value: settingValues.enableNextEpisodeButton,
@@ -371,6 +367,20 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                           settingValues.enableNextEpisodeButton = value;
                         });
                       }),
+                    ),
+                    SwitchListTile(
+                      inactiveThumbColor: Colors.white,
+                      inactiveTrackColor: const Color(0xFF9B9B9B),
+                      secondary: Icon(
+                        PhosphorIcons.fastForward(),
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      value: settingValues.enableIntroDbSkipButtons,
+                      title: Text(tr('enable_skip_buttons')),
+                      subtitle: Text(tr('enable_skip_buttons_description')),
+                      onChanged: (value) => setState(
+                        () => settingValues.enableIntroDbSkipButtons = value,
+                      ),
                     ),
                     ListTile(
                       onTap: () {
@@ -393,6 +403,72 @@ class _PlayerSettingsState extends State<PlayerSettings> {
               const SizedBox(height: 36),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SubtitleColorPickerSheet extends StatefulWidget {
+  const _SubtitleColorPickerSheet({
+    required this.initialColor,
+    required this.title,
+  });
+
+  final Color initialColor;
+  final String title;
+
+  @override
+  State<_SubtitleColorPickerSheet> createState() =>
+      _SubtitleColorPickerSheetState();
+}
+
+class _SubtitleColorPickerSheetState extends State<_SubtitleColorPickerSheet> {
+  late Color _pickerColor = widget.initialColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 4, 24, 8),
+              child: Text(
+                widget.title,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ),
+            ColorPicker(
+              pickerColor: _pickerColor,
+              onColorChanged: (color) => setState(() => _pickerColor = color),
+              enableAlpha: true,
+              hexInputBar: true,
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(tr('cancel')),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: () => Navigator.pop(context, _pickerColor),
+                      child: Text(tr('save')),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
