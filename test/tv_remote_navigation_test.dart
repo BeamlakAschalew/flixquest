@@ -291,9 +291,14 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    for (var index = 0; index < 7; index++) {
+    for (var index = 0;
+        index < 20 &&
+            !(FocusManager.instance.primaryFocus?.debugLabel
+                    ?.startsWith('Subtitle settings,') ??
+                false);
+        index++) {
       await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
-      await tester.pump();
+      await tester.pumpAndSettle();
     }
     expect(
       FocusManager.instance.primaryFocus?.debugLabel,

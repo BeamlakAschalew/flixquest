@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 
+import '../../functions/function.dart';
+import '../../functions/language_names.dart';
 import '../../models/app_colors.dart';
 import '../../models/app_mode.dart';
 import '../../screens/common/update_screen.dart';
@@ -14,6 +16,7 @@ import '../focus/tv_focusable.dart';
 import '../widgets/tv_dialog.dart';
 import '../widgets/tv_list_row.dart';
 import '../widgets/tv_page_header.dart';
+import '../widgets/tv_provider_order_dialog.dart';
 
 class TvSettingsScreen extends StatelessWidget {
   const TvSettingsScreen({
@@ -99,7 +102,7 @@ class TvSettingsScreen extends StatelessWidget {
             onActivate: () => _showAppModePicker(context, settings),
           ),
         ];
-        final playbackTiles = <Widget>[
+        final sourceTiles = <Widget>[
           _TvSettingTile(
             key: const ValueKey<String>('tmdb-proxy'),
             label: 'TMDB proxy',
@@ -121,6 +124,106 @@ class TvSettingsScreen extends StatelessWidget {
             icon: PhosphorIcons.lightning(),
             onActivate: () =>
                 settings.autoLoadSources = !settings.autoLoadSources,
+          ),
+          _TvSettingTile(
+            key: const ValueKey<String>('provider-order'),
+            label: 'Video provider order',
+            value: 'Choose source priority',
+            icon: PhosphorIcons.arrowsDownUp(),
+            onActivate: () => showTvProviderOrderDialog(context),
+          ),
+        ];
+        final playbackTiles = <Widget>[
+          _TvSettingTile(
+            key: const ValueKey<String>('video-resolution'),
+            label: 'Default video resolution',
+            value: settings.defaultVideoResolution == 0
+                ? 'Auto'
+                : '${settings.defaultVideoResolution}p',
+            icon: PhosphorIcons.filmStrip(),
+            onActivate: () => _showPlaybackChoice<int>(
+              context,
+              title: 'Default video resolution',
+              description: 'Choose a preferred quality for new playback. '
+                  'The player uses an available quality if this one is missing.',
+              value: settings.defaultVideoResolution,
+              options: const {
+                0: 'Auto',
+                360: '360p',
+                480: '480p',
+                720: '720p',
+                1080: '1080p'
+              },
+              onChanged: (value) => settings.defaultVideoResolution = value,
+            ),
+          ),
+          _TvSettingTile(
+            key: const ValueKey<String>('seek-interval'),
+            label: 'Seek interval',
+            value: '${settings.defaultSeekDuration}s',
+            icon: PhosphorIcons.arrowsClockwise(),
+            onActivate: () => _showPlaybackChoice<int>(
+              context,
+              title: 'Seek interval',
+              description: 'How far rewind and forward move through a video.',
+              value: settings.defaultSeekDuration,
+              options: const {
+                5: '5s',
+                10: '10s',
+                15: '15s',
+                20: '20s',
+                30: '30s'
+              },
+              onChanged: (value) => settings.defaultSeekDuration = value,
+            ),
+          ),
+          _TvSettingTile(
+            key: const ValueKey<String>('buffer-duration'),
+            label: 'Buffer duration',
+            value:
+                '${settings.defaultMaxBufferDuration.clamp(15000, 60000) ~/ 1000}s',
+            icon: PhosphorIcons.hourglassMedium(),
+            onActivate: () => _showPlaybackChoice<int>(
+              context,
+              title: 'Buffer duration',
+              description: 'How much video to keep ahead of playback. '
+                  'TV supports up to 60 seconds. Applies to new playback.',
+              value: settings.defaultMaxBufferDuration.clamp(15000, 60000),
+              options: const {
+                15000: '15s',
+                30000: '30s',
+                45000: '45s',
+                60000: '60s'
+              },
+              onChanged: (value) => settings.defaultMaxBufferDuration = value,
+            ),
+          ),
+          _TvSettingTile(
+            key: const ValueKey<String>('next-episode'),
+            label: 'Show next episode',
+            value: settings.enableNextEpisodeButton ? 'On' : 'Off',
+            icon: PhosphorIcons.skipForward(),
+            showsNext: false,
+            onActivate: () => settings.enableNextEpisodeButton =
+                !settings.enableNextEpisodeButton,
+          ),
+          _TvSettingTile(
+            key: const ValueKey<String>('introdb-skip-buttons'),
+            label: 'Show IntroDB skip buttons',
+            value: settings.enableIntroDbSkipButtons ? 'On' : 'Off',
+            icon: PhosphorIcons.fastForward(),
+            showsNext: false,
+            onActivate: () => settings.enableIntroDbSkipButtons =
+                !settings.enableIntroDbSkipButtons,
+          ),
+        ];
+        final subtitleTiles = <Widget>[
+          _TvSettingTile(
+            key: const ValueKey<String>('subtitle-language'),
+            label: 'Default subtitle language',
+            value: _subtitleLanguageLabel(settings.defaultSubtitleLanguage),
+            icon: PhosphorIcons.translate(),
+            onActivate: () => _showSubtitleLanguagePicker(context),
           ),
           _TvSettingTile(
             key: const ValueKey<String>('subtitle-settings'),
@@ -183,9 +286,29 @@ class TvSettingsScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 22),
                           _TvSettingsSection(
-                            title: 'STREAMING & PLAYBACK',
-                            subtitle: 'Quality, sources, and subtitles.',
+                            title: 'CONTENT & SOURCES',
+                            subtitle:
+                                'Catalog images, connection, and source priority.',
+                            children: sourceTiles,
+                          ),
+                          const SizedBox(height: 22),
+                          _TvSettingsSection(
+                            title: 'PLAYBACK',
+                            subtitle:
+                                'Video quality, seeking, buffering, and episode controls.',
                             children: playbackTiles,
+                          ),
+                          const SizedBox(height: 22),
+                          _TvSettingsSection(
+                            title: 'SUBTITLES',
+                            subtitle: 'Preferred language and text appearance.',
+                            children: subtitleTiles,
+                          ),
+                          const SizedBox(height: 22),
+                          const _TvSettingsSection(
+                            title: 'STORAGE',
+                            subtitle: 'Clear cached and temporary files.',
+                            children: <Widget>[_TvClearCacheTile()],
                           ),
                           const SizedBox(height: 22),
                           _TvSettingsSection(
@@ -203,6 +326,59 @@ class TvSettingsScreen extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  static Future<void> _showPlaybackChoice<T>(
+    BuildContext context, {
+    required String title,
+    required String description,
+    required T value,
+    required Map<T, String> options,
+    required ValueChanged<T> onChanged,
+  }) async {
+    final selected = await showTvDialog<T>(
+      context: context,
+      title: title,
+      content: Text(description),
+      actions: <TvDialogAction>[
+        for (final option in options.entries)
+          TvDialogAction(
+            label: option.value,
+            autofocus: value == option.key,
+            isPrimary: value == option.key,
+            onPressed: () => Navigator.of(context).pop(option.key),
+          ),
+      ],
+    );
+    if (selected != null) onChanged(selected);
+  }
+
+  static String _subtitleLanguageLabel(String code) {
+    if (code.isEmpty) return 'Any';
+    for (final language in appLanguages) {
+      if (language.code == code) {
+        final name = language.translationKey;
+        return name == 'croaitian'
+            ? 'Croatian'
+            : '${name[0].toUpperCase()}${name.substring(1)}';
+      }
+    }
+    return code;
+  }
+
+  static Future<void> _showSubtitleLanguagePicker(BuildContext context) {
+    return showTvDialog<void>(
+      context: context,
+      title: 'Default subtitle language',
+      content: const _TvSubtitleLanguagePicker(),
+      autofocusFirstAction: false,
+      actions: <TvDialogAction>[
+        TvDialogAction(
+          label: 'Cancel',
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ],
     );
   }
 
@@ -540,6 +716,100 @@ class TvSettingsScreen extends StatelessWidget {
       ],
     );
   }
+}
+
+class _TvSubtitleLanguagePicker extends StatelessWidget {
+  const _TvSubtitleLanguagePicker();
+
+  @override
+  Widget build(BuildContext context) {
+    final settings = context.watch<SettingsProvider>();
+    final codes = <String>[
+      '',
+      for (final language in appLanguages) language.code
+    ];
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        const Text('Prefer this language when subtitles are available. '
+            'Choose Any to leave the language selection automatic.'),
+        const SizedBox(height: 18),
+        for (final code in codes)
+          TvListRow(
+            key: ValueKey<String>('subtitle-language-$code'),
+            label: TvSettingsScreen._subtitleLanguageLabel(code),
+            value: settings.defaultSubtitleLanguage == code ? 'Selected' : null,
+            showsNext: false,
+            autofocus: settings.defaultSubtitleLanguage == code ||
+                (code.isEmpty &&
+                    !codes.contains(settings.defaultSubtitleLanguage)),
+            onActivate: () {
+              settings.defaultSubtitleLanguage = code;
+              Navigator.of(context).pop();
+            },
+          ),
+      ],
+    );
+  }
+}
+
+class _TvClearCacheTile extends StatefulWidget {
+  const _TvClearCacheTile();
+
+  @override
+  State<_TvClearCacheTile> createState() => _TvClearCacheTileState();
+}
+
+class _TvClearCacheTileState extends State<_TvClearCacheTile> {
+  bool _clearing = false;
+
+  Future<void> _clear() async {
+    if (_clearing) return;
+    setState(() => _clearing = true);
+    var cleared = false;
+    var failed = false;
+    // These directories may be the same on Android, so clear them in sequence.
+    for (final clear in [clearCache, clearTempCache]) {
+      try {
+        cleared = await clear() || cleared;
+      } catch (error) {
+        failed = true;
+        debugPrint('TV cache clearing failed: $error');
+      }
+    }
+    if (!mounted) return;
+    setState(() => _clearing = false);
+    await showTvDialog<void>(
+      context: context,
+      title: failed
+          ? 'Cache clearing incomplete'
+          : cleared
+              ? 'Cache cleared'
+              : 'No cache to clear',
+      content: Text(failed
+          ? 'Some cached files could not be cleared. Please try again.'
+          : cleared
+              ? 'Cached and temporary files were cleared.'
+              : 'There are no cached or temporary files to clear.'),
+      actions: <TvDialogAction>[
+        TvDialogAction(
+          label: 'Done',
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) => _TvSettingTile(
+        key: const ValueKey<String>('clear-cache'),
+        label: 'Clear cache',
+        value: _clearing ? 'Clearing…' : 'Clear temporary files',
+        icon: PhosphorIcons.eraser(),
+        showsNext: false,
+        onActivate: _clear,
+      );
 }
 
 class _TvSubtitleSettingsContent extends StatelessWidget {
@@ -884,6 +1154,7 @@ class _TvSettingTile extends StatelessWidget {
     required this.icon,
     required this.onActivate,
     this.focusNode,
+    this.showsNext = true,
     super.key,
   });
 
@@ -892,6 +1163,7 @@ class _TvSettingTile extends StatelessWidget {
   final IconData icon;
   final VoidCallback onActivate;
   final FocusNode? focusNode;
+  final bool showsNext;
 
   @override
   Widget build(BuildContext context) {
@@ -900,6 +1172,7 @@ class _TvSettingTile extends StatelessWidget {
       label: label,
       value: value,
       icon: icon,
+      showsNext: showsNext,
       onActivate: onActivate,
     );
   }
