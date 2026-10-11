@@ -1487,7 +1487,7 @@
   "player_playback_position": "Playback position",
   "player_position_of": "{position} of {duration}",
   "tv_search_again": "Search for “{query}” again.",
-  "default": "Default",
+  "player_default": "Default",
   "video_quality": "Video quality",
   "tv_current_provider": "Current provider",
   "tv_font_weight_light": "Light"

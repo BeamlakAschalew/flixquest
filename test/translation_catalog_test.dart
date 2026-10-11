@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flixquest/translations/codegen_loader.g.dart';
+import 'package:flixquest/translations/locale_keys.g.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -115,6 +116,13 @@ void main() {
       for (final match in keyPattern.allMatches(source.readAsStringSync())) {
         expect(catalog, contains(match[1]), reason: source.path);
       }
+    }
+  });
+
+  test('generated locale keys resolve the default player label', () {
+    for (final entry in CodegenLoader.mapLocales.entries) {
+      expect(entry.value[LocaleKeys.player_default], isNotEmpty,
+          reason: entry.key);
     }
   });
 

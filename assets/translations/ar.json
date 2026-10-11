@@ -1534,7 +1534,7 @@
   "player_playback_position": "موضع التشغيل",
   "player_position_of": "{position} من {duration}",
   "tv_search_again": "ابحث عن «{query}» مجدداً.",
-  "default": "افتراضي",
+  "player_default": "افتراضي",
   "video_quality": "جودة الفيديو",
   "tv_current_provider": "المزود الحالي",
   "tv_font_weight_light": "خفيف"
