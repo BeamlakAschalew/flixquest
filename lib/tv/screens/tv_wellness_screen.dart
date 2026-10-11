@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +22,7 @@ class TvWellnessScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final provider = context.watch<WellnessProvider>();
     return TvWellnessContent(
       metrics: metrics,
@@ -107,6 +109,7 @@ class _TvWellnessContentState extends State<TvWellnessContent> {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = TvPalette.of(context);
     final theme = Theme.of(context);
     final insights = widget.insights;
@@ -132,14 +135,14 @@ class _TvWellnessContentState extends State<TvWellnessContent> {
               Theme(
                 data: theme,
                 child: TvPageHeader(
-                  kicker: 'YOUR VIEWING STORY',
-                  title: 'Viewing Insights',
+                  kicker: tr('tv_your_viewing_story'),
+                  title: tr('viewing_insights'),
                   compact: widget.metrics.compact,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
-                'Active playback only · private to this profile',
+                tr('tv_active_playback_only_private_to_this_profile'),
                 style: TextStyle(color: palette.mutedText, fontSize: 15),
               ),
               const SizedBox(height: 22),
@@ -152,8 +155,12 @@ class _TvWellnessContentState extends State<TvWellnessContent> {
                       key: Key('tv-insights-range-${range.name}'),
                       focusNode: range == WellnessRange.week ? _entry : null,
                       label: _rangeLabel(range),
-                      semanticLabel: '${_rangeLabel(range)} viewing range'
-                          '${widget.range == range ? ', selected' : ''}',
+                      semanticLabel: tr('tv_viewing_range', namedArgs: {
+                        'range': _rangeLabel(range),
+                        'selected': widget.range == range
+                            ? tr('tv_selected_suffix')
+                            : ''
+                      }),
                       icon: widget.range == range
                           ? PhosphorIcons.check(PhosphorIconsStyle.bold)
                           : null,
@@ -166,15 +173,15 @@ class _TvWellnessContentState extends State<TvWellnessContent> {
               if (widget.loading)
                 TvInsightsSkeleton(metrics: widget.metrics)
               else if (insights.isEmpty)
-                const _InsightPanel(
-                  title: 'Your story starts here',
+                _InsightPanel(
+                  title: tr('tv_your_story_starts_here'),
                   child: Text(
-                    'Watch something and your private viewing insights will appear here. Try a different range to see older activity.',
+                    tr('tv_watch_something_and_your_private_viewing_insights_will_appear_here_try_a_different_range_to_see_older_activity'),
                   ),
                 )
               else ...<Widget>[
                 _InsightPanel(
-                  title: 'Active playback',
+                  title: tr('tv_active_playback'),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
@@ -201,11 +208,22 @@ class _TvWellnessContentState extends State<TvWellnessContent> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        '${series.activeBuckets} active ${series.unitLabel}${series.activeBuckets == 1 ? '' : 's'} · Average active day ${_duration(insights.averageActiveDayMs)}',
+                        tr('tv_active_period_summary', namedArgs: {
+                          'count': '${series.activeBuckets}',
+                          'unit': tr(
+                              'ins_unit_${series.unitLabel}${series.activeBuckets == 1 ? '' : 's'}'),
+                          'time': _duration(insights.averageActiveDayMs)
+                        }),
                       ),
                       if (series.indexOfBusiest() >= 0)
                         Text(
-                          'Busiest ${series.unitLabel}: ${series.buckets[series.indexOfBusiest()].fullLabel} · ${_duration(series.buckets[series.indexOfBusiest()].totalMs)}',
+                          tr('tv_busiest_period', namedArgs: {
+                            'unit': tr('ins_unit_${series.unitLabel}'),
+                            'label': series
+                                .buckets[series.indexOfBusiest()].fullLabel,
+                            'time': _duration(
+                                series.buckets[series.indexOfBusiest()].totalMs)
+                          }),
                         ),
                     ],
                   ),
@@ -219,82 +237,109 @@ class _TvWellnessContentState extends State<TvWellnessContent> {
                   children: <Widget>[
                     for (final section in _sections.keys)
                       TvPillButton(
-                        label: section,
-                        semanticLabel: 'Jump to $section insights',
+                        label: _sectionLabel(section),
+                        semanticLabel: tr('tv_jump_insights',
+                            namedArgs: {'section': _sectionLabel(section)}),
                         onActivate: () => _jumpTo(section),
                       ),
                   ],
                 ),
-                _heading('Your viewing rhythm', _sections['Time']!),
+                _heading(tr('ins_time_title'), _sections['Time']!),
                 _columns(<Widget>[
-                  _facts('Consistency', <(String, String)>[
+                  _facts(tr('ins_consistency'), <(String, String)>[
                     (
-                      'Active days',
-                      '${insights.activeDays} of ${insights.periodDays}'
+                      tr('tv_active_days'),
+                      tr('tv_active_days_of', namedArgs: {
+                        'active': '${insights.activeDays}',
+                        'total': '${insights.periodDays}'
+                      })
                     ),
-                    ('Current streak', '${insights.currentStreakDays()} days'),
-                    ('Longest streak', '${insights.longestStreakDays} days'),
                     (
-                      'Typical active day',
+                      tr('tv_current_streak'),
+                      plural('tv_days_count', insights.currentStreakDays(),
+                          name: 'count')
+                    ),
+                    (
+                      tr('tv_longest_streak'),
+                      plural('tv_days_count', insights.longestStreakDays,
+                          name: 'count')
+                    ),
+                    (
+                      tr('tv_typical_active_day'),
                       _duration(insights.medianActiveDayMs)
                     ),
                   ]),
-                  _facts('What you watched', <(String, String)>[
-                    ('Movies', _duration(insights.movieMs)),
-                    ('Episodes', _duration(insights.episodeMs)),
-                    ('Live TV', _duration(insights.liveMs)),
-                    ('Longest session', _duration(insights.longestSessionMs)),
+                  _facts(tr('tv_what_you_watched'), <(String, String)>[
+                    (tr('movies'), _duration(insights.movieMs)),
+                    (tr('episodes'), _duration(insights.episodeMs)),
+                    (tr('live_tv'), _duration(insights.liveMs)),
+                    (
+                      tr('tv_longest_session'),
+                      _duration(insights.longestSessionMs)
+                    ),
                     if (insights.hasNetworkUsage)
                       (
-                        'Data used',
+                        tr('tv_data_used'),
                         '${_dataSize(insights.networkBytes)} · '
                             '${_dataSize(insights.networkBytesPerHour)}/h'
                       ),
                   ]),
                 ]),
-                _heading('What held your attention', _sections['Titles']!),
+                _heading(tr('ins_titles_title'), _sections['Titles']!),
                 _columns(<Widget>[
-                  _facts('Follow-through', <(String, String)>[
-                    ('Started', '${insights.titlesStarted} titles'),
+                  _facts(tr('ins_follow_through'), <(String, String)>[
                     (
-                      'Finished',
+                      tr('tv_started'),
+                      plural('tv_title_count', insights.titlesStarted,
+                          name: 'count')
+                    ),
+                    (
+                      tr('tv_finished'),
                       '${insights.completedTitles} · ${_percent(insights.completionRate)}'
                     ),
-                    ('Sampled', '${insights.sampledTitles}'),
-                    ('Rewatched', '${insights.rewatches}'),
-                    ('Average session', _duration(insights.averageSessionMs)),
+                    (tr('tv_sampled'), '${insights.sampledTitles}'),
+                    (tr('tv_rewatched'), '${insights.rewatches}'),
+                    (
+                      tr('tv_average_session'),
+                      _duration(insights.averageSessionMs)
+                    ),
                   ]),
-                  _ranked('Most watched', insights.topTitles),
+                  _ranked(tr('ins_most_watched'), insights.topTitles),
                   if (insights.topSeriesEpisodes.isNotEmpty)
                     _ranked(
-                      'Series you kept going',
+                      tr('ins_series_kept'),
                       insights.topSeriesEpisodes,
-                      format: (value) => '$value episodes',
+                      format: (value) =>
+                          plural('tv_episodes_count', value, name: 'count'),
                     ),
-                  _facts('Recent viewing', <(String, String)>[
+                  _facts(tr('tv_recent_viewing'), <(String, String)>[
                     for (final session in insights.sessions.take(5))
                       (
                         session.title,
-                        '${_duration(session.watchedMs)} · ${session.viewingStatus}',
+                        '${_duration(session.watchedMs)} · ${tr(switch (session.viewingStatus) {
+                          'completed' => 'ins_completed',
+                          'sampled' => 'ins_sampled',
+                          _ => 'ins_in_progress'
+                        })}',
                       ),
                   ]),
                 ]),
-                _heading('The shape of your taste', _sections['Taste']!),
+                _heading(tr('ins_taste_title'), _sections['Taste']!),
                 _columns(<Widget>[
-                  _ranked('Genres', insights.topGenres),
-                  _ranked('Languages', insights.topLanguages),
-                  _ranked('Countries', insights.topCountries),
-                  _ranked('Release decades', insights.topDecades),
-                  _ranked('Stream providers', insights.topProviders),
+                  _ranked(tr('genres'), insights.topGenres),
+                  _ranked(tr('ins_languages'), insights.topLanguages),
+                  _ranked(tr('ins_countries'), insights.topCountries),
+                  _ranked(tr('ins_decades'), insights.topDecades),
+                  _ranked(tr('ins_providers'), insights.topProviders),
                 ]),
-                _heading('When stories fit your day', _sections['Patterns']!),
+                _heading(tr('ins_patterns_title'), _sections['Patterns']!),
                 _InsightPanel(
-                  title: 'Weekly rhythm',
+                  title: tr('ins_weekly_rhythm'),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      const Text(
-                          'Viewing by weekday and hour across this range'),
+                      Text(tr(
+                          'tv_viewing_by_weekday_and_hour_across_this_range')),
                       const SizedBox(height: 14),
                       WellnessHeatmap(
                         values: insights.hourOfWeekMs,
@@ -305,7 +350,11 @@ class _TvWellnessContentState extends State<TvWellnessContent> {
                         Padding(
                           padding: const EdgeInsets.only(top: 12),
                           child: Text(
-                            'Busiest window: ${_weekdays[peak.$1]} at ${_hourLabel(peak.$2)} · ${_duration(peak.$3)}',
+                            tr('tv_busiest_window', namedArgs: {
+                              'day': _weekdays[peak.$1],
+                              'hour': _hourLabel(peak.$2),
+                              'time': _duration(peak.$3)
+                            }),
                           ),
                         ),
                     ],
@@ -313,21 +362,21 @@ class _TvWellnessContentState extends State<TvWellnessContent> {
                 ),
                 const SizedBox(height: 14),
                 _columns(<Widget>[
-                  _facts('Days of the week', <(String, String)>[
+                  _facts(tr('tv_days_of_the_week'), <(String, String)>[
                     for (var day = 0; day < 7; day++)
                       (
                         _weekdays[day],
                         _duration(insights.weekdayTotalsMs[day])
                       ),
                   ]),
-                  _facts('Parts of the day', <(String, String)>[
+                  _facts(tr('tv_parts_of_the_day'), <(String, String)>[
                     for (var part = 0; part < 4; part++)
                       (_dayParts[part], _duration(insights.partOfDayMs[part])),
                   ]),
-                  _facts('Viewing patterns', <(String, String)>[
-                    ('Weekdays', _duration(insights.weekdayWatchedMs)),
-                    ('Weekends', _duration(insights.weekendWatchedMs)),
-                    ('Late night', _duration(insights.lateNightMs)),
+                  _facts(tr('tv_viewing_patterns'), <(String, String)>[
+                    (tr('tv_weekdays'), _duration(insights.weekdayWatchedMs)),
+                    (tr('tv_weekends'), _duration(insights.weekendWatchedMs)),
+                    (tr('ins_late_night'), _duration(insights.lateNightMs)),
                   ]),
                 ]),
               ],
@@ -340,35 +389,39 @@ class _TvWellnessContentState extends State<TvWellnessContent> {
   }
 }
 
-const _weekdays = <String>[
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-  'Sunday',
-];
-const _dayParts = <String>['Morning', 'Afternoon', 'Evening', 'Late night'];
+String _sectionLabel(String section) => tr(switch (section) {
+      'Time' => 'ins_time',
+      'Titles' => 'ins_titles',
+      'Taste' => 'ins_taste',
+      _ => 'ins_patterns'
+    });
+
+List<String> get _weekdays => List.generate(
+    7, (day) => DateFormat.EEEE().format(DateTime(2024, 1, day + 1)));
+List<String> get _dayParts => <String>[
+      tr('ins_morning'),
+      tr('ins_afternoon'),
+      tr('ins_evening'),
+      tr('ins_late_night')
+    ];
 
 String _rangeLabel(WellnessRange range) => switch (range) {
-      WellnessRange.week => 'Week',
-      WellnessRange.month => 'Month',
-      WellnessRange.year => 'Year',
-      WellnessRange.allTime => 'All time',
+      WellnessRange.week => tr('ins_week'),
+      WellnessRange.month => tr('ins_month'),
+      WellnessRange.year => tr('year'),
+      WellnessRange.allTime => tr('ins_all_time'),
     };
 
 String _duration(int milliseconds) {
   final minutes = Duration(milliseconds: milliseconds).inMinutes;
-  return '${minutes ~/ 60}h ${minutes % 60}m';
+  return tr('tv_duration',
+      namedArgs: {'hours': '${minutes ~/ 60}', 'minutes': '${minutes % 60}'});
 }
 
 String _percent(double value) => '${(value * 100).round()}%';
 
-String _hourLabel(int hour) {
-  final h = hour % 12 == 0 ? 12 : hour % 12;
-  return '$h ${hour < 12 ? 'am' : 'pm'}';
-}
+String _hourLabel(int hour) =>
+    DateFormat.j().format(DateTime(2024, 1, 1, hour));
 
 Widget _heading(String title, Key key) => Padding(
       key: key,
@@ -407,21 +460,29 @@ Widget _statGrid(WellnessInsights insights) => LayoutBuilder(
         final columns = constraints.maxWidth >= 800 ? 3 : 2;
         final width = (constraints.maxWidth - gap * (columns - 1)) / columns;
         final stats = <(String, String, IconData)>[
-          ('Movies', '${insights.completedMovies}', PhosphorIcons.filmSlate()),
           (
-            'Episodes',
+            tr('movies'),
+            '${insights.completedMovies}',
+            PhosphorIcons.filmSlate()
+          ),
+          (
+            tr('episodes'),
             '${insights.completedEpisodes}',
             PhosphorIcons.television()
           ),
-          ('Series', '${insights.uniqueSeries}', PhosphorIcons.stack()),
-          ('Sessions', '${insights.sessionCount}', PhosphorIcons.playCircle()),
+          (tr('series'), '${insights.uniqueSeries}', PhosphorIcons.stack()),
           (
-            'Active days',
+            tr('tv_sessions'),
+            '${insights.sessionCount}',
+            PhosphorIcons.playCircle()
+          ),
+          (
+            tr('tv_active_days'),
             '${insights.activeDays}',
             PhosphorIcons.calendarDots()
           ),
           (
-            'Rewatches',
+            tr('tv_rewatches'),
             '${insights.rewatches}',
             PhosphorIcons.arrowCounterClockwise()
           ),
@@ -511,7 +572,9 @@ Widget _ranked(
     _facts(
       title,
       values.isEmpty
-          ? <(String, String)>[('More viewing will reveal this insight.', '')]
+          ? <(String, String)>[
+              (tr('tv_more_viewing_will_reveal_this_insight'), '')
+            ]
           : <(String, String)>[
               for (final value in values.take(5))
                 (value.label, (format ?? _duration)(value.value)),
@@ -535,6 +598,7 @@ class _InsightPanelState extends State<_InsightPanel> {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = TvPalette.of(context);
     return Focus(
       onFocusChange: (focused) {

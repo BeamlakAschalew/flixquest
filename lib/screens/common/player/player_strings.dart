@@ -1,7 +1,7 @@
 import 'package:better_player_plus/better_player_plus.dart';
 import 'package:easy_localization/easy_localization.dart';
 
-/// The phone controls' words in the app's language.
+/// The phone and TV controls' words in the app's language.
 BetterPlayerControlsStrings playerControlsStrings() =>
     BetterPlayerControlsStrings(
       back: tr('player_back'),
@@ -43,4 +43,18 @@ BetterPlayerControlsStrings playerControlsStrings() =>
       stretchDescription: tr('player_stretch_description'),
       live: tr('player_live'),
       playbackFailed: tr('player_playback_failed'),
+      settings: tr('settings'),
+      playerSettings: tr('player_settings'),
+      audioTrack: tr('player_audio_track'),
+      defaultAudio: tr('player_default_audio'),
+      subtitleNumber: tr('player_subtitle_number'),
+      automatic: tr('auto'),
+      on: tr('tv_on'),
+      defaultLabel: tr('default'),
+      videoQuality: tr('video_quality'),
+      detectedQuality: tr('player_detected_quality'),
+      retry: tr('retry'),
+      loadingSubtitles: tr('loading_subtitles'),
+      playbackPosition: tr('player_playback_position'),
+      positionOf: tr('player_position_of'),
     );

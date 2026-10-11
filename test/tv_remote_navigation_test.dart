@@ -16,7 +16,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'support/tv_localization.dart';
+
 void main() {
+  initializeTvTranslations();
   TestWidgetsFlutterBinding.ensureInitialized();
 
   const metrics = TvShellMetrics(
@@ -228,7 +231,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    for (var index = 0; index < 3; index++) {
+    for (var index = 0; index < 4; index++) {
       await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
       await tester.pump();
     }

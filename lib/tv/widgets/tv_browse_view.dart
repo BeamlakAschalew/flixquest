@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -410,6 +411,7 @@ class _TvBrowseViewState extends State<TvBrowseView> {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final compact = widget.metrics.compact;
     final insets = TvShellInsets.of(context);
     return LayoutBuilder(
@@ -649,8 +651,10 @@ class _TvBrowseViewState extends State<TvBrowseView> {
       scopeId: row.scopeId,
       items: row.items,
       itemId: (item) => item.stableId,
-      semanticLabel: (item) =>
-          'Number ${row.items.indexOf(item) + 1}, ${item.title}',
+      semanticLabel: (item) => tr('tv_numbered_title', namedArgs: {
+        'number': '${row.items.indexOf(item) + 1}',
+        'title': item.title
+      }),
       // The rank already says it; a Top 10 badge here would repeat it.
       itemBuilder: (_, item) => TvMediaCard(
         item: item,
@@ -719,10 +723,11 @@ class _MoreInfoButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = TvPalette.of(context);
     return TvFocusable(
       focusNode: focusNode,
-      semanticLabel: 'More information about $title',
+      semanticLabel: tr('tv_more_info_semantics', namedArgs: {'title': title}),
       onFocusChanged: (hasFocus) {
         if (hasFocus) onFocused();
       },
@@ -742,7 +747,7 @@ class _MoreInfoButton extends StatelessWidget {
             Icon(PhosphorIcons.info(), color: palette.onFocus, size: 19),
             const SizedBox(width: 8),
             Text(
-              'More info',
+              tr('tv_more_info'),
               style: TextStyle(
                 color: palette.onFocus,
                 fontFamily: 'FigtreeSB',

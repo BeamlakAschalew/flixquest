@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -78,6 +79,7 @@ class _TvCollectionScreenState extends State<TvCollectionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = TvPalette.of(context);
     return Scaffold(
       backgroundColor: palette.page,
@@ -107,9 +109,9 @@ class _TvCollectionScreenState extends State<TvCollectionScreen> {
       }
       if (_ended) {
         return TvStatePanel(
-          title: 'Nothing here yet',
-          message: 'No titles are listed for ${widget.collection.title} '
-              'right now.',
+          title: tr('nothing_here_yet'),
+          message: tr('tv_collection_empty',
+              namedArgs: {'title': widget.collection.title}),
           icon: PhosphorIcons.filmStrip(),
         );
       }
@@ -143,13 +145,14 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = TvPalette.of(context);
     final colors = Theme.of(context).colorScheme;
     final logo = collection.logoAsset;
     return Row(
       children: <Widget>[
         TvFocusable(
-          semanticLabel: 'Back',
+          semanticLabel: tr('player_back'),
           onActivate: () => Navigator.of(context).maybePop(),
           focusScale: 1.03,
           borderRadius: BorderRadius.circular(22),
@@ -164,8 +167,8 @@ class _Header extends StatelessWidget {
               children: <Widget>[
                 Icon(PhosphorIcons.caretLeft(), size: 18),
                 const SizedBox(width: 6),
-                const Text(
-                  'Back',
+                Text(
+                  tr('player_back'),
                   style: TextStyle(fontFamily: 'FigtreeSB', fontSize: 16),
                 ),
               ],

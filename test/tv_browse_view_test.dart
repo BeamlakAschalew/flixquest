@@ -21,6 +21,8 @@ import 'package:http/testing.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'support/tv_localization.dart';
+
 const _metrics = TvShellMetrics(
   compact: true,
   safeInset: 16,
@@ -120,6 +122,7 @@ Future<TvScreenFocusController> _pumpBrowse(
 }
 
 void main() {
+  initializeTvTranslations();
   setUpAll(() {
     dotenv.testLoad(fileInput: 'FLIXQUEST_API_URL=https://example.com');
   });

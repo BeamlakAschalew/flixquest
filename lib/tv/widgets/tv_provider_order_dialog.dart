@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,11 +16,11 @@ Future<void> showTvProviderOrderDialog(
 }) {
   return showTvDialog<void>(
     context: context,
-    title: 'Video provider order',
+    title: tr('tv_video_provider_order'),
     content: TvProviderOrderContent(loadProviders: loadProviders),
     actions: <TvDialogAction>[
       TvDialogAction(
-        label: 'Done',
+        label: tr('tv_done'),
         onPressed: () => Navigator.of(context).pop(),
       ),
     ],
@@ -108,21 +109,23 @@ class _TvProviderOrderContentState extends State<TvProviderOrderContent> {
     final move = await showTvDialog<int>(
       context: context,
       title: provider.displayName,
-      content: Text('Priority ${index + 1} of ${_providers.length}. '
-          'Sources are tried from top to bottom.'),
+      content: Text(tr('tv_provider_priority', namedArgs: {
+        'position': '${index + 1}',
+        'total': '${_providers.length}'
+      })),
       actions: <TvDialogAction>[
         if (index > 0)
           TvDialogAction(
-            label: 'Move earlier',
+            label: tr('tv_move_earlier'),
             onPressed: () => Navigator.of(context).pop(-1),
           ),
         if (index < _providers.length - 1)
           TvDialogAction(
-            label: 'Move later',
+            label: tr('tv_move_later'),
             onPressed: () => Navigator.of(context).pop(1),
           ),
         TvDialogAction(
-          label: 'Cancel',
+          label: tr('cancel'),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ],
@@ -140,25 +143,26 @@ class _TvProviderOrderContentState extends State<TvProviderOrderContent> {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        const Text('Sources are tried from top to bottom. '
-            'Select a source to move it earlier or later.'),
+        Text(tr(
+            'tv_sources_are_tried_from_top_to_bottom_select_a_source_to_move_it_earlier_or_later')),
         const SizedBox(height: 18),
         if (_loading)
-          const Padding(
+          Padding(
             padding: EdgeInsets.symmetric(vertical: 12),
-            child: Text('Loading sources…'),
+            child: Text(tr('tv_loading_sources')),
           ),
         if (_discoveryFailed) ...<Widget>[
-          const Text(
-              'Could not refresh sources. Your saved order is unchanged.'),
+          Text(
+              tr('tv_could_not_refresh_sources_your_saved_order_is_unchanged')),
           const SizedBox(height: 12),
           Align(
             alignment: Alignment.centerLeft,
-            child: TvPillButton(label: 'Retry', onActivate: _loadProviders),
+            child: TvPillButton(label: tr('retry'), onActivate: _loadProviders),
           ),
           const SizedBox(height: 12),
         ],

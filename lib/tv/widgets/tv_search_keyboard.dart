@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -211,6 +212,7 @@ class TvSearchKeyboardState extends State<TvSearchKeyboard> {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final unit = widget.width / TvSearchKeyboard.columns;
     Widget row(int index) => Row(
           children: <Widget>[
@@ -223,9 +225,9 @@ class TvSearchKeyboardState extends State<TvSearchKeyboard> {
                   child: _Key(
                     focusNode: _node(key.id),
                     label: switch (key.id) {
-                      _space => 'Space',
-                      _delete => 'Delete',
-                      _clear => 'Clear',
+                      _space => tr('tv_space'),
+                      _delete => tr('tv_delete'),
+                      _clear => tr('clear'),
                       final letter => letter,
                     },
                     icon: switch (key.id) {
@@ -284,6 +286,7 @@ class _KeyState extends State<_Key> {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = TvPalette.of(context);
     final foreground = _focused ? palette.onFocus : palette.foreground;
     final icon = widget.icon;
@@ -341,10 +344,13 @@ class TvSearchQueryField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = TvPalette.of(context);
     final empty = query.isEmpty;
     return Semantics(
-      label: empty ? 'Search, nothing typed' : 'Search for $query',
+      label: empty
+          ? tr('tv_search_nothing_typed')
+          : tr('tv_search_query_semantics', namedArgs: {'query': query}),
       liveRegion: true,
       child: Container(
         padding: const EdgeInsets.only(bottom: 10),

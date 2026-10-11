@@ -17,6 +17,8 @@ import 'package:path_provider_platform_interface/path_provider_platform_interfac
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'support/tv_localization.dart';
+
 class _CachePaths extends PathProviderPlatform {
   _CachePaths({required this.cache, required this.temp});
 
@@ -79,6 +81,7 @@ Future<void> _select(WidgetTester tester) async {
 }
 
 void main() {
+  initializeTvTranslations();
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUpAll(() {

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import '../models/movie.dart';
 import 'up_next.dart';
 import '../models/recently_watched.dart';
@@ -29,7 +30,7 @@ class MediaItem {
     return MediaItem(
       kind: MediaKind.movie,
       id: movie.id ?? -1,
-      title: movie.title ?? movie.originalTitle ?? 'Untitled movie',
+      title: movie.title ?? movie.originalTitle ?? tr('tv_untitled_movie'),
       overview: movie.overview ?? '',
       posterPath: movie.posterPath,
       backdropPath: movie.backdropPath,
@@ -43,7 +44,7 @@ class MediaItem {
     return MediaItem(
       kind: MediaKind.series,
       id: series.id ?? -1,
-      title: series.name ?? series.originalName ?? 'Untitled series',
+      title: series.name ?? series.originalName ?? tr('tv_untitled_series'),
       overview: series.overview ?? '',
       posterPath: series.posterPath,
       backdropPath: series.backdropPath,
@@ -65,14 +66,14 @@ class MediaItem {
     return MediaItem(
       kind: MediaKind.movie,
       id: recent.id ?? -1,
-      title: recent.title ?? 'Untitled movie',
+      title: recent.title ?? tr('tv_untitled_movie'),
       overview: '',
       posterPath: recent.posterPath,
       backdropPath: recent.backdropPath,
       rating: null,
       releaseDate: recent.releaseYear?.toString(),
       progress: _watchProgress(recent.elapsed, recent.remaining),
-      progressLabel: 'Continue movie',
+      progressLabel: tr('tv_continue_movie'),
       stableKey: 'recent-movie:${recent.id}',
       movie: movie,
       recentMovie: recent,
@@ -84,7 +85,8 @@ class MediaItem {
     return MediaItem(
       kind: MediaKind.series,
       id: next.seriesId,
-      title: next.seriesName.isEmpty ? 'Untitled series' : next.seriesName,
+      title:
+          next.seriesName.isEmpty ? tr('tv_untitled_series') : next.seriesName,
       overview: '',
       posterPath: next.posterPath,
       backdropPath: next.backdropPath,
@@ -117,7 +119,7 @@ class MediaItem {
     return MediaItem(
       kind: MediaKind.series,
       id: recent.seriesId ?? -1,
-      title: recent.seriesName ?? 'Untitled series',
+      title: recent.seriesName ?? tr('tv_untitled_series'),
       overview: '',
       posterPath: recent.posterPath,
       backdropPath: recent.backdropPath,

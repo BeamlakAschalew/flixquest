@@ -2374,7 +2374,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       tr('select_season'),
       [
         BetterPlayerTvMenuItem(
-          label: 'Loading episodes…',
+          label: '${tr('loading_episodes')}…',
           icon: PhosphorIcons.spinnerGap(),
           enabled: false,
           onSelected: () {},
@@ -3010,6 +3010,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
               Positioned.fill(
                 child: BetterPlayerTvMenu(
                   title: menu.title,
+                  strings: playerControlsStrings(),
                   items: menu.items,
                   onClose: _closeTvMenu,
                   accentColor: widget.colors.first,
@@ -3668,7 +3669,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   }
 
   String _providerDisplayName(String? code) {
-    if (code == null || code.trim().isEmpty) return 'Current provider';
+    if (code == null || code.trim().isEmpty) return tr('tv_current_provider');
     final loadedName = _loadedProviders[code]?.providerName;
     if (loadedName?.isNotEmpty == true) return loadedName!;
     for (final provider

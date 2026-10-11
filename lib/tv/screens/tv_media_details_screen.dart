@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -318,8 +319,8 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
         setState(() => _bookmarked = Future<bool>.value(updated));
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content:
-                Text(updated ? 'Added to My List' : 'Removed from My List'),
+            content: Text(
+                updated ? tr('added_to_my_list') : tr('removed_from_my_list')),
           ),
         );
       }
@@ -344,7 +345,7 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
     if (await checkConnection()) return true;
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Check your internet connection.')),
+        SnackBar(content: Text(tr('tv_check_your_internet_connection'))),
       );
     }
     return false;
@@ -430,7 +431,7 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Episodes could not be loaded.')),
+          SnackBar(content: Text(tr('tv_episodes_could_not_be_loaded'))),
         );
       }
     }
@@ -509,7 +510,7 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
     ].join('   ');
     final play = await showTvDialog<bool>(
       context: context,
-      title: episode.name ?? 'Episode information',
+      title: episode.name ?? tr('tv_episode_information'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -521,7 +522,7 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
           Text(
             episode.overview?.trim().isNotEmpty ?? false
                 ? episode.overview!
-                : 'No episode overview is available.',
+                : tr('tv_no_episode_overview_is_available'),
             maxLines: 6,
             overflow: TextOverflow.ellipsis,
           ),
@@ -530,13 +531,13 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
       actions: <TvDialogAction>[
         if (canPlay)
           TvDialogAction(
-            label: 'Play episode',
+            label: tr('tv_play_episode'),
             autofocus: true,
             isPrimary: true,
             onPressed: () => Navigator.of(context).pop(true),
           ),
         TvDialogAction(
-          label: 'Close',
+          label: tr('close'),
           autofocus: !canPlay,
           onPressed: () => Navigator.of(context).pop(false),
         ),
@@ -549,6 +550,7 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = TvPalette.of(context);
     final resume = _resume(listen: true);
     return TvFocusMemoryScope(
@@ -714,7 +716,7 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  _isMovie ? 'MOVIE' : 'SERIES',
+                  _isMovie ? tr('tv_movie') : tr('tv_series'),
                   style: TextStyle(
                     color: colors.primary,
                     fontFamily: 'FigtreeSB',
@@ -788,21 +790,22 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
     final canWatch =
         context.watch<AppDependencyProvider>().displayWatchNowButton;
     final resuming = resume != null && !resume.finished;
+    final firstSeason = _loaded?.seasons.firstOrNull?.seasonNumber ?? 1;
     final playLabel = switch ((_isMovie, resume)) {
-      (_, final point?) when !point.finished =>
-        point.episodeLabel == null ? 'Resume' : 'Resume ${point.episodeLabel}',
-      (false, final point?) when point.finished => 'Next episode',
-      (true, _) => 'Play',
-      (false, _) => 'Play S1:E1',
+      (_, final point?) when !point.finished => point.episodeLabel == null
+          ? tr('resume_title')
+          : tr('tv_resume_episode',
+              namedArgs: {'episode': point.episodeLabel!}),
+      (false, final point?) when point.finished => tr('tv_next_episode'),
+      (true, _) => tr('play'),
+      (false, _) =>
+        tr('tv_play_first_episode', namedArgs: {'season': '$firstSeason'}),
     };
-    final seriesStartsAtOne = _loaded?.seasons.firstOrNull?.seasonNumber;
     final buttons = <Widget>[
       if (canWatch)
         _DetailButton(
           focusNode: _actionNode('play'),
-          label: _isMovie || seriesStartsAtOne == null || resume != null
-              ? playLabel
-              : playLabel.replaceFirst('S1', 'S$seriesStartsAtOne'),
+          label: playLabel,
           icon: PhosphorIcons.play(PhosphorIconsStyle.fill),
           autofocus: true,
           onFocused: () => _lastActionId = 'play',
@@ -813,7 +816,10 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
       if (canWatch && resuming)
         _DetailButton(
           focusNode: _actionNode('restart'),
-          label: _isMovie ? 'Play from start' : 'Play from S1:E1',
+          label: _isMovie
+              ? tr('tv_play_from_start')
+              : tr('tv_play_from_first_episode',
+                  namedArgs: {'season': '$firstSeason'}),
           icon: PhosphorIcons.arrowCounterClockwise(),
           onFocused: () => _lastActionId = 'restart',
           onActivate: () =>
@@ -822,7 +828,7 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
       if (!_isMovie && (_loaded?.seasons.isNotEmpty ?? false))
         _DetailButton(
           focusNode: _actionNode('episodes'),
-          label: 'Episodes',
+          label: tr('episodes'),
           icon: PhosphorIcons.listBullets(),
           onFocused: () => _lastActionId = 'episodes',
           onActivate: () =>
@@ -834,7 +840,7 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
           final saved = snapshot.data ?? false;
           return _DetailButton(
             focusNode: _actionNode('list'),
-            label: 'My List',
+            label: tr('my_list'),
             icon: saved
                 ? PhosphorIcons.checkCircle(PhosphorIconsStyle.fill)
                 : PhosphorIcons.plusCircle(),
@@ -910,8 +916,8 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return _SectionMessage(
-              message: 'Some details could not be loaded.',
-              actionLabel: 'Retry',
+              message: tr('tv_some_details_could_not_be_loaded'),
+              actionLabel: tr('retry'),
               onAction: _retry,
             );
           }
@@ -933,7 +939,7 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
                     _Stop.similar,
                     TvContentRow<TvMediaItem>(
                       controller: _similarRow,
-                      title: 'More like this',
+                      title: tr('tv_more_like_this'),
                       scopeId: 'details-similar:${_item.stableId}',
                       items:
                           data.recommendations.take(16).toList(growable: false),
@@ -964,7 +970,7 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
       _Stop.seasons,
       TvContentRow<Seasons>(
         controller: _seasonRow,
-        title: 'Episodes',
+        title: tr('episodes'),
         scopeId: 'details-seasons:${_item.id}',
         items: seasons,
         itemId: (season) => '${season.seasonNumber}',
@@ -988,8 +994,8 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
 
   static String _seasonName(Seasons season) {
     final number = season.seasonNumber ?? 0;
-    if (number <= 0) return season.name ?? 'Specials';
-    return 'Season $number';
+    if (number <= 0) return season.name ?? tr('tv_specials');
+    return tr('tv_season_number', namedArgs: {'season': '$number'});
   }
 
   Widget _buildEpisodes(
@@ -1009,8 +1015,8 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return _SectionMessage(
-            message: 'Episodes could not be loaded.',
-            actionLabel: 'Retry',
+            message: tr('tv_episodes_could_not_be_loaded'),
+            actionLabel: tr('retry'),
             onAction: () {
               if (season != null) _selectSeason(season, immediately: true);
             },
@@ -1021,8 +1027,8 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
           return _EpisodePlaceholders(width: width, height: cardHeight);
         }
         if (items.isEmpty) {
-          return const _SectionMessage(
-            message: 'No episodes are listed for this season yet.',
+          return _SectionMessage(
+            message: tr('tv_no_episodes_are_listed_for_this_season_yet'),
           );
         }
         final watched = resume?.episode;
@@ -1034,15 +1040,19 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
               season,
               TvContentRowController.new,
             ),
-            title:
-                '${seasonInfo == null ? 'Season $season' : _seasonName(seasonInfo)}'
-                '  ·  $count episode${count == 1 ? '' : 's'}',
+            title: tr('tv_season_episode_count', namedArgs: {
+              'season': seasonInfo == null
+                  ? tr('tv_season_number', namedArgs: {'season': '$season'})
+                  : _seasonName(seasonInfo),
+              'episodes': plural('tv_episodes_count', count, name: 'count')
+            }),
             scopeId: _episodesScope(season),
             items: items,
             itemId: (episode) => '${episode.episodeNumber}',
-            semanticLabel: (episode) =>
-                'Episode ${episode.episodeNumber ?? ''}, '
-                '${episode.name ?? 'Untitled episode'}',
+            semanticLabel: (episode) => tr('tv_episode_semantics', namedArgs: {
+              'number': '${episode.episodeNumber ?? ''}',
+              'title': episode.name ?? tr('tv_untitled_episode')
+            }),
             itemBuilder: (_, episode) => _EpisodeCard(
               episode: episode,
               width: width,
@@ -1059,7 +1069,7 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
             pinFocusedItem: true,
             onItemActivated: (episode) => _activateEpisode(episode, items),
             onItemMenu: (episode) => _showEpisode(episode, items),
-            itemMenuHint: 'Hold OK for episode info',
+            itemMenuHint: tr('tv_hold_ok_for_episode_info'),
           ),
         );
       },
@@ -1070,12 +1080,10 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
   static String? _airLabel(EpisodeList episode) {
     final aired = DateTime.tryParse(episode.airDate ?? '');
     if (aired == null) return null;
-    const months = <String>[
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', //
-    ];
-    final date = '${aired.day} ${months[aired.month - 1]} ${aired.year}';
-    return hasAired(episode) ? date : 'Coming $date';
+    final date = DateFormat.yMMMd().format(aired);
+    return hasAired(episode)
+        ? date
+        : tr('tv_coming_date', namedArgs: {'date': date});
   }
 }
 
@@ -1195,6 +1203,7 @@ class _ResumeProgress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = TvPalette.of(context);
     final colors = Theme.of(context).colorScheme;
     return Row(
@@ -1238,6 +1247,7 @@ class _SeasonPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = TvPalette.of(context);
     return AnimatedContainer(
       duration: const Duration(milliseconds: 150),
@@ -1280,6 +1290,7 @@ class _EpisodeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = TvPalette.of(context);
     final colors = Theme.of(context).colorScheme;
     final settings = context.watch<SettingsProvider>();
@@ -1367,7 +1378,7 @@ class _EpisodeCard extends StatelessWidget {
                 children: <Widget>[
                   Text(
                     '${number == null ? '' : '$number. '}'
-                    '${episode.name ?? 'Untitled episode'}',
+                    '${episode.name ?? tr('tv_untitled_episode')}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
@@ -1407,9 +1418,10 @@ class _EpisodePlaceholders extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = TvPalette.of(context);
     return Semantics(
-      label: 'Loading episodes',
+      label: tr('loading_episodes'),
       child: Padding(
         padding: const EdgeInsets.only(
           left: TvDesign.focusOutset + 4,
@@ -1459,6 +1471,7 @@ class _SectionMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = TvPalette.of(context);
     final action = onAction;
     return Padding(
@@ -1473,7 +1486,7 @@ class _SectionMessage extends StatelessWidget {
           if (action != null) ...<Widget>[
             const SizedBox(width: 16),
             TvFocusable(
-              semanticLabel: actionLabel ?? 'Retry',
+              semanticLabel: actionLabel ?? tr('retry'),
               onActivate: action,
               focusScale: 1.04,
               borderRadius: BorderRadius.circular(TvDesign.cardRadius),
@@ -1485,7 +1498,7 @@ class _SectionMessage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(TvDesign.cardRadius),
                 ),
                 child: Text(
-                  actionLabel ?? 'Retry',
+                  actionLabel ?? tr('retry'),
                   style: TextStyle(
                     color: palette.foreground,
                     fontFamily: 'FigtreeSB',

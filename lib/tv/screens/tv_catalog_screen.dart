@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
@@ -90,6 +91,7 @@ class _TvCatalogScreenState extends State<TvCatalogScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     // A full-bleed screen: only the browse view's artwork reaches the edges.
     final insets = TvShellInsets.of(context);
     return FutureBuilder<TvCatalogData>(
@@ -122,11 +124,13 @@ class _TvCatalogScreenState extends State<TvCatalogScreen> {
       return Padding(
         padding: insets,
         child: TvStatePanel(
-          title: _isMovie ? 'No movies to show' : 'No series to show',
-          message: 'FlixQuest could not load this page. Try again.',
+          title: _isMovie
+              ? tr('tv_no_movies_to_show')
+              : tr('tv_no_series_to_show'),
+          message: tr('tv_flixquest_could_not_load_this_page_try_again'),
           icon:
               _isMovie ? PhosphorIcons.filmSlate() : PhosphorIcons.television(),
-          actionLabel: 'Retry',
+          actionLabel: tr('retry'),
           onAction: _retry,
         ),
       );
@@ -152,62 +156,65 @@ class _TvCatalogScreenState extends State<TvCatalogScreen> {
 
   List<TvBrowseRow> _rows(TvCatalogData data) {
     final kind = widget.kind.name;
-    final noun = _isMovie ? 'movies' : 'series';
     return <TvBrowseRow>[
       TvTopTenRow(
-        title: 'Top 10 $noun today',
+        title: tr(_isMovie ? 'top_10_movies_today' : 'top_10_series_today'),
         scopeId: '$kind-top-ten',
         items: data.topTen,
       ),
       TvMediaRow(
-        title: 'Trending now',
+        title: tr('tv_trending_now'),
         scopeId: '$kind-trending',
         items: data.trending,
       ),
       TvMediaRow(
-        title: 'Popular $noun',
+        title: tr(_isMovie ? 'popular_movies' : 'popular_series'),
         scopeId: '$kind-popular',
         items: data.popular,
       ),
       TvShortcutRow(
-        title: 'Streaming services',
+        title: tr('streaming_services'),
         scopeId: '$kind-services',
         shortcuts: <TvBrowseShortcut>[
           for (final service in appStreamingServices)
             TvBrowseShortcut(
               id: 'service-${service.providerId}',
               title: service.name,
-              facts: const <String>['Streaming service'],
-              description:
-                  'The most popular $noun streaming on ${service.name}.',
+              facts: <String>[tr('tv_streaming_service')],
+              description: tr('tv_service_description', namedArgs: {
+                'kind': tr(_isMovie ? 'movies' : 'series'),
+                'service': service.name
+              }),
               logoAsset: service.imagePath,
               onActivate: () => _openService(service),
             ),
         ],
       ),
       TvMediaRow(
-        title: 'Top rated',
+        title: tr('tv_top_rated'),
         scopeId: '$kind-top-rated',
         items: data.topRated,
       ),
       TvMediaRow(
-        title: _isMovie ? 'Coming soon' : 'New episodes',
+        title: _isMovie ? tr('tv_coming_soon') : tr('new_episodes'),
         scopeId: '$kind-fresh',
         items: data.fresh,
         // Every card here would say New episodes.
         showBadges: _isMovie,
       ),
       TvShortcutRow(
-        title: 'Genres',
+        title: tr('genres'),
         scopeId: '$kind-genres',
         shortcuts: <TvBrowseShortcut>[
           for (final genre in data.genres)
             TvBrowseShortcut(
               id: 'genre-${genre.genreID}',
               title: genre.genreName!,
-              facts: const <String>['Genre'],
-              description: 'Popular ${genre.genreName!.toLowerCase()} $noun, '
-                  'the most watched first.',
+              facts: <String>[tr('tv_genre')],
+              description: tr('tv_genre_description', namedArgs: {
+                'genre': genre.genreName!,
+                'kind': tr(_isMovie ? 'movies' : 'series')
+              }),
               onActivate: () => widget.onOpenCollection(
                 _controller.genreCollection(
                   kind: widget.kind,
@@ -221,7 +228,8 @@ class _TvCatalogScreenState extends State<TvCatalogScreen> {
       ),
       for (final shelf in data.serviceShelves)
         TvMediaRow(
-          title: 'Popular on ${shelf.service.name}',
+          title:
+              tr('tv_popular_on', namedArgs: {'service': shelf.service.name}),
           scopeId: '$kind-on-${shelf.service.providerId}',
           items: shelf.items,
         ),

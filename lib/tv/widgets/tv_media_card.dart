@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -44,6 +45,7 @@ class TvMediaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = TvPalette.of(context);
     final colors = Theme.of(context).colorScheme;
     final settings = context.watch<SettingsProvider>();
@@ -154,7 +156,7 @@ class TvMediaCard extends StatelessWidget {
                   if (item.rating case final rating?)
                     '★ ${rating.toStringAsFixed(1)}'
                   else
-                    item.kind == TvMediaKind.movie ? 'Movie' : 'Series',
+                    item.kind == TvMediaKind.movie ? tr('movie') : tr('series'),
                 ].join('  •  '),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -182,6 +184,7 @@ class _ImageFallback extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = TvPalette.of(context);
     final icon = OutlineMark(height: 48, color: palette.mutedText);
     return ColoredBox(

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -23,12 +24,13 @@ class TvProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final user = FirebaseAuth.instance.currentUser;
     if (user == null || user.isAnonymous) {
       return _ProfileLayout(
         metrics: metrics,
-        name: 'Guest',
-        subtitle: 'Local watchlist and browsing session',
+        name: tr('guest'),
+        subtitle: tr('tv_local_watchlist_and_browsing_session'),
         profileId: 0,
         isGuest: true,
         focusController: focusController,
@@ -49,10 +51,10 @@ class TvProfileScreen extends StatelessWidget {
         return _ProfileLayout(
           metrics: metrics,
           name: name == null || name.isEmpty
-              ? user.displayName ?? 'FlixQuest member'
+              ? user.displayName ?? tr('tv_flixquest_member')
               : name,
           subtitle: username == null || username.isEmpty
-              ? user.email ?? 'Signed in'
+              ? user.email ?? tr('signed_in')
               : '@$username',
           profileId: profileId,
           photoUrl: data?['photoUrl']?.toString(),
@@ -67,18 +69,18 @@ class TvProfileScreen extends StatelessWidget {
   Future<void> _confirmSignOut(BuildContext context) async {
     await showTvDialog<void>(
       context: context,
-      title: 'Sign out?',
-      content: const Text(
-        'You will return to the FlixQuest TV welcome screen.',
+      title: tr('tv_sign_out'),
+      content: Text(
+        tr('tv_you_will_return_to_the_flixquest_tv_welcome_screen'),
       ),
       actions: <TvDialogAction>[
         TvDialogAction(
-          label: 'Cancel',
+          label: tr('cancel'),
           autofocus: true,
           onPressed: () => Navigator.of(context).pop(),
         ),
         TvDialogAction(
-          label: 'Sign out',
+          label: tr('sign_out'),
           isPrimary: true,
           onPressed: () async {
             Navigator.of(context).pop();
@@ -153,6 +155,7 @@ class _ProfileLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = TvPalette.of(context);
     final compact = metrics.compact;
     return _ProfileFocusEntry(
@@ -170,8 +173,8 @@ class _ProfileLayout extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(left: TvDesign.focusOutset + 4),
               child: TvPageHeader(
-                kicker: 'ACCOUNT',
-                title: 'Profile',
+                kicker: tr('tv_account'),
+                title: tr('profile'),
                 compact: compact,
               ),
             ),
@@ -224,9 +227,9 @@ class _ProfileLayout extends StatelessWidget {
                         const SizedBox(height: 12),
                         Text(
                           isGuest
-                              ? 'Your list and history stay on this TV.'
-                              : 'Your list and history stay in sync across '
-                                  'your devices.',
+                              ? tr('tv_your_list_and_history_stay_on_this_tv')
+                              : tr(
+                                  'tv_your_list_and_history_stay_in_sync_across_your_signed_in_devices'),
                           style: TextStyle(
                             color: palette.mutedText,
                             fontSize: compact ? 14 : 16,
@@ -236,7 +239,7 @@ class _ProfileLayout extends StatelessWidget {
                         SizedBox(height: compact ? 18 : 26),
                         TvPillButton(
                           focusNode: signOutFocusNode,
-                          label: 'Sign out',
+                          label: tr('sign_out'),
                           icon: PhosphorIcons.signOut(),
                           onActivate: onSignOut,
                         ),
@@ -262,6 +265,7 @@ class _AccountStatus extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = TvPalette.of(context);
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -276,7 +280,7 @@ class _AccountStatus extends StatelessWidget {
         ),
         const SizedBox(width: 9),
         Text(
-          isGuest ? 'LOCAL PROFILE' : 'SIGNED IN',
+          isGuest ? tr('tv_local_profile') : tr('tv_signed_in'),
           style: TextStyle(
             color: palette.mutedText,
             fontFamily: 'FigtreeBold',

@@ -91,15 +91,16 @@ class _UpdateScreenState extends State<UpdateScreen> {
       try {
         await showTvDialog<void>(
             context: context,
-            title: 'Update required',
-            content: const Text(
-                'Update FlixQuest to continue watching. You can also exit the app.'),
+            title: tr('tv_update_required'),
+            content: Text(tr(
+                'tv_update_flixquest_to_continue_watching_you_can_also_exit_the_app')),
             actions: [
               TvDialogAction(
-                  label: 'Return to update',
+                  label: tr('tv_return_to_update'),
                   autofocus: true,
                   onPressed: () => Navigator.pop(context)),
-              TvDialogAction(label: 'Exit app', onPressed: SystemNavigator.pop),
+              TvDialogAction(
+                  label: tr('tv_exit_app'), onPressed: SystemNavigator.pop),
             ]);
       } finally {
         _showingMandatoryDialog = false;
@@ -124,6 +125,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     return PopScope(
       canPop: !_forced,
       onPopInvokedWithResult: (didPop, _) {
@@ -207,19 +209,25 @@ class _UpdateScreenState extends State<UpdateScreen> {
             latestBuildNumber: config.latestBuildNumber,
             minimumBuildNumber: config.minimumBuildNumber));
     return TvUpdateLayout(
-      title: _forced ? 'Update required' : 'App updates',
+      title: _forced ? tr('tv_update_required') : tr('tv_app_updates'),
       message: _error != null
-          ? 'Unable to prepare the update. Please try again.'
+          ? tr('tv_unable_to_prepare_the_update_please_try_again')
           : _packageInfo == null
-              ? 'Checking your installed version…'
+              ? tr('tv_checking_your_installed_version')
               : available
-                  ? 'FlixQuest $version is available. Installed: ${_packageInfo!.version}. '
-                      '${_forced ? 'Update to continue watching.' : 'Get the latest improvements for your TV.'}'
-                  : 'You’re up to date. FlixQuest ${_packageInfo!.version}',
+                  ? tr('tv_update_available_version', namedArgs: {
+                      'version': version,
+                      'installed': _packageInfo!.version,
+                      'hint': tr(_forced
+                          ? 'tv_update_continue_hint'
+                          : 'tv_update_tv_hint'),
+                    })
+                  : tr('tv_update_current',
+                      namedArgs: {'version': _packageInfo!.version}),
       children: [
         if (_error != null)
           TvUpdateAction(
-              label: 'Retry',
+              label: tr('retry'),
               autofocus: true,
               primary: true,
               onPressed: _prepare)
@@ -235,8 +243,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
                 onOpen: _openDownload,
                 onDelete: _deleteDownload)
           else ...[
-            Text(
-                'The download link is not available yet. Please try again later.',
+            Text(tr('tv_the_download_link_is_not_available_yet_please_try_again_later'),
                 style: TextStyle(
                     color: TvPalette.of(context).mutedText, fontSize: 20)),
             const SizedBox(height: 16),
@@ -250,7 +257,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
         ],
         const SizedBox(height: 16),
         TvUpdateAction(
-            label: _forced ? 'Exit app' : 'Back',
+            label: _forced ? tr('tv_exit_app') : tr('player_back'),
             autofocus: _error == null &&
                 (_packageInfo != null &&
                     (!available || config.appDownloadUrl.isEmpty)),
@@ -361,10 +368,11 @@ class _UpdateScreenState extends State<UpdateScreen> {
     if (widget.television) {
       showTvDialog<void>(
           context: context,
-          title: 'Update could not complete',
+          title: tr('tv_update_could_not_complete'),
           content: Text(message),
           actions: [
-            TvDialogAction(label: 'OK', onPressed: () => Navigator.pop(context))
+            TvDialogAction(
+                label: tr('tv_ok'), onPressed: () => Navigator.pop(context))
           ]);
     } else {
       GlobalMethods.showErrorScaffoldMessengerGeneral(
@@ -376,14 +384,14 @@ class _UpdateScreenState extends State<UpdateScreen> {
     final file = File('$_savedDir/${_downloadManager.getFileNameFromUrl(url)}');
     try {
       if (!await file.exists()) {
-        throw const FileSystemException(
-            'The downloaded file is missing. Delete it and download again.');
+        throw FileSystemException(tr(
+            'tv_the_downloaded_file_is_missing_delete_it_and_download_again'));
       }
       final result = await OpenFilex.open(file.path,
           type: 'application/vnd.android.package-archive');
       if (result.type != ResultType.done && mounted) {
-        _showDownloadError(
-            '${result.message}\nIf Android asks, allow FlixQuest to install apps, then select Install again.');
+        _showDownloadError(tr('tv_update_install_error',
+            namedArgs: {'message': result.message}));
       }
     } catch (error) {
       if (mounted) _showDownloadError(error.toString());
@@ -423,17 +431,18 @@ class _DownloadCard extends StatelessWidget {
 
   Widget _tvActions(BuildContext context, DownloadStatus? status) {
     final label = switch (status) {
-      null => 'Download update',
-      DownloadStatus.completed => 'Install',
-      DownloadStatus.downloading || DownloadStatus.queued => 'Pause',
-      DownloadStatus.paused => 'Resume',
-      _ => 'Retry download',
+      null => tr('update_download'),
+      DownloadStatus.completed => tr('install_action'),
+      DownloadStatus.downloading || DownloadStatus.queued => tr('pause_action'),
+      DownloadStatus.paused => tr('resume_title'),
+      _ => tr('tv_retry_download'),
     };
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       if (status == DownloadStatus.failed)
         Padding(
             padding: const EdgeInsets.only(bottom: 12),
-            child: Text('Download failed. Check your connection and retry.',
+            child: Text(
+                tr('tv_download_failed_check_your_connection_and_retry'),
                 style: TextStyle(
                     fontSize: 20, color: Theme.of(context).colorScheme.error))),
       TvUpdateAction(
@@ -456,13 +465,14 @@ class _DownloadCard extends StatelessWidget {
       if (status == DownloadStatus.completed) ...[
         const SizedBox(height: 12),
         TvUpdateAction(
-            label: 'Delete download', onPressed: () => onDelete(url)),
+            label: tr('tv_delete_download'), onPressed: () => onDelete(url)),
       ],
     ]);
   }
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = TvPalette.of(context);
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       if (task != null) ...[
@@ -524,6 +534,7 @@ class _ChangelogSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = AppPalette.of(context);
     final gutter = AppSpace.gutter(context);
     final items = AppUpdateService.changelogItems(changeLog);
@@ -635,6 +646,7 @@ class _UpdateBottomState extends State<UpdateBottom> {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     if (!_visible) return const SizedBox.shrink();
     final config = context.watch<AppDependencyProvider>();
     final remoteBuild = AppUpdateService.effectiveBuildNumber(
@@ -682,7 +694,7 @@ class _UpdateBottomState extends State<UpdateBottom> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'UPDATE AVAILABLE',
+                      tr('tv_update_available'),
                       style: TextStyle(
                         color: colors.primary,
                         fontFamily: 'FigtreeSB',
@@ -721,7 +733,8 @@ class _UpdateBottomState extends State<UpdateBottom> {
                             ),
                             // Kept whole however long the notes before it.
                             if (items.length > 2)
-                              Text('  ·  +${items.length - 2} more'),
+                              Text(tr('tv_more_count',
+                                  namedArgs: {'count': '${items.length - 2}'})),
                           ],
                         ),
                       ),
@@ -731,7 +744,7 @@ class _UpdateBottomState extends State<UpdateBottom> {
               ),
               const SizedBox(width: 16),
               TvUpdateAction(
-                label: 'Update',
+                label: tr('update'),
                 primary: true,
                 onPressed: () => Navigator.push(
                   context,
@@ -838,6 +851,7 @@ class _ChangelogPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = AppPalette.of(context);
     final more = items.length - _maxItems;
     return Material(
@@ -901,6 +915,7 @@ class _UpdateHero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = AppPalette.of(context);
     final accent = Theme.of(context).colorScheme.primary;
     return DecoratedBox(
@@ -1008,6 +1023,7 @@ class _VersionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = AppPalette.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -1053,6 +1069,7 @@ class _UpdateNotice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = AppPalette.of(context);
     final error = Theme.of(context).colorScheme.error;
     return Container(
@@ -1089,6 +1106,7 @@ class _WhatsNew extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = AppPalette.of(context);
     final lines = changeLog
         .split('\n')
@@ -1170,6 +1188,7 @@ class _UpdateActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = AppPalette.of(context);
     final gutter = AppSpace.gutter(context);
     final task = this.task;

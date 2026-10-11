@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -102,7 +103,7 @@ class _TvAuthScreenState extends State<TvAuthScreen> {
       if (mounted) setState(() => _error = _authMessage(error));
     } catch (_) {
       if (mounted) {
-        setState(() => _error = 'Unable to connect. Please try again.');
+        setState(() => _error = tr('tv_unable_to_connect_please_try_again'));
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -113,27 +114,29 @@ class _TvAuthScreenState extends State<TvAuthScreen> {
     return switch (error.code) {
       'invalid-credential' ||
       'wrong-password' =>
-        'The email or password is incorrect.',
-      'user-not-found' => 'No account exists for that email.',
-      'invalid-email' => 'Enter a valid email address.',
-      'user-disabled' => 'This account has been disabled.',
-      'email-already-in-use' => 'That email is already registered.',
-      'username-already-in-use' => 'That username is already in use.',
-      'weak-password' => 'Use a password with at least 7 characters.',
-      'network-request-failed' => 'Check your internet connection and retry.',
-      _ => error.message ?? 'Authentication failed. Please try again.',
+        tr('tv_the_email_or_password_is_incorrect'),
+      'user-not-found' => tr('tv_no_account_exists_for_that_email'),
+      'invalid-email' => tr('tv_enter_a_valid_email_address'),
+      'user-disabled' => tr('tv_this_account_has_been_disabled'),
+      'email-already-in-use' => tr('tv_that_email_is_already_registered'),
+      'username-already-in-use' => tr('tv_that_username_is_already_in_use'),
+      'weak-password' => tr('tv_use_a_password_with_at_least_7_characters'),
+      'network-request-failed' =>
+        tr('tv_check_your_internet_connection_and_retry'),
+      _ => error.message ?? tr('tv_authentication_failed_please_try_again'),
     };
   }
 
   String _googleAuthMessage(FirebaseAuthException error) {
     return switch (error.code) {
-      'account-exists-with-different-credential' =>
-        'That email is already used by an email-and-password account. '
-            'Sign in with your email and password instead.',
-      'network-request-failed' => 'Check your internet connection and retry.',
-      'operation-not-allowed' => 'Google sign-in is currently unavailable.',
-      'invalid-credential' => 'Google sign-in failed. Please try again.',
-      _ => error.message ?? 'Unable to sign in with Google.',
+      'account-exists-with-different-credential' => tr(
+          'tv_that_email_is_already_used_by_an_email_and_password_account_sign_in_with_your_email_and_password_instead'),
+      'network-request-failed' =>
+        tr('tv_check_your_internet_connection_and_retry'),
+      'operation-not-allowed' =>
+        tr('tv_google_sign_in_is_currently_unavailable'),
+      'invalid-credential' => tr('google_signin_failed'),
+      _ => error.message ?? tr('tv_unable_to_sign_in_with_google'),
     };
   }
 
@@ -149,13 +152,11 @@ class _TvAuthScreenState extends State<TvAuthScreen> {
     final code = error.code.toLowerCase();
     if (code == 'network_error' ||
         error.message?.toLowerCase().contains('network') == true) {
-      return 'Check your internet connection and retry.';
+      return tr('tv_check_your_internet_connection_and_retry');
     }
     final detail =
         (error.message?.isNotEmpty ?? false) ? error.message! : error.code;
-    return 'Google sign-in is not available on this device '
-        '($detail). Make sure Google Play services is installed and a '
-        'Google account is set up, or sign in with your email and password.';
+    return tr('tv_google_unavailable_device', namedArgs: {'detail': detail});
   }
 
   Future<void> _signInWithGoogle() async {
@@ -187,7 +188,8 @@ class _TvAuthScreenState extends State<TvAuthScreen> {
     } catch (_) {
       if (mounted) {
         setState(
-          () => _error = 'Unable to sign in with Google. Please try again.',
+          () =>
+              _error = tr('tv_unable_to_sign_in_with_google_please_try_again'),
         );
       }
     } finally {
@@ -197,6 +199,7 @@ class _TvAuthScreenState extends State<TvAuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = TvPalette.of(context);
     final colors = Theme.of(context).colorScheme;
     return Scaffold(
@@ -262,8 +265,8 @@ class _TvAuthScreenState extends State<TvAuthScreen> {
                                       const SizedBox(width: 13),
                                       Text(
                                         _isSignIn
-                                            ? 'Sign in to FlixQuest'
-                                            : 'Create your account',
+                                            ? tr('tv_sign_in_to_flixquest')
+                                            : tr('tv_create_your_account'),
                                         style: TextStyle(
                                           color: palette.foreground,
                                           fontFamily: 'FigtreeBold',
@@ -276,7 +279,7 @@ class _TvAuthScreenState extends State<TvAuthScreen> {
                                   SizedBox(height: compact ? 18 : 25),
                                   if (_isSignIn) ...<Widget>[
                                     TvFocusable(
-                                      semanticLabel: 'Continue with Google',
+                                      semanticLabel: tr('continue_with_google'),
                                       enabled: !_submitting,
                                       onActivate: _signInWithGoogle,
                                       focusScale: 1.02,
@@ -304,7 +307,7 @@ class _TvAuthScreenState extends State<TvAuthScreen> {
                                             const SizedBox(width: 13),
                                             Expanded(
                                               child: Text(
-                                                'Continue with Google',
+                                                tr('continue_with_google'),
                                                 style: TextStyle(
                                                   color: palette.foreground,
                                                   fontFamily: 'FigtreeSB',
@@ -356,12 +359,12 @@ class _TvAuthScreenState extends State<TvAuthScreen> {
                                       controller: _nameController,
                                       focusNode: _nameFocus,
                                       nextFocusNode: _emailFocus,
-                                      label: 'Full name',
+                                      label: tr('full_name'),
                                       icon: PhosphorIcons.user(),
                                       autofocus: true,
                                       validator: (value) => value == null ||
                                               value.trim().length < 2
-                                          ? 'Enter your full name.'
+                                          ? tr('tv_enter_your_full_name')
                                           : null,
                                     ),
                                     const SizedBox(height: 13),
@@ -372,13 +375,13 @@ class _TvAuthScreenState extends State<TvAuthScreen> {
                                     nextFocusNode: _isSignIn
                                         ? _passwordFocus
                                         : _usernameFocus,
-                                    label: 'Email address',
+                                    label: tr('email_address'),
                                     icon: PhosphorIcons.envelopeSimple(),
                                     autofocus: _isSignIn,
                                     keyboardType: TextInputType.emailAddress,
                                     validator: (value) => value == null ||
                                             !value.trim().contains('@')
-                                        ? 'Enter a valid email address.'
+                                        ? tr('tv_enter_a_valid_email_address')
                                         : null,
                                   ),
                                   if (!_isSignIn) ...<Widget>[
@@ -387,7 +390,7 @@ class _TvAuthScreenState extends State<TvAuthScreen> {
                                       controller: _usernameController,
                                       focusNode: _usernameFocus,
                                       nextFocusNode: _passwordFocus,
-                                      label: 'Username',
+                                      label: tr('username'),
                                       icon: PhosphorIcons.at(),
                                       inputFormatters: <TextInputFormatter>[
                                         FilteringTextInputFormatter.allow(
@@ -396,7 +399,8 @@ class _TvAuthScreenState extends State<TvAuthScreen> {
                                       ],
                                       validator: (value) => value == null ||
                                               value.trim().length < 3
-                                          ? 'Use at least 3 letters or numbers.'
+                                          ? tr(
+                                              'tv_use_at_least_3_letters_or_numbers')
                                           : null,
                                     ),
                                   ],
@@ -407,7 +411,7 @@ class _TvAuthScreenState extends State<TvAuthScreen> {
                                     nextFocusNode: _isSignIn
                                         ? null
                                         : _confirmPasswordFocus,
-                                    label: 'Password',
+                                    label: tr('password'),
                                     icon: PhosphorIcons.lock(),
                                     obscureText: _obscurePassword,
                                     textInputAction: _isSignIn
@@ -417,7 +421,7 @@ class _TvAuthScreenState extends State<TvAuthScreen> {
                                         _isSignIn ? (_) => _submit() : null,
                                     validator: (value) =>
                                         value == null || value.length < 7
-                                            ? 'Use at least 7 characters.'
+                                            ? tr('tv_use_at_least_7_characters')
                                             : null,
                                   ),
                                   if (!_isSignIn) ...<Widget>[
@@ -425,14 +429,14 @@ class _TvAuthScreenState extends State<TvAuthScreen> {
                                     _TvAuthField(
                                       controller: _confirmPasswordController,
                                       focusNode: _confirmPasswordFocus,
-                                      label: 'Confirm password',
+                                      label: tr('tv_confirm_password'),
                                       icon: PhosphorIcons.checkCircle(),
                                       obscureText: _obscurePassword,
                                       textInputAction: TextInputAction.done,
                                       onSubmitted: (_) => _submit(),
                                       validator: (value) =>
                                           value != _passwordController.text
-                                              ? 'Passwords do not match.'
+                                              ? tr('tv_passwords_do_not_match')
                                               : null,
                                     ),
                                     const SizedBox(height: 18),
@@ -458,13 +462,13 @@ class _TvAuthScreenState extends State<TvAuthScreen> {
                                     alignment: Alignment.centerLeft,
                                     child: TvPillButton(
                                       label: _submitting
-                                          ? 'Please wait…'
+                                          ? tr('tv_please_wait')
                                           : _isSignIn
-                                              ? 'Sign in'
-                                              : 'Create account',
+                                              ? tr('tv_sign_in')
+                                              : tr('tv_create_account'),
                                       semanticLabel: _isSignIn
-                                          ? 'Sign in'
-                                          : 'Create account',
+                                          ? tr('tv_sign_in')
+                                          : tr('tv_create_account'),
                                       icon: _isSignIn
                                           ? PhosphorIcons.signIn()
                                           : PhosphorIcons.userPlus(),
@@ -548,6 +552,7 @@ class _TvAuthFieldState extends State<_TvAuthField> {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = TvPalette.of(context);
     return AnimatedContainer(
       duration: const Duration(milliseconds: 150),
@@ -599,12 +604,13 @@ class _ProfilePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = TvPalette.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          'Choose a profile image',
+          tr('tv_choose_a_profile_image'),
           style: TextStyle(
             color: palette.foreground,
             fontFamily: 'FigtreeSB',
@@ -618,7 +624,8 @@ class _ProfilePicker extends StatelessWidget {
           children: <Widget>[
             for (final id in const <int>[0, 1, 2, 3, 4])
               TvFocusable(
-                semanticLabel: 'Profile image ${id + 1}',
+                semanticLabel: tr('tv_profile_image_semantics',
+                    namedArgs: {'number': '${id + 1}'}),
                 onActivate: () => onSelected(id),
                 focusScale: 1.04,
                 borderRadius: BorderRadius.circular(13),
@@ -653,9 +660,10 @@ class _BackAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = TvPalette.of(context);
     return TvFocusable(
-      semanticLabel: 'Back',
+      semanticLabel: tr('player_back'),
       onActivate: onActivate,
       focusScale: 1.025,
       child: Container(
@@ -673,7 +681,7 @@ class _BackAction extends StatelessWidget {
             Icon(PhosphorIcons.caretLeft(), color: palette.foreground),
             const SizedBox(width: 8),
             Text(
-              'Back',
+              tr('player_back'),
               style: TextStyle(
                 color: palette.foreground,
                 fontFamily: 'FigtreeSB',

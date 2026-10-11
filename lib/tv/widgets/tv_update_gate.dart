@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -53,6 +54,7 @@ class _TvUpdateGateState extends State<TvUpdateGate>
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final config = context.watch<AppDependencyProvider>();
     return FutureBuilder<PackageInfo>(
         future: _packageInfo,
@@ -63,14 +65,15 @@ class _TvUpdateGateState extends State<TvUpdateGate>
             return TvKeymap(
                 onBack: SystemNavigator.pop,
                 child: TvUpdateLayout(
-                    title: 'Checking for a required update',
+                    title: tr('tv_checking_for_a_required_update'),
                     message: snapshot.hasError
-                        ? 'Unable to read the installed version. Please retry.'
-                        : 'Checking your installed version…',
+                        ? tr(
+                            'tv_unable_to_read_the_installed_version_please_retry')
+                        : tr('tv_checking_your_installed_version'),
                     children: [
                       if (snapshot.hasError)
                         TvUpdateAction(
-                            label: 'Retry',
+                            label: tr('retry'),
                             autofocus: true,
                             primary: true,
                             onPressed: () => setState(() =>
@@ -79,7 +82,7 @@ class _TvUpdateGateState extends State<TvUpdateGate>
                         const TvUpdateSkeleton(),
                       const SizedBox(height: 16),
                       TvUpdateAction(
-                          label: 'Exit app',
+                          label: tr('tv_exit_app'),
                           autofocus: !snapshot.hasError,
                           onPressed: SystemNavigator.pop),
                     ]));

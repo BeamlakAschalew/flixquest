@@ -12,6 +12,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'support/tv_localization.dart';
+
 Future<void> _openOrder(WidgetTester tester, SettingsProvider settings,
     Future<List<VideoProvider>> Function() loadProviders) async {
   tester.view.physicalSize = const Size(960, 540);
@@ -55,6 +57,7 @@ Future<void> _select(WidgetTester tester) async {
 }
 
 void main() {
+  initializeTvTranslations();
   TestWidgetsFlutterBinding.ensureInitialized();
   final alpha =
       VideoProvider.scraper(id: 'alpha', name: 'Alpha', alias: 'First source');

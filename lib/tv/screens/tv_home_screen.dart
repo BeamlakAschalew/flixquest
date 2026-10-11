@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
@@ -75,6 +76,7 @@ class _TvHomeScreenState extends State<TvHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     // Home is full bleed: only the browse view's artwork reaches the edges.
     final insets = TvShellInsets.of(context);
     return Column(children: [
@@ -131,10 +133,10 @@ class _TvHomeScreenState extends State<TvHomeScreen> {
       return Padding(
         padding: insets,
         child: TvStatePanel(
-          title: 'Nothing to show yet',
-          message: 'FlixQuest could not find content for this region.',
+          title: tr('tv_nothing_to_show_yet'),
+          message: tr('tv_flixquest_could_not_find_content_for_this_region'),
           icon: PhosphorIcons.filmStrip(),
-          actionLabel: 'Retry',
+          actionLabel: tr('retry'),
           onAction: _retry,
         ),
       );
@@ -155,28 +157,30 @@ class _TvHomeScreenState extends State<TvHomeScreen> {
           : null,
       rows: <TvBrowseRow>[
         TvMediaRow(
-          title: 'Continue watching',
+          title: tr('tv_continue_watching'),
           scopeId: 'home-continue-watching',
           items: continueWatching,
           onItemActivated: widget.onContinueWatching,
           onItemMenu: _removeFromContinueWatching,
-          itemMenuHint: 'Hold OK to remove',
+          itemMenuHint: tr('tv_hold_ok_to_remove'),
           showBadges: false,
         ),
         TvTopTenRow(
-          title: 'Top 10 movies today',
+          title: tr('top_10_movies_today'),
           scopeId: 'home-top-movies',
           items: data.topMovies,
         ),
-        _row('Trending movies', 'home-trending-movies', data.trendingMovies),
-        _row('Popular movies', 'home-popular-movies', data.popularMovies),
+        _row(
+            tr('trending_movies'), 'home-trending-movies', data.trendingMovies),
+        _row(tr('popular_movies'), 'home-popular-movies', data.popularMovies),
         TvTopTenRow(
-          title: 'Top 10 series today',
+          title: tr('top_10_series_today'),
           scopeId: 'home-top-series',
           items: data.topSeries,
         ),
-        _row('Trending series', 'home-trending-series', data.trendingSeries),
-        _row('Popular series', 'home-popular-series', data.popularSeries),
+        _row(tr('trending_series_week'), 'home-trending-series',
+            data.trendingSeries),
+        _row(tr('popular_series'), 'home-popular-series', data.popularSeries),
       ],
     );
   }

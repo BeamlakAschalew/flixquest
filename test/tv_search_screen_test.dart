@@ -18,6 +18,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'support/tv_localization.dart';
+
 const _metrics = TvShellMetrics(
   compact: true,
   safeInset: 16,
@@ -147,6 +149,7 @@ Future<_FakeCatalog> _pumpSearch(
 }
 
 void main() {
+  initializeTvTranslations();
   setUpAll(() {
     dotenv.testLoad(fileInput: 'FLIXQUEST_API_URL=https://example.com');
   });

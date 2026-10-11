@@ -1187,26 +1187,7 @@ class _AdsterraPlaybackAdScreenState extends State<AdsterraPlaybackAdScreen>
           if (_closable)
             Tooltip(
               message: 'Close ad',
-              child: FilledButton.icon(
-                focusNode: _continueFocus,
-                onPressed: () => _finish('user_close'),
-                icon: Icon(_continueIcon, size: 18 * scale),
-                label: Text(_continueLabel),
-                style: FilledButton.styleFrom(
-                  visualDensity: widget.television
-                      ? VisualDensity.standard
-                      : VisualDensity.compact,
-                  padding: EdgeInsets.symmetric(horizontal: 14 * scale),
-                  textStyle: TextStyle(
-                      fontSize: 14 * scale, fontWeight: FontWeight.w600),
-                ).copyWith(
-                  // A remote needs to see where it is.
-                  side: WidgetStateProperty.resolveWith((states) =>
-                      states.contains(WidgetState.focused)
-                          ? const BorderSide(color: Colors.white, width: 3)
-                          : null),
-                ),
-              ),
+              child: _continueButton(scale),
             )
           // On the tag page its own Play button leads on.
           else if (_phase == _Phase.page)
@@ -1218,6 +1199,63 @@ class _AdsterraPlaybackAdScreenState extends State<AdsterraPlaybackAdScreen>
             ),
         ]),
       ),
+    );
+  }
+
+  /// The way on. On a TV the focused button turns white with black text and
+  /// grows, like the rest of the TV app's buttons, so the remote's place is
+  /// obvious the moment the countdown hands over to it.
+  Widget _continueButton(double scale) {
+    final button = FilledButton.icon(
+      focusNode: _continueFocus,
+      onPressed: () => _finish('user_close'),
+      icon: Icon(_continueIcon, size: 18 * scale),
+      label: Text(_continueLabel),
+      style: FilledButton.styleFrom(
+        visualDensity:
+            widget.television ? VisualDensity.standard : VisualDensity.compact,
+        padding: EdgeInsets.symmetric(horizontal: 14 * scale),
+        textStyle: TextStyle(fontSize: 14 * scale, fontWeight: FontWeight.w600),
+      ).copyWith(
+        backgroundColor: widget.television
+            ? WidgetStateProperty.resolveWith((states) =>
+                states.contains(WidgetState.focused) ? Colors.white : null)
+            : null,
+        foregroundColor: widget.television
+            ? WidgetStateProperty.resolveWith((states) =>
+                states.contains(WidgetState.focused) ? Colors.black : null)
+            : null,
+        overlayColor: widget.television
+            ? const WidgetStatePropertyAll(Colors.transparent)
+            : null,
+      ),
+    );
+    if (!widget.television) return button;
+    return ListenableBuilder(
+      listenable: _continueFocus,
+      builder: (context, child) {
+        final focused = _continueFocus.hasFocus;
+        return AnimatedScale(
+          scale: focused ? 1.08 : 1,
+          duration: const Duration(milliseconds: 150),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 150),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(40 * scale),
+              boxShadow: [
+                if (focused)
+                  BoxShadow(
+                    color: Colors.white.withValues(alpha: 0.35),
+                    blurRadius: 18 * scale,
+                    spreadRadius: 1,
+                  ),
+              ],
+            ),
+            child: child,
+          ),
+        );
+      },
+      child: button,
     );
   }
 

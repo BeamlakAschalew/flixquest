@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
@@ -82,12 +83,12 @@ class _TvLibraryScreenState extends State<TvLibraryScreen> {
     await removal.apply(context.read<RecentProvider>());
   }
 
-  TvCollection _collection(String title, List<TvMediaItem> items) {
+  TvCollection _collection(TvMediaKind kind, List<TvMediaItem> items) {
     const page = 24;
     return TvCollection(
-      id: 'library-${title.toLowerCase()}',
-      title: title,
-      kicker: 'MY LIST',
+      id: 'library-${kind == TvMediaKind.movie ? 'movies' : 'series'}',
+      title: tr(kind == TvMediaKind.movie ? 'movies' : 'series'),
+      kicker: tr('tv_my_list'),
       loadPage: (number) async {
         final start = (number - 1) * page;
         if (start >= items.length) return const <TvMediaItem>[];
@@ -98,6 +99,7 @@ class _TvLibraryScreenState extends State<TvLibraryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final insets = TvShellInsets.of(context);
     final recent = context.watch<RecentProvider?>();
     final continueWatching = <TvMediaItem>[
@@ -125,11 +127,11 @@ class _TvLibraryScreenState extends State<TvLibraryScreen> {
           return Padding(
             padding: insets,
             child: TvStatePanel(
-              title: 'Your list is empty',
-              message: 'Add a movie or series to My List from its page and '
-                  'it will wait for you here.',
+              title: tr('tv_your_list_is_empty'),
+              message: tr(
+                  'tv_add_a_movie_or_series_to_my_list_from_its_page_and_it_will_wait_for_you_here'),
               icon: PhosphorIcons.bookmarkSimple(),
-              actionLabel: 'Refresh',
+              actionLabel: tr('refresh'),
               onAction: _refresh,
             ),
           );
@@ -140,9 +142,11 @@ class _TvLibraryScreenState extends State<TvLibraryScreen> {
         final series = saved
             .where((item) => item.kind == TvMediaKind.series)
             .toList(growable: false);
-        final overflow = <(String, List<TvMediaItem>)>[
-          if (movies.length > TvLibraryScreen.rowLimit) ('Movies', movies),
-          if (series.length > TvLibraryScreen.rowLimit) ('Series', series),
+        final overflow = <(TvMediaKind, List<TvMediaItem>)>[
+          if (movies.length > TvLibraryScreen.rowLimit)
+            (TvMediaKind.movie, movies),
+          if (series.length > TvLibraryScreen.rowLimit)
+            (TvMediaKind.series, series),
         ];
 
         return TvBrowseView(
@@ -154,39 +158,46 @@ class _TvLibraryScreenState extends State<TvLibraryScreen> {
           showBillboard: false,
           rows: <TvBrowseRow>[
             TvMediaRow(
-              title: 'Movies in My List',
+              title: tr('tv_movies_in_my_list'),
               scopeId: 'library-movies',
               items: movies.take(TvLibraryScreen.rowLimit).toList(),
             ),
             TvMediaRow(
-              title: 'Series in My List',
+              title: tr('tv_series_in_my_list'),
               scopeId: 'library-series',
               items: series.take(TvLibraryScreen.rowLimit).toList(),
             ),
             TvMediaRow(
-              title: 'Continue watching',
+              title: tr('tv_continue_watching'),
               scopeId: 'library-continue-watching',
               items: continueWatching,
               onItemActivated: widget.onContinueWatching,
               onItemMenu: _removeFromContinueWatching,
-              itemMenuHint: 'Hold OK to remove',
+              itemMenuHint: tr('tv_hold_ok_to_remove'),
               showBadges: false,
             ),
             if (widget.onOpenCollection case final open?)
               TvShortcutRow(
-                title: 'See all',
+                title: tr('see_all'),
                 scopeId: 'library-all',
                 shortcuts: <TvBrowseShortcut>[
-                  for (final (title, items) in overflow)
+                  for (final (kind, items) in overflow)
                     TvBrowseShortcut(
-                      id: 'all-$title',
-                      title: 'All ${title.toLowerCase()} · ${items.length}',
+                      id: 'all-${kind == TvMediaKind.movie ? 'Movies' : 'Series'}',
+                      title: tr('tv_library_all', namedArgs: {
+                        'kind':
+                            tr(kind == TvMediaKind.movie ? 'movies' : 'series'),
+                        'count': '${items.length}'
+                      }),
                       icon: PhosphorIcons.squaresFour(),
-                      facts: <String>['${items.length} titles'],
-                      description:
-                          'Every ${title == 'Movies' ? 'movie' : 'series'} '
-                          'in My List, most recently added first.',
-                      onActivate: () => open(_collection(title, items)),
+                      facts: <String>[
+                        plural('tv_title_count', items.length, name: 'count')
+                      ],
+                      description: tr('tv_library_description', namedArgs: {
+                        'kind':
+                            tr(kind == TvMediaKind.movie ? 'movies' : 'series')
+                      }),
+                      onActivate: () => open(_collection(kind, items)),
                     ),
                 ],
               ),
