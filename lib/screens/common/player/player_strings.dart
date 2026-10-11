@@ -50,7 +50,7 @@ BetterPlayerControlsStrings playerControlsStrings() =>
       subtitleNumber: tr('player_subtitle_number'),
       automatic: tr('auto'),
       on: tr('tv_on'),
-      defaultLabel: tr('default'),
+      defaultLabel: tr('player_default'),
       videoQuality: tr('video_quality'),
       detectedQuality: tr('player_detected_quality'),
       retry: tr('retry'),

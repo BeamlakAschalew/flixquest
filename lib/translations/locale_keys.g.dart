@@ -1452,7 +1452,7 @@ abstract class  LocaleKeys {
   static const player_playback_position = 'player_playback_position';
   static const player_position_of = 'player_position_of';
   static const tv_search_again = 'tv_search_again';
-  static const default = 'default';
+  static const player_default = 'player_default';
   static const video_quality = 'video_quality';
   static const tv_current_provider = 'tv_current_provider';
   static const tv_font_weight_light = 'tv_font_weight_light';

@@ -1503,7 +1503,7 @@ class CodegenLoader extends AssetLoader{
   "player_playback_position": "Playback position",
   "player_position_of": "{position} of {duration}",
   "tv_search_again": "Search for “{query}” again.",
-  "default": "Default",
+  "player_default": "Default",
   "video_quality": "Video quality",
   "tv_current_provider": "Current provider",
   "tv_font_weight_light": "Light"
@@ -2997,7 +2997,7 @@ static const Map<String,dynamic> _hi = {
   "player_playback_position": "प्लेबैक की स्थिति",
   "player_position_of": "{duration} में से {position}",
   "tv_search_again": "“{query}” फिर से खोजें।",
-  "default": "डिफ़ॉल्ट",
+  "player_default": "डिफ़ॉल्ट",
   "video_quality": "वीडियो की गुणवत्ता",
   "tv_current_provider": "वर्तमान प्रदाता",
   "tv_font_weight_light": "हल्का"
@@ -4491,7 +4491,7 @@ static const Map<String,dynamic> _es = {
   "player_playback_position": "Posición de reproducción",
   "player_position_of": "{position} de {duration}",
   "tv_search_again": "Buscar «{query}» de nuevo.",
-  "default": "Predeterminado",
+  "player_default": "Predeterminado",
   "video_quality": "Calidad de vídeo",
   "tv_current_provider": "Proveedor actual",
   "tv_font_weight_light": "Ligero"
@@ -6032,7 +6032,7 @@ static const Map<String,dynamic> _ar = {
   "player_playback_position": "موضع التشغيل",
   "player_position_of": "{position} من {duration}",
   "tv_search_again": "ابحث عن «{query}» مجدداً.",
-  "default": "افتراضي",
+  "player_default": "افتراضي",
   "video_quality": "جودة الفيديو",
   "tv_current_provider": "المزود الحالي",
   "tv_font_weight_light": "خفيف"

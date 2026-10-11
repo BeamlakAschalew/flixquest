@@ -1487,7 +1487,7 @@
   "player_playback_position": "प्लेबैक की स्थिति",
   "player_position_of": "{duration} में से {position}",
   "tv_search_again": "“{query}” फिर से खोजें।",
-  "default": "डिफ़ॉल्ट",
+  "player_default": "डिफ़ॉल्ट",
   "video_quality": "वीडियो की गुणवत्ता",
   "tv_current_provider": "वर्तमान प्रदाता",
   "tv_font_weight_light": "हल्का"

@@ -1487,7 +1487,7 @@
   "player_playback_position": "Posición de reproducción",
   "player_position_of": "{position} de {duration}",
   "tv_search_again": "Buscar «{query}» de nuevo.",
-  "default": "Predeterminado",
+  "player_default": "Predeterminado",
   "video_quality": "Calidad de vídeo",
   "tv_current_provider": "Proveedor actual",
   "tv_font_weight_light": "Ligero"
