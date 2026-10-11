@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import '../api/endpoints.dart';
 import '../controllers/bookmark_database_controller.dart';
 import '../functions/network.dart';
@@ -218,8 +219,8 @@ class CatalogController {
       id: '${kind.name}-service-${service.providerId}',
       title: service.name,
       kicker: kind == MediaKind.movie
-          ? 'MOVIES ON THIS SERVICE'
-          : 'SERIES ON THIS SERVICE',
+          ? tr('tv_movies_on_this_service')
+          : tr('tv_series_on_this_service'),
       logoAsset: service.imagePath,
       loadPage: (page) => _fetch(
         kind,
@@ -241,7 +242,7 @@ class CatalogController {
     return MediaCollection(
       id: '${kind.name}-genre-${genre.genreID}',
       title: genre.genreName!,
-      kicker: isMovie ? 'MOVIE GENRE' : 'SERIES GENRE',
+      kicker: tr(isMovie ? 'tv_movie_genre' : 'tv_series_genre').toUpperCase(),
       loadPage: (page) => _fetch(
         kind,
         isMovie

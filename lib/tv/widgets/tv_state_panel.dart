@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -22,19 +23,20 @@ class TvStatePanel extends StatelessWidget {
 
   factory TvStatePanel.error({
     required VoidCallback onRetry,
-    String message = 'Check your connection and try again.',
+    String? message,
   }) {
     return TvStatePanel(
-      title: 'Something went wrong',
-      message: message,
+      title: tr('something_went_wrong'),
+      message: message ?? tr('tv_check_your_connection_and_try_again'),
       icon: PhosphorIcons.warningCircle(),
-      actionLabel: 'Retry',
+      actionLabel: tr('retry'),
       onAction: onRetry,
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = TvPalette.of(context);
     return Center(
       child: ConstrainedBox(

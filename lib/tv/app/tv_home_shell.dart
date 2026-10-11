@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
@@ -51,7 +52,54 @@ class _TvHomeShellState extends State<TvHomeShell> with RestorationMixin {
   final GlobalKey<TvShellLayoutState> _layoutKey =
       GlobalKey<TvShellLayoutState>();
   late final FocusScopeNode _shellFocusScope;
-  late final List<TvNavigationDestination> _destinations;
+  List<TvNavigationDestination> get _destinations => <TvNavigationDestination>[
+        TvNavigationDestination(
+          id: 'home',
+          label: tr('home'),
+          icon: PhosphorIcons.house(),
+          selectedIcon: PhosphorIcons.house(PhosphorIconsStyle.fill),
+        ),
+        TvNavigationDestination(
+            id: 'search',
+            label: tr('search'),
+            icon: PhosphorIcons.magnifyingGlass()),
+        TvNavigationDestination(
+            id: 'movies',
+            label: tr('movies'),
+            icon: PhosphorIcons.filmSlate(),
+            selectedIcon: PhosphorIcons.filmSlate(PhosphorIconsStyle.fill)),
+        TvNavigationDestination(
+            id: 'series',
+            label: tr('series'),
+            icon: PhosphorIcons.television(),
+            selectedIcon: PhosphorIcons.television(PhosphorIconsStyle.fill)),
+        TvNavigationDestination(
+            id: 'live',
+            label: tr('live_tv'),
+            icon: PhosphorIcons.broadcast(),
+            selectedIcon: PhosphorIcons.broadcast(PhosphorIconsStyle.fill)),
+        TvNavigationDestination(
+            id: 'library',
+            label: tr('my_list'),
+            icon: PhosphorIcons.bookmarkSimple(),
+            selectedIcon:
+                PhosphorIcons.bookmarkSimple(PhosphorIconsStyle.fill)),
+        TvNavigationDestination(
+            id: 'wellness',
+            label: tr('tv_insights'),
+            icon: PhosphorIcons.chartDonut(),
+            selectedIcon: PhosphorIcons.chartDonut(PhosphorIconsStyle.fill)),
+        TvNavigationDestination(
+            id: 'profile',
+            label: tr('profile'),
+            icon: PhosphorIcons.user(),
+            selectedIcon: PhosphorIcons.user(PhosphorIconsStyle.fill)),
+        TvNavigationDestination(
+            id: 'settings',
+            label: tr('settings'),
+            icon: PhosphorIcons.gear(),
+            selectedIcon: PhosphorIcons.gear(PhosphorIconsStyle.fill)),
+      ];
 
   /// Browse pages whose artwork runs under the rail to the screen edge.
   static const _fullBleedDestinations = <String>{
@@ -96,61 +144,6 @@ class _TvHomeShellState extends State<TvHomeShell> with RestorationMixin {
   void initState() {
     super.initState();
     _shellFocusScope = FocusScopeNode(debugLabel: 'TV home shell');
-    _destinations = <TvNavigationDestination>[
-      TvNavigationDestination(
-        id: 'home',
-        label: 'Home',
-        icon: PhosphorIcons.house(),
-        selectedIcon: PhosphorIcons.house(PhosphorIconsStyle.fill),
-      ),
-      TvNavigationDestination(
-        id: 'search',
-        label: 'Search',
-        icon: PhosphorIcons.magnifyingGlass(),
-      ),
-      TvNavigationDestination(
-        id: 'movies',
-        label: 'Movies',
-        icon: PhosphorIcons.filmSlate(),
-        selectedIcon: PhosphorIcons.filmSlate(PhosphorIconsStyle.fill),
-      ),
-      TvNavigationDestination(
-        id: 'series',
-        label: 'Series',
-        icon: PhosphorIcons.television(),
-        selectedIcon: PhosphorIcons.television(PhosphorIconsStyle.fill),
-      ),
-      TvNavigationDestination(
-        id: 'live',
-        label: 'Live TV',
-        icon: PhosphorIcons.broadcast(),
-        selectedIcon: PhosphorIcons.broadcast(PhosphorIconsStyle.fill),
-      ),
-      TvNavigationDestination(
-        id: 'library',
-        label: 'My List',
-        icon: PhosphorIcons.bookmarkSimple(),
-        selectedIcon: PhosphorIcons.bookmarkSimple(PhosphorIconsStyle.fill),
-      ),
-      TvNavigationDestination(
-        id: 'wellness',
-        label: 'Insights',
-        icon: PhosphorIcons.chartDonut(),
-        selectedIcon: PhosphorIcons.chartDonut(PhosphorIconsStyle.fill),
-      ),
-      TvNavigationDestination(
-        id: 'profile',
-        label: 'Profile',
-        icon: PhosphorIcons.user(),
-        selectedIcon: PhosphorIcons.user(PhosphorIconsStyle.fill),
-      ),
-      TvNavigationDestination(
-        id: 'settings',
-        label: 'Settings',
-        icon: PhosphorIcons.gear(),
-        selectedIcon: PhosphorIcons.gear(PhosphorIconsStyle.fill),
-      ),
-    ];
     _sessionState = AppSessionStateStore(sharedPrefsSingleton);
     _selectedDestinationId = RestorableString(
       _sessionState.televisionDestination ?? 'home',
@@ -340,7 +333,7 @@ class _TvHomeShellState extends State<TvHomeShell> with RestorationMixin {
     if (!await checkConnection()) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Check your internet connection.')),
+          SnackBar(content: Text(tr('tv_check_your_internet_connection'))),
         );
       }
       return;
@@ -371,6 +364,7 @@ class _TvHomeShellState extends State<TvHomeShell> with RestorationMixin {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = TvPalette.of(context);
     final dependencies = context.watch<AppDependencyProvider>();
     final showLiveTv = dependencies.displayLiveTV;

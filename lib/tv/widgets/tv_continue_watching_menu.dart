@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 export '../../catalog/continue_watching.dart';
@@ -19,21 +20,20 @@ Future<bool> confirmRemoveFromContinueWatching({
 }) async {
   final confirmed = await showTvDialog<bool>(
     context: context,
-    title: 'Remove from Continue watching?',
+    title: tr('tv_remove_from_continue_watching'),
     content: Text(
-      '"${item.title}" stops showing up in Continue watching, and its '
-      'playback position is discarded.',
+      tr('tv_remove_continue_body', namedArgs: {'title': item.title}),
     ),
     actions: <TvDialogAction>[
       TvDialogAction(
-        label: 'Remove',
+        label: tr('remove'),
         isPrimary: true,
         onPressed: () => Navigator.of(context).pop(true),
       ),
       // The safe action takes focus: someone who only meant to resume playback
       // and held OK a beat too long should not land on a destructive default.
       TvDialogAction(
-        label: 'Cancel',
+        label: tr('cancel'),
         autofocus: true,
         onPressed: () => Navigator.of(context).pop(false),
       ),

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../app/tv_design.dart';
@@ -43,6 +44,7 @@ class _TvBrowseSkeletonState extends State<TvBrowseSkeleton>
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = TvPalette.of(context);
     final metrics = widget.metrics;
     final compact = metrics.compact;
@@ -51,7 +53,7 @@ class _TvBrowseSkeletonState extends State<TvBrowseSkeleton>
     final cardHeight = cardWidth / TvMediaCard.artworkAspectRatio;
 
     return Semantics(
-      label: 'Loading',
+      label: tr('tv_loading'),
       child: LayoutBuilder(
         builder: (context, constraints) {
           final innerHeight = constraints.maxHeight - insets.vertical;

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -37,16 +38,16 @@ class _TvBackDispatcherState extends State<TvBackDispatcher> {
       if (!wasHandled && widget.exitAtRoot && mounted) {
         final shouldExit = await showTvDialog<bool>(
           context: context,
-          title: 'Exit FlixQuest?',
-          content: const Text('Are you sure you want to close the app?'),
+          title: tr('tv_exit_flixquest'),
+          content: Text(tr('tv_are_you_sure_you_want_to_close_the_app')),
           actions: <TvDialogAction>[
             TvDialogAction(
-              label: 'Cancel',
+              label: tr('cancel'),
               autofocus: true,
               onPressed: () => Navigator.of(context).pop(false),
             ),
             TvDialogAction(
-              label: 'Exit',
+              label: tr('exit'),
               onPressed: () => Navigator.of(context).pop(true),
             ),
           ],
@@ -67,6 +68,7 @@ class _TvBackDispatcherState extends State<TvBackDispatcher> {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     return PopScope<void>(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {

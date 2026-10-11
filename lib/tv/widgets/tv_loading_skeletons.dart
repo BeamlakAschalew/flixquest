@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../design/skeleton.dart';
@@ -14,11 +15,12 @@ class TvCollectionGridSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final cardWidth = metrics.mediaCardWidth;
     final cardHeight =
         cardWidth / TvMediaCard.artworkAspectRatio + TvMediaCard.detailsHeight;
     return SkeletonPulse(
-      label: 'Loading collection',
+      label: tr('tv_loading_collection'),
       child: GridView.builder(
         physics: const NeverScrollableScrollPhysics(),
         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
@@ -51,9 +53,10 @@ class TvLiveSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final compact = metrics.compact;
     return SkeletonPulse(
-      label: 'Loading Live TV',
+      label: tr('tv_loading_live_tv'),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: metrics.contentPadding),
         child: Column(
@@ -123,8 +126,9 @@ class TvInsightsSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     return SkeletonPulse(
-      label: 'Loading viewing insights',
+      label: tr('tv_loading_viewing_insights'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -166,8 +170,8 @@ class TvUpdateSkeleton extends StatelessWidget {
   const TvUpdateSkeleton({super.key});
 
   @override
-  Widget build(BuildContext context) => const SkeletonPulse(
-        label: 'Checking for updates',
+  Widget build(BuildContext context) => SkeletonPulse(
+        label: tr('tv_checking_for_updates'),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[

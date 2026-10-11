@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'support/tv_localization.dart';
+
 RecentMovie _recentMovie({required int? id, required String title}) =>
     RecentMovie(
       backdropPath: null,
@@ -61,6 +63,7 @@ Widget _rowHarness({
 }
 
 void main() {
+  initializeTvTranslations();
   TestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('a held OK opens the row menu while a tap still activates',

@@ -9,7 +9,10 @@ import 'package:flixquest/tv/widgets/tv_loading_skeletons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'support/tv_localization.dart';
+
 void main() {
+  initializeTvTranslations();
   const metrics = TvShellMetrics(
     compact: true,
     safeInset: 16,

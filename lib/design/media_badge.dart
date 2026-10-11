@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../catalog/media_item.dart';
@@ -28,6 +29,13 @@ class MediaBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
+    final text = switch (label) {
+      top10 => tr('badge_top_10'),
+      newEpisodes => tr('badge_new_episodes'),
+      recent => tr('badge_new'),
+      _ => label,
+    };
     return DecoratedBox(
       decoration: BoxDecoration(
         color: const Color(0xd9050606),
@@ -41,7 +49,7 @@ class MediaBadge extends StatelessWidget {
           fit: BoxFit.scaleDown,
           alignment: AlignmentDirectional.centerStart,
           child: Text(
-            label,
+            text,
             maxLines: 1,
             softWrap: false,
             style: const TextStyle(

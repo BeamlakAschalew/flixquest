@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:better_player_plus/better_player_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../design/app_tokens.dart';
 import '../../../ui_components/app_ui_components.dart';
+import '../../../widgets/playback_action.dart';
 
 final Expando<ThemeData> _playerThemes = Expando<ThemeData>('playerTheme');
 final Expando<ThemeData> _videoThemes = Expando<ThemeData>('videoTheme');
@@ -12,14 +16,27 @@ final Expando<ThemeData> _videoThemes = Expando<ThemeData>('videoTheme');
 /// accent kept for progress. Shared with the controls' own panels.
 ThemeData playerSheetTheme(BuildContext context) {
   final app = Theme.of(context);
-  return _playerThemes[app] ??= betterPlayerPanelTheme(app);
+  return _playerThemes[app] ??= _figtreePanelTheme(app);
 }
 
 /// The dark panel theme whatever the mode, for anything drawn over the video
 /// itself (error screens), which is dark in every theme.
 ThemeData playerVideoTheme(BuildContext context) {
   final app = Theme.of(context);
-  return _videoThemes[app] ??= betterPlayerPanelTheme(app, dark: true);
+  return _videoThemes[app] ??= _figtreePanelTheme(app, dark: true);
+}
+
+ThemeData _figtreePanelTheme(ThemeData app, {bool dark = false}) {
+  // Navigator overlays and fullscreen routes may inherit a default theme.
+  // Keep the app's typography explicit on every player-owned surface.
+  return betterPlayerPanelTheme(
+    app.copyWith(
+      textTheme: app.textTheme.apply(fontFamily: AppType.regular).copyWith(
+            labelLarge: AppType.button,
+          ),
+    ),
+    dark: dark,
+  );
 }
 
 /// Puts [child] in the player's theme: the one that follows the app, or with
@@ -31,10 +48,22 @@ class PlayerTheme extends StatelessWidget {
   final bool onVideo;
 
   @override
-  Widget build(BuildContext context) => Theme(
-        data: onVideo ? playerVideoTheme(context) : playerSheetTheme(context),
+  Widget build(BuildContext context) {
+    final theme =
+        onVideo ? playerVideoTheme(context) : playerSheetTheme(context);
+    return Theme(
+      data: theme,
+      // OverlayEntry has no Material ancestor. Replace MaterialApp's red,
+      // double-underlined fallback style before text merges its own style.
+      child: DefaultTextStyle(
+        style: theme.textTheme.bodyMedium!.copyWith(
+          inherit: false,
+          decoration: TextDecoration.none,
+        ),
         child: child,
-      );
+      ),
+    );
+  }
 }
 
 /// A sheet from the player: a panel in the app's mode, rounded at the top
@@ -60,7 +89,7 @@ Future<T?> showPlayerSheet<T>({
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
     ),
-    builder: (sheetContext) => Theme(data: theme, child: builder(sheetContext)),
+    builder: (_) => Theme(data: theme, child: Builder(builder: builder)),
   );
 }
 
@@ -75,6 +104,8 @@ class PlayerSheetScaffold extends StatelessWidget {
     this.actions = const [],
     this.footer,
     this.showDragHandle = true,
+    this.fitContent = false,
+    this.subtitleMaxLines = 1,
     this.onHeaderVerticalDragUpdate,
     this.onHeaderVerticalDragEnd,
     super.key,
@@ -86,6 +117,8 @@ class PlayerSheetScaffold extends StatelessWidget {
   final Widget child;
   final Widget? footer;
   final bool showDragHandle;
+  final bool fitContent;
+  final int subtitleMaxLines;
   final GestureDragUpdateCallback? onHeaderVerticalDragUpdate;
   final GestureDragEndCallback? onHeaderVerticalDragEnd;
 
@@ -96,6 +129,7 @@ class PlayerSheetScaffold extends StatelessWidget {
       maxWidth: 760,
       padding: EdgeInsets.zero,
       child: Column(
+        mainAxisSize: fitContent ? MainAxisSize.min : MainAxisSize.max,
         children: [
           GestureDetector(
             behavior: HitTestBehavior.opaque,
@@ -140,7 +174,7 @@ class PlayerSheetScaffold extends StatelessWidget {
                               const SizedBox(height: 2),
                               Text(
                                 subtitle!,
-                                maxLines: 1,
+                                maxLines: subtitleMaxLines,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   color: colors.muted,
@@ -158,7 +192,7 @@ class PlayerSheetScaffold extends StatelessWidget {
               ],
             ),
           ),
-          Expanded(child: child),
+          if (fitContent) child else Expanded(child: child),
           if (footer != null) footer!,
         ],
       ),
@@ -184,7 +218,7 @@ class PlayerChoiceCard extends StatelessWidget {
   });
 
   final String title;
-  final VoidCallback? onTap;
+  final FutureOr<void> Function()? onTap;
   final Widget? thumbnail;
   final String? subtitle;
   final String? description;
@@ -197,17 +231,28 @@ class PlayerChoiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final action = onTap;
+    if (action == null) return _buildCard(context, false, null);
+    return PlaybackAction(
+      onStart: action,
+      builder: (context, busy, start) =>
+          _buildCard(context, busy, busy ? null : start),
+    );
+  }
+
+  Widget _buildCard(BuildContext context, bool busy, VoidCallback? activate) {
     final colors = BetterPlayerPanelColors.of(context);
     final accent = Theme.of(context).colorScheme.primary;
     return Semantics(
       selected: selected,
       button: onTap != null,
+      enabled: onTap != null && !busy,
       child: Material(
         color: selected ? colors.selectedFill : Colors.transparent,
         borderRadius: BorderRadius.circular(8),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
-          onTap: onTap,
+          onTap: activate,
           child: Padding(
             padding: const EdgeInsetsDirectional.fromSTEB(10, 10, 12, 10),
             child: Row(
@@ -259,7 +304,8 @@ class PlayerChoiceCard extends StatelessWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          color: selected ? colors.foreground : colors.secondary,
+                          color:
+                              selected ? colors.foreground : colors.secondary,
                           fontFamily: selected ? 'FigtreeBold' : 'FigtreeSB',
                           fontSize: 15,
                           height: 1.25,
@@ -291,20 +337,29 @@ class PlayerChoiceCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 10),
-                trailing ??
-                    (selected
-                        ? Icon(
-                            PhosphorIcons.check(PhosphorIconsStyle.bold),
-                            color: colors.foreground,
-                            size: 20,
-                          )
-                        : onTap == null
-                            ? const SizedBox.shrink()
-                            : Icon(
-                                PhosphorIcons.caretRight(),
-                                color: colors.muted,
-                                size: 18,
-                              )),
+                if (busy)
+                  SizedBox.square(
+                    dimension: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: colors.foreground,
+                    ),
+                  )
+                else
+                  trailing ??
+                      (selected
+                          ? Icon(
+                              PhosphorIcons.check(PhosphorIconsStyle.bold),
+                              color: colors.foreground,
+                              size: 20,
+                            )
+                          : onTap == null
+                              ? const SizedBox.shrink()
+                              : Icon(
+                                  PhosphorIcons.caretRight(),
+                                  color: colors.muted,
+                                  size: 18,
+                                )),
               ],
             ),
           ),

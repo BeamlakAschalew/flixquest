@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -276,6 +277,7 @@ class _TvSearchScreenState extends State<TvSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final metrics = widget.metrics;
     final compact = metrics.compact;
     final insets = TvShellInsets.of(context);
@@ -300,8 +302,9 @@ class _TvSearchScreenState extends State<TvSearchScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                _QueryField(
+                TvSearchQueryField(
                   query: _query,
+                  hint: tr('tv_movies_and_series'),
                   searching: _searching,
                   compact: compact,
                 ),
@@ -331,8 +334,8 @@ class _TvSearchScreenState extends State<TvSearchScreen> {
     if (query != null && items != null) {
       if (items.isEmpty) {
         return _panel(TvStatePanel(
-          title: 'No matches',
-          message: 'Nothing matched “$query”. Try another title.',
+          title: tr('tv_no_matches'),
+          message: tr('tv_search_no_matches', namedArgs: {'query': query}),
           icon: PhosphorIcons.magnifyingGlass(),
         ));
       }
@@ -370,13 +373,13 @@ class _TvSearchScreenState extends State<TvSearchScreen> {
             items.indexOf(series.first) < items.indexOf(movies.first));
     final rows = <TvBrowseRow>[
       TvMediaRow(
-        title: 'Movies',
+        title: tr('movies'),
         scopeId: 'search-movies:$query',
         items: movies,
         onItemActivated: _openResult,
       ),
       TvMediaRow(
-        title: 'Series',
+        title: tr('series'),
         scopeId: 'search-series:$query',
         items: series,
         onItemActivated: _openResult,
@@ -398,8 +401,8 @@ class _TvSearchScreenState extends State<TvSearchScreen> {
     final featured = suggestions.topSearches.firstOrNull;
     if (featured == null && _recent.isEmpty) {
       return _panel(TvStatePanel(
-        title: 'Find something to watch',
-        message: 'Type a movie or series title with the keyboard.',
+        title: tr('tv_find_something_to_watch'),
+        message: tr('tv_type_a_movie_or_series_title_with_the_keyboard'),
         icon: PhosphorIcons.magnifyingGlass(),
       ));
     }
@@ -410,11 +413,14 @@ class _TvSearchScreenState extends State<TvSearchScreen> {
               id: '${kind.name}-genre-${genre.genreID}',
               title: genre.genreName!,
               facts: <String>[
-                kind == TvMediaKind.movie ? 'Movie genre' : 'Series genre',
+                kind == TvMediaKind.movie
+                    ? tr('tv_movie_genre')
+                    : tr('tv_series_genre'),
               ],
-              description: 'The most watched '
-                  '${genre.genreName!.toLowerCase()} '
-                  '${kind == TvMediaKind.movie ? 'movies' : 'series'}.',
+              description: tr('tv_search_genre_description', namedArgs: {
+                'genre': genre.genreName!,
+                'kind': tr(kind == TvMediaKind.movie ? 'movies' : 'series')
+              }),
               onActivate: () => _openGenre(kind, genre),
             ),
         ];
@@ -423,10 +429,10 @@ class _TvSearchScreenState extends State<TvSearchScreen> {
       key: const ValueKey<String>('search-suggestions'),
       // Recent searches alone still need a title behind them.
       featured: featured ??
-          const TvMediaItem(
+          TvMediaItem(
             kind: TvMediaKind.movie,
             id: -1,
-            title: 'Search',
+            title: tr('search'),
             overview: '',
             posterPath: null,
             backdropPath: null,
@@ -440,9 +446,9 @@ class _TvSearchScreenState extends State<TvSearchScreen> {
       showBillboard: false,
       rows: <TvBrowseRow>[
         TvShortcutRow(
-          title: 'Recent searches',
+          title: tr('tv_recent_searches'),
           scopeId: 'search-recent',
-          menuHint: 'Hold OK to remove',
+          menuHint: tr('tv_hold_ok_to_remove'),
           onShortcutMenu: (shortcut) => _forget(shortcut.title),
           shortcuts: <TvBrowseShortcut>[
             for (final query in _recent)
@@ -450,115 +456,28 @@ class _TvSearchScreenState extends State<TvSearchScreen> {
                 id: 'recent:$query',
                 title: query,
                 icon: PhosphorIcons.clockCounterClockwise(),
-                facts: const <String>['Recent search'],
-                description: 'Search for “$query” again.',
+                facts: <String>[tr('tv_recent_search')],
+                description: tr('tv_search_again', namedArgs: {'query': query}),
                 onActivate: () => _setQuery(query, immediately: true),
               ),
           ],
         ),
         TvTopTenRow(
-          title: 'Top searches today',
+          title: tr('tv_top_searches_today'),
           scopeId: 'search-top',
           items: suggestions.topSearches,
         ),
         TvShortcutRow(
-          title: 'Movie genres',
+          title: tr('movie_genres'),
           scopeId: 'search-movie-genres',
           shortcuts: genres(TvMediaKind.movie, suggestions.movieGenres),
         ),
         TvShortcutRow(
-          title: 'Series genres',
+          title: tr('series_genres'),
           scopeId: 'search-series-genres',
           shortcuts: genres(TvMediaKind.series, suggestions.seriesGenres),
         ),
       ],
-    );
-  }
-}
-
-/// What has been typed, with a cursor, above the keyboard.
-class _QueryField extends StatelessWidget {
-  const _QueryField({
-    required this.query,
-    required this.searching,
-    required this.compact,
-  });
-
-  final String query;
-  final bool searching;
-  final bool compact;
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = TvPalette.of(context);
-    final empty = query.isEmpty;
-    return Semantics(
-      label: empty ? 'Search, nothing typed' : 'Search for $query',
-      liveRegion: true,
-      child: Container(
-        padding: const EdgeInsets.only(bottom: 10),
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: palette.foreground.withValues(alpha: 0.2),
-            ),
-          ),
-        ),
-        child: Row(
-          children: <Widget>[
-            Icon(
-              PhosphorIcons.magnifyingGlass(),
-              color: palette.mutedText,
-              size: compact ? 20 : 22,
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Row(
-                children: <Widget>[
-                  Flexible(
-                    // Scrolled to its end, so a long query shows what was
-                    // typed last, where the cursor is.
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      reverse: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      child: Text(
-                        empty ? 'Movies and series' : query,
-                        maxLines: 1,
-                        softWrap: false,
-                        style: TextStyle(
-                          color: empty ? palette.mutedText : palette.foreground,
-                          fontFamily: empty ? 'Figtree' : 'FigtreeSB',
-                          fontSize: compact ? 20 : 24,
-                          height: 1.1,
-                        ),
-                      ),
-                    ),
-                  ),
-                  if (!empty)
-                    Container(
-                      width: 2,
-                      height: compact ? 22 : 26,
-                      margin: const EdgeInsets.only(left: 2),
-                      color: palette.foreground,
-                    ),
-                ],
-              ),
-            ),
-            // Built only while searching: a spinner keeps animating, and
-            // drawing frames, even when faded out.
-            if (searching)
-              SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: palette.mutedText,
-                ),
-              ),
-          ],
-        ),
-      ),
     );
   }
 }

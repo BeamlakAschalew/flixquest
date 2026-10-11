@@ -111,6 +111,7 @@ void main() {
       final options = buildSubtitleOptions([
         BetterPlayerSubtitlesSource(
           type: BetterPlayerSubtitlesSourceType.none,
+          name: null,
         ),
         _network('English', '$_wyzie/1.vtt'),
         _network('German', '$_wyzie/2.vtt'),

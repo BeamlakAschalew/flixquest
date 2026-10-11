@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -79,6 +80,7 @@ class _TvBackdropState extends State<TvBackdrop> {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = TvPalette.of(context);
     final settings = context.watch<SettingsProvider>();
     final proxy = context.watch<AppDependencyProvider>().tmdbProxy;
@@ -170,14 +172,15 @@ class TvSpotlightData {
       title: item.title,
       facts: <String>[
         if (item.year case final year?) year,
-        isMovie ? 'Movie' : 'Series',
+        isMovie ? tr('movie') : tr('series'),
         if (item.rating case final rating? when rating > 0)
           '★ ${rating.toStringAsFixed(1)}',
         if (item.progressLabel case final label?) label,
       ],
       overview: item.overview,
-      kicker:
-          featured ? (isMovie ? 'FEATURED MOVIE' : 'FEATURED SERIES') : null,
+      kicker: featured
+          ? (isMovie ? tr('tv_featured_movie') : tr('tv_featured_series'))
+          : null,
       kickerIcon: featured
           ? (isMovie ? PhosphorIcons.filmSlate() : PhosphorIcons.television())
           : null,
@@ -249,6 +252,7 @@ class TvSpotlightInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = TvPalette.of(context);
     final colors = Theme.of(context).colorScheme;
     final kicker = data.kicker;

@@ -11,7 +11,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
+import 'support/tv_localization.dart';
+
 void main() {
+  initializeTvTranslations();
   setUpAll(() {
     dotenv.testLoad(fileInput: 'FLIXQUEST_API_URL=https://example.com');
   });

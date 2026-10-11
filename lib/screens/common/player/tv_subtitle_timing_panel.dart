@@ -321,9 +321,13 @@ class _TimingDialState extends State<_TimingDial> {
               const SizedBox(height: 6),
               DefaultTextStyle(
                 style: TextStyle(color: muted, fontSize: 11),
-                child: const Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [Text('−10s'), Text('0s'), Text('+10s')],
+                  children: [
+                    Text(tr('tv_seconds', namedArgs: {'seconds': '−10'})),
+                    Text(tr('tv_seconds', namedArgs: {'seconds': '0'})),
+                    Text(tr('tv_seconds', namedArgs: {'seconds': '+10'})),
+                  ],
                 ),
               ),
             ],
@@ -480,8 +484,11 @@ class _PanelButtonState extends State<_PanelButton> {
 }
 
 String _offsetValue(Duration offset) {
-  if (offset == Duration.zero) return '0.0s';
+  if (offset == Duration.zero) {
+    return tr('tv_seconds', namedArgs: {'seconds': '0.0'});
+  }
   final seconds = offset.inMilliseconds / 1000;
   final sign = seconds > 0 ? '+' : '−';
-  return '$sign${seconds.abs().toStringAsFixed(1)}s';
+  return tr('tv_seconds',
+      namedArgs: {'seconds': '$sign${seconds.abs().toStringAsFixed(1)}'});
 }

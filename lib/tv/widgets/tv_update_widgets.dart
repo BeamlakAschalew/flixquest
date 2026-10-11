@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -24,6 +25,7 @@ class TvUpdateAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     return TvPillButton(
       label: label,
       focusNode: focusNode,
@@ -52,11 +54,12 @@ class TvUpdateChangelog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = TvPalette.of(context);
     final items = AppUpdateService.changelogItems(changeLog);
     final more = items.length - _previewItems;
     return TvFocusable(
-      semanticLabel: 'What’s new',
+      semanticLabel: tr('tv_what_s_new'),
       focusNode: focusNode,
       onActivate: onPressed,
       focusScale: 1,
@@ -79,7 +82,7 @@ class TvUpdateChangelog extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  'What’s new',
+                  tr('tv_what_s_new'),
                   style: TextStyle(
                     color: palette.foreground,
                     fontFamily: 'FigtreeBold',
@@ -123,7 +126,7 @@ class TvUpdateChangelog extends StatelessWidget {
             if (more > 0) ...<Widget>[
               const SizedBox(height: 8),
               Text(
-                '+$more more · Select to read all',
+                tr('tv_update_more_notes', namedArgs: {'count': '$more'}),
                 style: TextStyle(
                   color: palette.foreground,
                   fontFamily: 'FigtreeSB',
@@ -150,6 +153,7 @@ class TvUpdateLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = TvPalette.of(context);
     return Scaffold(
       backgroundColor: palette.page,
@@ -184,7 +188,7 @@ class TvUpdateLayout extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
                         Text(
-                          'FLIXQUEST FOR TV',
+                          tr('tv_flixquest_for_tv'),
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.primary,
                             fontFamily: 'FigtreeBold',
@@ -278,6 +282,7 @@ class _TvChangelogViewState extends State<TvChangelogView> {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final palette = TvPalette.of(context);
     return TvKeymap(
       onBack: () => Navigator.of(context).pop(),
@@ -298,7 +303,7 @@ class _TvChangelogViewState extends State<TvChangelogView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'RELEASE NOTES',
+                        tr('tv_release_notes').toUpperCase(),
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.primary,
                           fontFamily: 'FigtreeBold',
@@ -308,7 +313,7 @@ class _TvChangelogViewState extends State<TvChangelogView> {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        'What’s new',
+                        tr('tv_what_s_new'),
                         style: TextStyle(
                           color: palette.foreground,
                           fontFamily: 'FigtreeBold',
@@ -317,7 +322,7 @@ class _TvChangelogViewState extends State<TvChangelogView> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Text('Use ↑ ↓ to scroll',
+                      Text(tr('tv_use_to_scroll'),
                           style: TextStyle(
                               color: palette.mutedText, fontSize: 16)),
                       const SizedBox(height: 24),
@@ -337,7 +342,7 @@ class _TvChangelogViewState extends State<TvChangelogView> {
                               ))),
                       const SizedBox(height: 16),
                       TvUpdateAction(
-                          label: 'Back',
+                          label: tr('player_back'),
                           focusNode: _backFocus,
                           onPressed: () => Navigator.of(context).pop()),
                     ]),

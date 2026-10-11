@@ -13,6 +13,8 @@ import 'package:flixquest/widgets/network_banner_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+import 'support/tv_localization.dart';
+
 import 'support/fake_adsterra_webview.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -175,6 +177,7 @@ Future<_FakeController> _pumpDetails(
 }
 
 void main() {
+  initializeTvTranslations();
   setUpAll(() {
     dotenv.testLoad(fileInput: 'FLIXQUEST_API_URL=https://example.com');
   });
