@@ -1049,6 +1049,7 @@ abstract class  LocaleKeys {
   static const player_stretch_description = 'player_stretch_description';
   static const player_live = 'player_live';
   static const player_playback_failed = 'player_playback_failed';
+  static const player_waiting_for_network = 'player_waiting_for_network';
   static const player_playback_failed_hint = 'player_playback_failed_hint';
   static const player_playback_retry_hint = 'player_playback_retry_hint';
   static const player_backup_streams = 'player_backup_streams';

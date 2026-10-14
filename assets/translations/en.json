@@ -1069,6 +1069,7 @@
   "player_stretch_description": "Fill the screen without cropping",
   "player_live": "LIVE",
   "player_playback_failed": "Playback failed",
+  "player_waiting_for_network": "No internet connection. Playback resumes when you reconnect.",
   "player_playback_failed_hint": "This stream couldn’t play. Try another provider or retry.",
   "player_playback_retry_hint": "This video couldn’t play. Please try again.",
   "player_backup_streams": "Backup streams",

@@ -473,6 +473,9 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
             autoDetectFullscreenAspectRatio: !widget.useTvControls,
             errorBuilder: (context, _) =>
                 _buildCustomPlayerErrorWidget(context),
+            // Provider links expire mid-movie; resolve the provider again
+            // before the player gives up and shows the error.
+            sourceRecoveryHandler: _refreshCurrentProviderSource,
             subtitlesConfiguration: buildPlayerSubtitleConfiguration(
               backgroundColor: widget.settings.subtitleBackgroundColor,
               foregroundColor: widget.settings.subtitleForegroundColor,
@@ -2760,14 +2763,45 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     );
   }
 
-  Future<void> _switchToProvider(
+  /// The player's last automatic recovery step: provider links expire, so
+  /// resolve the current provider again and carry on from [position]. The
+  /// playback error shows only if this fails too.
+  Future<bool> _refreshCurrentProviderSource(Duration? position) async {
+    final providerCode = _currentProviderCode;
+    final known = widget.availableProviders
+            ?.any((provider) => provider.codeName == providerCode) ==
+        true;
+    if (!mounted || providerCode == null || !known) return false;
+    return _switchToProvider(
+      providerCode,
+      reload: true,
+      resumeAt: position,
+      refreshMenu: () {},
+      closeMenu: () {},
+    );
+  }
+
+  /// Switches to [providerCode], or with [reload] resolves the current
+  /// provider again for a fresh link. Returns whether the new source is set up.
+  Future<bool> _switchToProvider(
     String providerCode, {
     required VoidCallback refreshMenu,
     required VoidCallback closeMenu,
+    bool reload = false,
+    Duration? resumeAt,
   }) async {
-    if (_isSwitchingProvider || providerCode == _currentProviderCode) return;
+    if (_isSwitchingProvider ||
+        (!reload && providerCode == _currentProviderCode)) {
+      return false;
+    }
     final analyticsStopwatch = Stopwatch()..start();
     final providerName = _providerDisplayName(providerCode);
+    final analyticsPurpose = reload ? 'source_refresh' : 'provider_switch';
+    if (reload) {
+      // The cached links are the ones that stopped working.
+      _loadedProviders.remove(providerCode);
+      _providerResults.remove(providerCode);
+    }
 
     setState(() {
       _isSwitchingProvider = true;
@@ -2776,10 +2810,11 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     });
     refreshMenu();
 
-    final position =
+    final position = resumeAt ??
         _betterPlayerController.videoPlayerController?.value.position ??
-            Duration.zero;
-    final wasPlaying =
+        Duration.zero;
+    // A refresh replaces a source that failed while the viewer watched it.
+    final wasPlaying = reload ||
         _betterPlayerController.videoPlayerController?.value.isPlaying == true;
     final previousDataSource = _betterPlayerController.betterPlayerDataSource;
     var replacementStarted = false;
@@ -2843,7 +2878,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         _rawVideoLinksByProvider[providerCode] = List.of(result.videoLinks!);
       }
 
-      if (!mounted) return;
+      if (!mounted) return false;
       final nextSource = source;
       replacementStarted = true;
       _preRollActive = false;
@@ -2860,7 +2895,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       if (!wasPlaying) await _betterPlayerController.pause();
       unawaited(_loadIntroDbTimings());
 
-      if (!mounted) return;
+      if (!mounted) return false;
       setState(() {
         _currentProviderCode = providerCode;
         _activeSources = Map.of(nextSource.videoSources);
@@ -2872,26 +2907,28 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
             .videoPlayerController?.value.duration?.inSeconds;
         if (switchedDuration != null) duration = switchedDuration;
       });
-      _analyticsProviderSwitchCount++;
-      settings.analytics.trackStreamServerChanged(
-        mediaType: _analyticsMediaType,
-        serverName: nextSource.providerName,
-        contentId: _analyticsContentId,
-        contentTitle: _analyticsContentTitle,
-      );
+      if (!reload) {
+        _analyticsProviderSwitchCount++;
+        settings.analytics.trackStreamServerChanged(
+          mediaType: _analyticsMediaType,
+          serverName: nextSource.providerName,
+          contentId: _analyticsContentId,
+          contentTitle: _analyticsContentTitle,
+        );
+      }
       settings.analytics.trackProviderAttempt(
         mediaType: _analyticsMediaType,
         contentId: _analyticsContentId,
         contentTitle: _analyticsContentTitle,
         provider: nextSource.providerName,
-        purpose: 'provider_switch',
+        purpose: analyticsPurpose,
         success: true,
         durationMs: analyticsStopwatch.elapsedMilliseconds,
         sourceCount: nextSource.videoSources.length,
         subtitleCount: nextSource.subtitles.length,
       );
       _trackPlaybackEvent(
-        'provider_switch_succeeded',
+        '${analyticsPurpose}_succeeded',
         value: nextSource.providerName,
       );
       switched = true;
@@ -2901,7 +2938,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         contentId: _analyticsContentId,
         contentTitle: _analyticsContentTitle,
         provider: providerName,
-        purpose: 'provider_switch',
+        purpose: analyticsPurpose,
         success: false,
         durationMs: analyticsStopwatch.elapsedMilliseconds,
         sourceCount: 0,
@@ -2909,15 +2946,18 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         error: error.toString(),
       );
       _trackPlaybackEvent(
-        'provider_switch_failed',
+        '${analyticsPurpose}_failed',
         value: providerName,
         error: error.toString(),
       );
       debugPrint(
-        '[Player] Provider switch failed for $providerCode: $error',
+        '[Player] Provider ${reload ? 'refresh' : 'switch'} failed for '
+        '$providerCode: $error',
       );
-      if (!mounted) return;
-      if (replacementStarted && previousDataSource != null) {
+      if (!mounted) return false;
+      // A refresh has nothing to restore: the previous source is the one
+      // that failed.
+      if (!reload && replacementStarted && previousDataSource != null) {
         try {
           await _betterPlayerController.setupDataSource(
             previousDataSource,
@@ -2927,7 +2967,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         } catch (restoreError) {
           debugPrint('Unable to restore provider after switch: $restoreError');
         }
-      } else if (wasPlaying) {
+      } else if (!reload && wasPlaying) {
         try {
           await _betterPlayerController.play();
         } catch (playError) {
@@ -2951,7 +2991,8 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           closeMenu();
           unawaited(_startActiveProviderEnrichment());
         } else {
-          if (widget.useTvControls) {
+          // A failed refresh ends on the error view, which takes the focus.
+          if (widget.useTvControls && !reload) {
             // A failed switch must return focus to the TV controls; otherwise
             // the remote appears frozen after the error sheet closes.
             _tvControlsController.show(restorePreviousFocus: true);
@@ -2960,6 +3001,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         }
       }
     }
+    return switched;
   }
 
   @override
@@ -3794,18 +3836,9 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           icon: PhosphorIcons.arrowClockwise(),
           primary: !hasProviders,
           autofocus: widget.useTvControls && !hasProviders,
-          onPressed: () {
-            final currentSource = _currentProviderCode;
-            if (currentSource != null) {
-              unawaited(_switchToProvider(
-                currentSource,
-                closeMenu: () {},
-                refreshMenu: () {},
-              ));
-            } else {
-              _betterPlayerController.retryDataSource();
-            }
-          },
+          // Reloads the source (waiting for the network if offline), then
+          // resolves the provider again if the link itself has expired.
+          onPressed: () => unawaited(_betterPlayerController.retryDataSource()),
         ),
       ],
     );

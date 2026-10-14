@@ -1069,6 +1069,7 @@
   "player_stretch_description": "बिना क्रॉप किए स्क्रीन भरें",
   "player_live": "लाइव",
   "player_playback_failed": "प्लेबैक विफल रहा",
+  "player_waiting_for_network": "इंटरनेट कनेक्शन नहीं है। कनेक्शन लौटते ही प्लेबैक फिर शुरू होगा।",
   "player_playback_failed_hint": "यह स्ट्रीम नहीं चल सकी। दूसरा प्रदाता चुनें या फिर से कोशिश करें।",
   "player_playback_retry_hint": "यह वीडियो नहीं चल सका। फिर से कोशिश करें।",
   "player_backup_streams": "बैकअप स्ट्रीम",
