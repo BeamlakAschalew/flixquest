@@ -1,16 +1,21 @@
 import 'live_schedule_sports.dart';
 
-/// A sport a viewer can follow. Schedule sections are named from upstream
-/// data, so a sport recognises its sections by their emoji first and by
-/// words in their name after that.
+/// A sport a viewer can follow. Schedule sections are named from the
+/// upstream schedule's English category names, which vary in spelling
+/// ("Am. Football", "Ice-Hockey", "Motorsports", "Formula1"), so a sport
+/// recognises its sections by their emoji first and by its names after that.
 class LiveSport {
-  const LiveSport({
+  LiveSport({
     required this.id,
     required this.emoji,
     required this.markers,
-    required this.keywords,
-    this.excludes = const <String>[],
-  });
+    required List<String> names,
+    List<String> competitions = const <String>[],
+    List<String> excludes = const <String>[],
+  })  : _names = _phrasePattern(names),
+        _competitions =
+            competitions.isEmpty ? null : _phrasePattern(competitions),
+        _excludes = excludes.isEmpty ? null : _phrasePattern(excludes);
 
   /// Stored in preferences; never change one.
   final String id;
@@ -18,178 +23,335 @@ class LiveSport {
   /// Shown on the picker.
   final String emoji;
 
-  /// Section emoji (without the variation selector) that mean this sport.
+  /// Section emoji (first code point, no variation selector) that mean this
+  /// sport.
   final Set<String> markers;
 
-  /// Whole words or phrases in a section name that mean this sport.
-  final List<String> keywords;
+  /// The sport's own names and abbreviations nothing else uses: "soccer",
+  /// "nhl".
+  final RegExp _names;
 
-  /// Phrases that rule a name out even when a keyword matches ("Table
-  /// Tennis" is not tennis).
-  final List<String> excludes;
+  /// Competition names that usually, not always, mean this sport ("Premier
+  /// League" is also darts). Consulted only when no section name matched.
+  final RegExp? _competitions;
+
+  /// Phrases that rule a match inside them out: the "football" in "Gaelic
+  /// Football" is not soccer.
+  final RegExp? _excludes;
 
   /// The translation key of the sport's name.
   String get labelKey => 'live_sport_$id';
-
-  bool _matchesName(String words) =>
-      keywords.any((keyword) => _hasPhrase(words, keyword)) &&
-      !excludes.any((phrase) => _hasPhrase(words, phrase));
 }
 
 /// The sports offered on the picker, in the order shown.
-const List<LiveSport> liveSports = <LiveSport>[
+final List<LiveSport> liveSports = <LiveSport>[
   LiveSport(
     id: 'soccer',
     emoji: '⚽',
     markers: <String>{'⚽'},
-    keywords: <String>['soccer', 'football', 'futsal'],
+    names: <String>[
+      'soccer',
+      'football',
+      'futbol',
+      'futsal',
+      'fifa',
+      'uefa',
+      'mls',
+    ],
+    competitions: <String>[
+      'premier league',
+      'champions league',
+      'europa league',
+      'conference league',
+      'la liga',
+      'bundesliga',
+      'serie a',
+      'ligue 1',
+      'eredivisie',
+      'copa',
+      'nwsl',
+      'usl',
+      'epl',
+      'efl',
+    ],
     excludes: <String>[
       'american football',
       'am football',
+      'amer football',
       'college football',
-      'aussie',
-      'australian',
-      'gaelic',
+      'canadian football',
+      'arena football',
+      'flag football',
+      'gaelic football',
+      'australian football',
+      'aussie rules football',
+      'australian rules football',
     ],
   ),
   LiveSport(
     id: 'basketball',
     emoji: '🏀',
     markers: <String>{'🏀'},
-    keywords: <String>['basketball', 'nba', 'wnba', 'ncaab', 'euroleague'],
+    names: <String>[
+      'basketball',
+      'nba',
+      'wnba',
+      'ncaab',
+      'euroleague',
+      'eurocup',
+    ],
   ),
   LiveSport(
     id: 'tennis',
     emoji: '🎾',
     markers: <String>{'🎾'},
-    keywords: <String>['tennis', 'atp', 'wta'],
-    excludes: <String>['table tennis'],
+    names: <String>['tennis', 'atp', 'wta', 'itf', 'davis cup'],
+    excludes: <String>['table tennis', 'padel tennis', 'paddle tennis'],
   ),
   LiveSport(
     id: 'cricket',
     emoji: '🏏',
     markers: <String>{'🏏'},
-    keywords: <String>['cricket', 'ipl', 't20'],
+    names: <String>['cricket', 'ipl', 't20', 't20i', 'odi'],
   ),
   LiveSport(
     id: 'american_football',
     emoji: '🏈',
     markers: <String>{'🏈'},
-    keywords: <String>[
+    names: <String>[
       'american football',
       'am football',
+      'amer football',
       'college football',
+      'canadian football',
+      'arena football',
+      'flag football',
+      'gridiron',
+      'super bowl',
       'nfl',
       'ncaaf',
       'cfl',
+      'xfl',
+      'ufl',
     ],
   ),
   LiveSport(
     id: 'combat',
     emoji: '🥊',
     markers: <String>{'🥊', '🥋', '👊', '🤼'},
-    keywords: <String>[
+    names: <String>[
       'boxing',
-      'kickboxing',
+      'kick boxing',
       'mma',
       'ufc',
+      'bellator',
+      'pfl',
+      'bkfc',
+      'muay thai',
+      'fight night',
+      'fighting',
       'wrestling',
       'wwe',
       'aew',
     ],
+    excludes: <String>['fighting irish'],
   ),
   LiveSport(
     id: 'motorsport',
     emoji: '🏎️',
     markers: <String>{'🏎', '🏍', '🏁'},
-    keywords: <String>[
+    names: <String>[
       'motorsport',
-      'motorsports',
+      'motor sport',
+      'motor racing',
+      'auto racing',
       'formula',
+      'formula 1',
+      'formula 2',
+      'formula 3',
+      'formula e',
+      'formula one',
       'f1',
+      'f2',
+      'f3',
       'nascar',
-      'motogp',
       'indycar',
+      'moto gp',
+      'moto 2',
+      'moto 3',
+      'superbike',
+      'wsbk',
+      'supercars',
+      'motocross',
+      'supercross',
       'rally',
+      'wrc',
+      'wec',
+      'dtm',
     ],
   ),
   LiveSport(
     id: 'ice_hockey',
     emoji: '🏒',
     markers: <String>{'🏒'},
-    keywords: <String>['hockey', 'nhl', 'khl', 'ahl', 'ohl'],
-    excludes: <String>['field hockey'],
+    names: <String>[
+      'hockey',
+      'ice hockey',
+      'nhl',
+      'khl',
+      'ahl',
+      'ohl',
+      'whl',
+      'qmjhl',
+      'shl',
+    ],
+    excludes: <String>[
+      'field hockey',
+      'roller hockey',
+      'inline hockey',
+      'street hockey',
+      'floor hockey',
+      'air hockey',
+    ],
   ),
   LiveSport(
     id: 'baseball',
     emoji: '⚾',
     markers: <String>{'⚾'},
-    keywords: <String>['baseball', 'mlb', 'kbo', 'npb'],
+    names: <String>['baseball', 'mlb', 'kbo', 'npb'],
   ),
   LiveSport(
     id: 'rugby',
     emoji: '🏉',
     markers: <String>{'🏉'},
-    keywords: <String>['rugby', 'nrl'],
+    names: <String>['rugby', 'nrl', 'six nations'],
   ),
   LiveSport(
     id: 'golf',
     emoji: '⛳',
     markers: <String>{'⛳', '🏌'},
-    keywords: <String>['golf', 'pga', 'lpga'],
+    names: <String>[
+      'golf',
+      'pga',
+      'lpga',
+      'dp world tour',
+      'ryder cup',
+      'solheim cup',
+    ],
+    excludes: <String>['mini golf', 'disc golf', 'frisbee golf', 'crazy golf'],
   ),
   LiveSport(
     id: 'cycling',
     emoji: '🚴',
-    markers: <String>{'🚴', '🚲'},
-    keywords: <String>['cycling'],
+    markers: <String>{'🚴', '🚵', '🚲'},
+    names: <String>[
+      'cycling',
+      'uci',
+      'tour de france',
+      'giro d italia',
+      'vuelta',
+    ],
   ),
   LiveSport(
     id: 'darts',
     emoji: '🎯',
     markers: <String>{'🎯'},
-    keywords: <String>['darts'],
+    names: <String>['darts', 'pdc', 'bdo'],
   ),
   LiveSport(
     id: 'snooker',
     emoji: '🎱',
     markers: <String>{'🎱'},
-    keywords: <String>['snooker', 'billiards', 'pool'],
+    names: <String>[
+      'snooker',
+      'billiard',
+      'billiards',
+      '8 ball',
+      '9 ball',
+      'eight ball',
+      'nine ball',
+    ],
   ),
   LiveSport(
     id: 'volleyball',
     emoji: '🏐',
     markers: <String>{'🏐'},
-    keywords: <String>['volleyball'],
+    names: <String>['volleyball', 'vnl'],
   ),
   LiveSport(
     id: 'handball',
     emoji: '🤾',
     markers: <String>{'🤾'},
-    keywords: <String>['handball'],
+    names: <String>['handball', 'ehf'],
   ),
   LiveSport(
     id: 'horse_racing',
     emoji: '🏇',
     markers: <String>{'🏇'},
-    keywords: <String>['horse racing', 'horse'],
+    names: <String>[
+      'horse racing',
+      'horse race',
+      'harness racing',
+      'thoroughbred',
+    ],
   ),
 ];
 
+final Expando<Object> _sportCache = Expando<Object>();
+const Object _noSport = Object();
+
 /// The sport a schedule section shows, or null when none on the picker does.
 /// The section's emoji decides when it names a sport; otherwise its name.
+/// Cached per section, since the schedule asks on every build.
 LiveSport? liveSportOf(LiveSportSection section) {
-  final marker = section.emoji.replaceAll('️', '');
-  if (marker.isNotEmpty) {
+  final cached = _sportCache[section];
+  if (cached != null) return cached is LiveSport ? cached : null;
+  final sport = _classify(section);
+  _sportCache[section] = sport ?? _noSport;
+  return sport;
+}
+
+LiveSport? _classify(LiveSportSection section) {
+  final marker = _markerOf(section.emoji);
+  if (marker != null) {
     for (final sport in liveSports) {
       if (sport.markers.contains(marker)) return sport;
     }
   }
-  final words = _words(section.name);
+  final text = normalizeSportText(section.name);
+  if (text.isEmpty) return null;
+  return _bestMatch(text, (sport) => sport._names) ??
+      _bestMatch(text, (sport) => sport._competitions);
+}
+
+/// The sport whose [pattern] matches [text] at the longest stretch (so
+/// "American Football" beats the "football" of soccer), then the earliest,
+/// then the first on [liveSports]. Matches inside an excluded phrase do not
+/// count.
+LiveSport? _bestMatch(String text, RegExp? Function(LiveSport) pattern) {
+  LiveSport? best;
+  var bestLength = 0;
+  var bestStart = 0;
   for (final sport in liveSports) {
-    if (sport._matchesName(words)) return sport;
+    final regex = pattern(sport);
+    if (regex == null) continue;
+    final excluded =
+        sport._excludes?.allMatches(text).toList(growable: false) ??
+            const <RegExpMatch>[];
+    for (final match in regex.allMatches(text)) {
+      if (excluded.any((e) => e.start <= match.start && match.end <= e.end)) {
+        continue;
+      }
+      final length = match.end - match.start;
+      if (length > bestLength ||
+          (length == bestLength && match.start < bestStart)) {
+        best = sport;
+        bestLength = length;
+        bestStart = match.start;
+      }
+    }
   }
-  return null;
+  return best;
 }
 
 /// [sections] with the ones showing a sport in [preferred] (by id) moved to
@@ -210,11 +372,53 @@ List<LiveSportSection> prioritizeSportSections(
   return <LiveSportSection>[...first, ...rest];
 }
 
+const Map<String, String> _accents = <String, String>{
+  'à': 'a', 'á': 'a', 'â': 'a', 'ã': 'a', 'ä': 'a', 'å': 'a', //
+  'ç': 'c',
+  'è': 'e', 'é': 'e', 'ê': 'e', 'ë': 'e', //
+  'ì': 'i', 'í': 'i', 'î': 'i', 'ï': 'i', //
+  'ñ': 'n',
+  'ò': 'o', 'ó': 'o', 'ô': 'o', 'õ': 'o', 'ö': 'o', 'ø': 'o', //
+  'ù': 'u', 'ú': 'u', 'û': 'u', 'ü': 'u', //
+  'ý': 'y', 'ÿ': 'y',
+};
+
+final RegExp _accented = RegExp('[${_accents.keys.join()}]');
 final RegExp _nonWord = RegExp(r'[^a-z0-9]+');
 
-/// "Am. Football (NFL)" -> " am football nfl ", padded so a phrase only
-/// matches whole words.
-String _words(String text) =>
-    ' ${text.toLowerCase().replaceAll(_nonWord, ' ').trim()} ';
+/// A category name as the patterns read it: lower case, accents folded,
+/// and every run of punctuation, emoji or spacing one space.
+/// "Am. Football (NFL)" -> "am football nfl"; "Ice-Hockey" -> "ice hockey".
+String normalizeSportText(String text) => text
+    .toLowerCase()
+    .replaceAllMapped(_accented, (m) => _accents[m[0]]!)
+    .replaceAll(_nonWord, ' ')
+    .trim();
 
-bool _hasPhrase(String words, String phrase) => words.contains(' $phrase ');
+/// Where letters meet digits inside a word: "t|20", "formula|1".
+final RegExp _letterDigit = RegExp(r'(?<=[a-z])(?=[0-9])|(?<=[0-9])(?=[a-z])');
+
+/// One pattern for a list of phrases over [normalizeSportText] output. A
+/// phrase matches whole words only ("pool" is not in "liverpool"), with or
+/// without the spaces between its words or between letters and digits
+/// ("icehockey", "formula1", "t 20"), and with a plural ending
+/// ("motorsports", "horse races"). Longer phrases are tried first so a match
+/// takes as much as it can.
+RegExp _phrasePattern(List<String> phrases) {
+  final alternatives = (phrases.toList()
+        ..sort((a, b) => b.length.compareTo(a.length)))
+      .map((phrase) => normalizeSportText(phrase)
+          .split(' ')
+          .map(
+              (word) => word.split(_letterDigit).map(RegExp.escape).join(r' ?'))
+          .join(r' ?'))
+      .join('|');
+  return RegExp('(?<![a-z0-9])(?:$alternatives)(?:e?s)?(?![a-z0-9])');
+}
+
+/// The first code point of a section's emoji, which is what
+/// [LiveSport.markers] holds: "🏎️" (with its variation selector) -> "🏎".
+String? _markerOf(String emoji) {
+  final runes = emoji.runes.where((rune) => rune != 0xFE0F);
+  return runes.isEmpty ? null : String.fromCharCode(runes.first);
+}

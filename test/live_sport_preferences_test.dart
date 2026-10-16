@@ -25,19 +25,157 @@ void main() {
     expect(_sportOf('Football', '🏈'), 'american_football');
   });
 
-  test('sections without a known emoji fall back to whole words', () {
-    expect(_sportOf('Am. Football'), 'american_football');
-    expect(_sportOf('NFL Preseason'), 'american_football');
-    expect(_sportOf('College Football'), 'american_football');
-    expect(_sportOf('Football'), 'soccer');
-    expect(_sportOf('College Soccer'), 'soccer');
-    expect(_sportOf('Table Tennis'), isNull);
-    expect(_sportOf('Field Hockey'), isNull);
-    expect(_sportOf('Aussie Rules Football'), isNull);
-    expect(_sportOf('ATP Tour'), 'tennis');
-    // Words, not substrings: "Liverpool" is not pool.
-    expect(_sportOf('Liverpool TV'), isNull);
-    expect(_sportOf('Big Brother'), isNull);
+  group('section names without a known emoji', () {
+    // Spellings the upstream schedule's English categories come in, and the
+    // traps around them. null: not a sport on the picker.
+    const cases = <String, String?>{
+      // Case, punctuation, spacing and plurals.
+      'SOCCER': 'soccer',
+      'soccer': 'soccer',
+      'Am. Football': 'american_football',
+      'Am.Football': 'american_football',
+      'Amer. Football': 'american_football',
+      'AmericanFootball': 'american_football',
+      'American-Football': 'american_football',
+      'Ice-Hockey': 'ice_hockey',
+      'IceHockey': 'ice_hockey',
+      'Motorsports': 'motorsport',
+      'Motor Sport': 'motorsport',
+      'Formula1': 'motorsport',
+      'Formula 1': 'motorsport',
+      'F1 Grand Prix': 'motorsport',
+      'MotoGP': 'motorsport',
+      'Moto GP': 'motorsport',
+      'NASCAR Cup Series': 'motorsport',
+      'Horse Racing': 'horse_racing',
+      'Horse Races': 'horse_racing',
+      'HorseRacing': 'horse_racing',
+      'Darts': 'darts',
+      'PDC Darts': 'darts',
+      'Snooker': 'snooker',
+      '9-Ball': 'snooker',
+      'Kick Boxing': 'combat',
+      'Kickboxing': 'combat',
+      'UFC Fight Night': 'combat',
+      'WWE': 'combat',
+      'Rugby Union': 'rugby',
+      'Rugby League': 'rugby',
+      'NRL': 'rugby',
+      'Beach Volleyball': 'volleyball',
+      'Cycling': 'cycling',
+      "Giro d'Italia": 'cycling',
+      'Golf': 'golf',
+      'PGA Tour': 'golf',
+      'Handball': 'handball',
+      'Baseball': 'baseball',
+      'MLB': 'baseball',
+      'Basketball': 'basketball',
+      'NBA': 'basketball',
+      'Cricket': 'cricket',
+      'T20 Blast': 'cricket',
+      'T-20': 'cricket',
+      'ATP Tour': 'tennis',
+      'WTA': 'tennis',
+      'Tennis': 'tennis',
+      'NHL': 'ice_hockey',
+      'OHL': 'ice_hockey',
+      'Fútbol': 'soccer',
+      'Futsal': 'soccer',
+      // "Football" alone is soccer; the American game says so.
+      'Football': 'soccer',
+      'College Football': 'american_football',
+      'Canadian Football (CFL)': 'american_football',
+      'NFL Preseason': 'american_football',
+      'College Soccer': 'soccer',
+      // Competitions count only when no sport is named.
+      'Premier League': 'soccer',
+      'UEFA Champions League': 'soccer',
+      'Premier League Darts': 'darts',
+      'Champions League T20': 'cricket',
+      'Volleyball Serie A': 'volleyball',
+      'Copa del Rey Basketball': 'basketball',
+      // Look-alikes that are not the sport.
+      'Table Tennis': null,
+      'Padel Tennis': null,
+      'Field Hockey': null,
+      'Roller Hockey': null,
+      'Gaelic Football': null,
+      'Aussie Rules Football': null,
+      'Australian Football': null,
+      'Disc Golf': null,
+      'Notre Dame Fighting Irish': null,
+      // Whole words only.
+      'Liverpool TV': null,
+      'Pool': null,
+      'Atpase': null,
+      'Bigolf': null,
+      'Draft': null,
+      // Not sports at all.
+      'Big Brother': null,
+      'PPV Events': null,
+      'TV Shows': null,
+      'Athletics': null,
+      '': null,
+      '🏆': null,
+    };
+    for (final entry in cases.entries) {
+      test('"${entry.key}" -> ${entry.value}', () {
+        expect(_sportOf(entry.key), entry.value);
+      });
+    }
+  });
+
+  test('emoji with or without a variation selector are the same marker', () {
+    expect(_sportOf('Racing', '🏎'), 'motorsport');
+    expect(_sportOf('Racing', '🏎️'), 'motorsport');
+    // An emoji that names no sport leaves it to the name.
+    expect(_sportOf('Golf', '🏆'), 'golf');
+    expect(_sportOf('Big Brother', '👁️'), isNull);
+  });
+
+  test('raw upstream categories file under the right sport once grouped', () {
+    DaddyLiveEpgCategory category(String name, String title) =>
+        DaddyLiveEpgCategory(name: name, events: <DaddyLiveEpgEvent>[
+          DaddyLiveEpgEvent(
+              time: '12:00', title: title, channels: const <Channel>[]),
+        ]);
+    final day =
+        DaddyLiveEpgDay(label: 'Sat', categories: <DaddyLiveEpgCategory>[
+      category('All Soccer Events ⚽', '⚽ 🇪🇸 La Liga : A vs B'),
+      category('Am. Football', 'NFL : Bears vs Packers'),
+      category('Ice Hockey (NHL) 🏒', '🏒 🇺🇸 NHL : C vs D'),
+      category('MMA 🥊👊', '🥋 🇧🇷 UFC Fight Night Prelims'),
+      category('Motorsport 🏎️🏁', '🏎️🇦🇿 Formula 1 Grand Prix Baku – Race'),
+      category('Tennis 🎾 ATP - Singles: Chengdu (China)', '🎾 ATP : E vs F'),
+      category('Table Tennis', 'WTT Champions'),
+      category('Horse Racing', 'Ascot'),
+      category('Big Brother 👁️ 28 LIVE CAMERA FEEDS', 'Live feed'),
+      category('PPV Events', 'Main card'),
+    ]);
+    expect(
+      <String, String?>{
+        for (final section in groupScheduleBySport(day))
+          section.name: liveSportOf(section)?.id,
+      },
+      <String, String?>{
+        'Soccer': 'soccer',
+        'Am. Football': 'american_football',
+        'Ice Hockey': 'ice_hockey',
+        'MMA': 'combat',
+        'Motorsport': 'motorsport',
+        'Tennis': 'tennis',
+        'Table Tennis': null,
+        'Horse Racing': 'horse_racing',
+        'Big Brother': null,
+        'PPV Events': null,
+      },
+    );
+  });
+
+  test('normalizeSportText folds case, accents and punctuation', () {
+    expect(normalizeSportText('  Am. Football (NFL) '), 'am football nfl');
+    expect(normalizeSportText('Fútbol—Copa Améric@'), 'futbol copa americ');
+    expect(normalizeSportText('⚽ 🇪🇸 La Liga'), 'la liga');
   });
 
   test('preferred sports lead and every other section follows in order', () {
