@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' show min;
 
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -25,6 +26,7 @@ import 'services/home_widget_service.dart';
 import 'services/recently_watched_sync_service.dart';
 import 'services/app_remote_config.dart';
 import 'mobile/app/mobile_shell.dart';
+import 'mobile/app/mobile_update_gate.dart';
 import 'tv/platform/device_presentation.dart';
 import 'tv/navigation/tv_back_key_guard.dart';
 import 'tv/widgets/tv_update_gate.dart';
@@ -53,6 +55,18 @@ class _FlixQuestState extends State<FlixQuest>
   final FirebaseRemoteConfig _remoteConfig = FirebaseRemoteConfig.instance;
   StreamSubscription<RemoteConfigUpdate>? _remoteConfigSubscription;
   Timer? _widgetRefreshDebounce;
+
+  /// Set while the last config fetch failed (offline launch, flaky network).
+  /// Until one succeeds the app keeps retrying, so a mandatory update
+  /// published since the last good fetch still reaches this session.
+  bool _configFetchFailed = false;
+  bool _fetchingConfig = false;
+  int _configRetries = 0;
+  Timer? _configRetry;
+
+  /// Waits 15 s after the first failure, doubling up to five minutes.
+  static Duration configRetryDelay(int retries) =>
+      Duration(seconds: min(15 << min(retries, 5), 300));
 
   Future<void> _initConfig() async {
     try {
@@ -83,8 +97,14 @@ class _FlixQuestState extends State<FlixQuest>
   }
 
   Future<void> _fetchConfig({bool requestPermissions = true}) async {
+    if (_fetchingConfig) return;
+    _fetchingConfig = true;
+    _configRetry?.cancel();
+    var fetched = false;
     try {
       final activated = await _remoteConfig.fetchAndActivate();
+      fetched =
+          _remoteConfig.lastFetchStatus == RemoteConfigFetchStatus.success;
       if (kDebugMode) {
         debugPrint('[PlaybackAdConfig] fetch '
             'status=${_remoteConfig.lastFetchStatus.name} '
@@ -98,10 +118,33 @@ class _FlixQuestState extends State<FlixQuest>
       }
       // Cached/default values still provide a safe startup when offline.
     }
+    _fetchingConfig = false;
     if (mounted) {
       AppRemoteConfig.apply(_remoteConfig, widget.appDependencyProvider);
+      _afterConfigFetch(fetched: fetched);
     }
     if (requestPermissions) await requestNotificationPermissions();
+  }
+
+  void _afterConfigFetch({required bool fetched}) {
+    _configFetchFailed = !fetched;
+    if (fetched) {
+      _configRetries = 0;
+      return;
+    }
+    _configRetry = Timer(configRetryDelay(_configRetries++),
+        () => unawaited(_fetchConfig(requestPermissions: false)));
+  }
+
+  /// Back in the app: retry a failed fetch now rather than at the next tick,
+  /// and refresh a config that has gone stale while the app sat in the
+  /// background.
+  void _refreshConfigOnResume() {
+    final stale = DateTime.now().difference(_remoteConfig.lastFetchTime) >
+        const Duration(hours: 1);
+    if (!_configFetchFailed && !stale) return;
+    _configRetries = 0;
+    unawaited(_fetchConfig(requestPermissions: false));
   }
 
   Future<void> _onRemoteConfigUpdated(RemoteConfigUpdate update) async {
@@ -184,6 +227,7 @@ class _FlixQuestState extends State<FlixQuest>
     DeepLinkDispatcher.onAppReady();
     unawaited(_refreshHomeWidgets());
     unawaited(RecentlyWatchedSyncService.instance.autoSyncIfSignedIn());
+    _refreshConfigOnResume();
   }
 
   @override
@@ -192,6 +236,7 @@ class _FlixQuestState extends State<FlixQuest>
     WellnessProvider.instance.removeListener(_scheduleLocalWidgetRefresh);
     widget.bookmarkProvider.removeListener(_scheduleLocalWidgetRefresh);
     _widgetRefreshDebounce?.cancel();
+    _configRetry?.cancel();
     _remoteConfigSubscription?.cancel();
     super.dispose();
   }
@@ -281,7 +326,8 @@ class _FlixQuestState extends State<FlixQuest>
                         if (devicePresentation == DevicePresentation.television)
                           TvUpdateGate(child: child ?? const SizedBox.shrink())
                         else
-                          child ?? const SizedBox.shrink(),
+                          MobileUpdateGate(
+                              child: child ?? const SizedBox.shrink()),
                         if (devicePresentation != DevicePresentation.television)
                           OccasionalEffectOverlay(
                             theme: appDependencyProvider.activeOccasionalTheme,

@@ -995,6 +995,21 @@ void main() {
       }
     }, variant: android);
 
+    testWidgets('TV keeps its own interval once published', (tester) async {
+      provider
+        ..setAdsterraPlaybackAdsConfig(
+            AdsterraPlaybackAdsConfig.parse(tvCatalog, enabled: true))
+        ..setTvPlaybackPopupFrequencyMinutes(0);
+      await pumpHost(tester);
+      await showVisiblePopup(tester, television: true);
+      await showVisiblePopup(tester, television: true);
+      expect(platform.controllers, hasLength(2));
+      // Phones keep their 15 minutes against the same history.
+      expect(await service.streamFound(host), isTrue);
+      expect(find.byType(AdsterraPlaybackAdScreen), findsNothing);
+      expect(platform.controllers, hasLength(2));
+    }, variant: android);
+
     testWidgets(
         'a saved interval discards empty preparation without an ad request',
         (tester) async {
@@ -2218,6 +2233,64 @@ void main() {
         expect(provider.playbackPopunderNetwork, isNull);
       }
     });
+
+    test('TV follows the phone selector and interval until it has its own',
+        () async {
+      final remote = FakeFirebaseRemoteConfig();
+      await AppRemoteConfig.configure(remote);
+      remote
+        ..setMockString(AppRemoteConfig.playbackPopunderNetworkKey, 'clickadu')
+        ..setMockInt(AppRemoteConfig.playbackPopupFrequencyMinutesKey, 30);
+      AppRemoteConfig.apply(remote, provider);
+      expect(provider.tvPlaybackPopunderNetwork, AdNetwork.clickadu);
+      expect(provider.tvPlaybackPopupFrequencyMinutes, 30);
+
+      remote
+        ..setMockString(AppRemoteConfig.tvPlaybackPopunderNetworkKey, 'Monetag')
+        ..setMockInt(AppRemoteConfig.tvPlaybackPopupFrequencyMinutesKey, 0);
+      AppRemoteConfig.apply(remote, provider);
+      expect(provider.playbackPopunderNetwork, AdNetwork.clickadu);
+      expect(provider.playbackPopupFrequencyMinutes, 30);
+      expect(provider.tvPlaybackPopunderNetwork, AdNetwork.monetag);
+      expect(provider.tvPlaybackPopupFrequencyMinutes, 0);
+
+      remote
+        ..setMockString(AppRemoteConfig.tvPlaybackPopunderNetworkKey, 'none')
+        ..setMockInt(AppRemoteConfig.tvPlaybackPopupFrequencyMinutesKey, -5);
+      AppRemoteConfig.apply(remote, provider);
+      expect(provider.tvPlaybackPopunderNetwork, isNull);
+      expect(provider.tvPlaybackPopupFrequencyMinutes, 0);
+      expect(provider.playbackPopunderNetwork, AdNetwork.clickadu);
+    });
+
+    testWidgets('TV serves its own network while phones keep theirs',
+        (tester) async {
+      final tv = jsonDecode(clickadu) as Map<String, dynamic>;
+      tv['tv_popunder'] = tv['popunder'];
+      provider
+        ..setPopunderAdsConfig(parseClickadu(jsonEncode(tv), enabled: true))
+        ..setAdsterraPlaybackAdsConfig(
+            AdsterraPlaybackAdsConfig.parse(tvCatalog, enabled: true))
+        ..setPlaybackPopunderNetwork(AdNetwork.clickadu)
+        ..setTvPlaybackPopunderNetwork(AdNetwork.adsterra);
+      await pumpHost(tester);
+      final phone = service.preloadStreamFound(host)!;
+      expect(phone.placement.network, AdNetwork.clickadu);
+      phone.dispose();
+      final television = service.preloadStreamFound(host, television: true)!;
+      expect(television.placement.trackedSmartlinkUrl,
+          Uri.parse('https://ads.example/smartlink?psid=fqtv'));
+      television.dispose();
+
+      provider.setTvPlaybackPopunderNetwork(null);
+      expect(service.preloadStreamFound(host, television: true), isNull);
+      expect(await service.streamFound(host, television: true), isTrue);
+      expect(find.byType(AdsterraPlaybackAdScreen), findsNothing);
+      final phoneAgain = service.preloadStreamFound(host)!;
+      expect(phoneAgain.placement.network, AdNetwork.clickadu);
+      phoneAgain.dispose();
+      await tester.pumpAndSettle();
+    }, variant: android);
 
     testWidgets('its popup opens in the ad page with the held close',
         (tester) async {

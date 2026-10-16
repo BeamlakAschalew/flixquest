@@ -528,6 +528,10 @@ abstract class  LocaleKeys {
   static const goto_update = 'goto_update';
   static const disable_notification_version = 'disable_notification_version';
   static const report_telegram = 'report_telegram';
+  static const telegram_prompt_title = 'telegram_prompt_title';
+  static const telegram_prompt_message = 'telegram_prompt_message';
+  static const telegram_prompt_join = 'telegram_prompt_join';
+  static const telegram_prompt_dont_show_again = 'telegram_prompt_dont_show_again';
   static const check_connection = 'check_connection';
   static const open_external = 'open_external';
   static const no_channels = 'no_channels';

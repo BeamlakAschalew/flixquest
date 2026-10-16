@@ -122,8 +122,27 @@ class AppDependencyProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Which network serves the popup on Android TV; null serves none. Follows
+  /// [playbackPopunderNetwork] until TV gets its own.
+  AdNetwork? _tvPlaybackPopunderNetwork;
+  bool _tvFollowsPlaybackPopunderNetwork = true;
+  AdNetwork? get tvPlaybackPopunderNetwork => _tvFollowsPlaybackPopunderNetwork
+      ? _playbackPopunderNetwork
+      : _tvPlaybackPopunderNetwork;
+
+  void setTvPlaybackPopunderNetwork(AdNetwork? network,
+      {bool followMobile = false}) {
+    if (_tvFollowsPlaybackPopunderNetwork == followMobile &&
+        _tvPlaybackPopunderNetwork == network) {
+      return;
+    }
+    _tvFollowsPlaybackPopunderNetwork = followMobile;
+    _tvPlaybackPopunderNetwork = network;
+    notifyListeners();
+  }
+
   /// Minimum minutes between visible stream-found popups; zero allows every
-  /// playback. Shared by all popup networks, including their TV placements.
+  /// playback. Shared by all popup networks on phones.
   int _playbackPopupFrequencyMinutes = 0;
   int get playbackPopupFrequencyMinutes => _playbackPopupFrequencyMinutes;
 
@@ -134,17 +153,33 @@ class AppDependencyProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// The interval on Android TV; null follows [playbackPopupFrequencyMinutes].
+  int? _tvPlaybackPopupFrequencyMinutes;
+  int get tvPlaybackPopupFrequencyMinutes =>
+      _tvPlaybackPopupFrequencyMinutes ?? _playbackPopupFrequencyMinutes;
+
+  void setTvPlaybackPopupFrequencyMinutes(int? minutes) {
+    final normalized = minutes == null || minutes >= 0 ? minutes : 0;
+    if (_tvPlaybackPopupFrequencyMinutes == normalized) return;
+    _tvPlaybackPopupFrequencyMinutes = normalized;
+    notifyListeners();
+  }
+
   /// Everything that decides a playback ad. A change closes an active one.
   ({
     AdNetwork? network,
     AdsterraPlaybackAdsConfig adsterra,
     Map<AdNetwork, PopunderAdsConfig> popunders,
     int popupFrequencyMinutes,
+    AdNetwork? tvNetwork,
+    int tvPopupFrequencyMinutes,
   }) get playbackAdsSelection => (
         network: _playbackPopunderNetwork,
         adsterra: _adsterraPlaybackAds,
         popunders: _popunderAds,
         popupFrequencyMinutes: _playbackPopupFrequencyMinutes,
+        tvNetwork: tvPlaybackPopunderNetwork,
+        tvPopupFrequencyMinutes: tvPlaybackPopupFrequencyMinutes,
       );
 
   VastPrerollConfig _vastPreroll = const VastPrerollConfig();
@@ -204,6 +239,24 @@ class AppDependencyProvider extends ChangeNotifier {
 
   String _tmdbProxy = '';
   String get tmdbProxy => _tmdbProxy;
+
+  /// The Telegram channel Home invites people to join; null hides the invite.
+  Uri? _telegramChannelUrl;
+  Uri? get telegramChannelUrl => _telegramChannelUrl;
+
+  /// Takes an `https://t.me/...` link (or a `tg:` one); anything else, empty
+  /// included, turns the invite off.
+  void setTelegramChannelUrl(String value) {
+    final uri = Uri.tryParse(value.trim());
+    final valid = uri != null &&
+        (((uri.scheme == 'https' || uri.scheme == 'http') &&
+                uri.host.isNotEmpty) ||
+            uri.scheme == 'tg');
+    final url = valid ? uri : null;
+    if (_telegramChannelUrl == url) return;
+    _telegramChannelUrl = url;
+    notifyListeners();
+  }
 
   OccasionalThemeCatalog _occasionalThemeCatalog =
       const OccasionalThemeCatalog.disabled();

@@ -178,6 +178,10 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   int? _phoneNextEpisodeCountdown;
   Timer? _phoneNextEpisodeTimer;
   bool _playerControlsVisible = false;
+
+  /// Picture in Picture shows the video alone, so the next-episode card
+  /// steps aside while it is open.
+  bool _inPictureInPicture = false;
   String? _lastNextEpisodeDebugSignature;
   Timer? _tvNextEpisodeTimer;
   EpisodeMetadata? _tvNextEpisode;
@@ -805,6 +809,15 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           unawaited(WakelockPlus.enable());
         });
         break;
+      case BetterPlayerEventType.pipStart:
+        _inPictureInPicture = true;
+        if (mounted) closePlayerPopups(context);
+        _nextEpisodeOverlay?.markNeedsBuild();
+        break;
+      case BetterPlayerEventType.pipStop:
+        _inPictureInPicture = false;
+        _nextEpisodeOverlay?.markNeedsBuild();
+        break;
       case BetterPlayerEventType.controlsVisible:
         _updatePlayerControlsVisibility(true);
         break;
@@ -1341,7 +1354,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
 
   Widget _buildPhoneNextEpisodeCard(BuildContext context) {
     final episode = _phoneNextEpisode;
-    if (episode == null) return const SizedBox.shrink();
+    if (episode == null || _inPictureInPicture) return const SizedBox.shrink();
     final counting = _phoneNextEpisodeCountdown != null;
     return _TvNextEpisodeOverlay(
       touch: true,

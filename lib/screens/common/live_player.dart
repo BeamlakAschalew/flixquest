@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../constants/app_constants.dart';
 import '../../design/app_tokens.dart';
@@ -182,6 +183,10 @@ class _LivePlayerState extends State<LivePlayer> {
       currentUrl: _currentVideoUrl,
     );
 
+    // Playback owns the screen for the whole session on both surfaces. Better
+    // Player only holds a wakelock inside its own fullscreen route, which TV
+    // and the inline portrait layout never enter.
+    unawaited(WakelockPlus.enable());
     betterPlayerBufferingConfiguration = liveBufferingConfiguration;
 
     betterPlayerControlsConfiguration =
@@ -929,9 +934,16 @@ class _LivePlayerState extends State<LivePlayer> {
         break;
       case BetterPlayerEventType.hideFullscreen:
         _trackPlayerEvent('fullscreen_closed');
+        // Leaving Better Player's fullscreen route unconditionally clears the
+        // screen-on flag. Re-asserting on the next frame lands after that
+        // cleanup and restores the player-lifetime hold.
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) unawaited(WakelockPlus.enable());
+        });
         break;
       case BetterPlayerEventType.pipStart:
         _trackPlayerEvent('pip_started');
+        if (mounted) closePlayerPopups(context);
         break;
       case BetterPlayerEventType.pipStop:
         _trackPlayerEvent('pip_stopped');
@@ -1239,6 +1251,7 @@ class _LivePlayerState extends State<LivePlayer> {
     _watchdogTimer?.cancel();
     _watchdogClock.stop();
     _cancelPlaybackRecovery();
+    unawaited(WakelockPlus.disable());
     _betterPlayerController.removeEventsListener(_onPlayerEvent);
     _playbackFailure.dispose();
     _stopWatchClock();

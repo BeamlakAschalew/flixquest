@@ -14,6 +14,7 @@ import '../screens/home_screen.dart';
 import '../screens/my_flixquest_screen.dart';
 import '../screens/new_and_hot_screen.dart';
 import '../screens/search_screen.dart';
+import '../widgets/telegram_channel_prompt.dart';
 import 'mobile_nav_bar.dart';
 import 'mobile_tabs.dart';
 
@@ -213,7 +214,7 @@ class _AppTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (tab) {
-      MobileTab.home => const HomeScreen(),
+      MobileTab.home => const TelegramChannelPrompt(child: HomeScreen()),
       MobileTab.newAndHot => const NewAndHotScreen(),
       MobileTab.discover => const DiscoverScreen(),
       MobileTab.search => const SearchScreen(),
