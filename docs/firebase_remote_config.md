@@ -61,6 +61,35 @@ splash remains bundled because it appears before Firebase initializes.
 | `flixquest_api_instances` | String | Empty | JSON array or `{"instances": [...]}` defining load-balanced FlixQuest scraper endpoints. |
 | `flixquest_api_url_v2` | String | Empty | Legacy single fallback URL for the scraper API. |
 
+## Telegram channel prompt
+
+| Parameter | Firebase type | Default | Purpose |
+| --- | --- | --- | --- |
+| `telegram_channel_url` | String | Empty | The channel phone users are invited to join from Home, e.g. `https://t.me/flixquestapp`. Empty, unpublished or not an `http(s)`/`tg:` link turns the invite off. |
+
+On phones and tablets (never Android TV), Home shows the invite two seconds
+after it is on screen, at most once a launch. **Join channel** opens the link
+outside the app and stops the invite for good, until a different link is
+published. **Don't show again** hides it for 14 days. Closing it only skips
+this launch. Publish an empty value to stop the invite everywhere.
+
+## App updates
+
+| Parameter | Firebase type | Default | Purpose |
+| --- | --- | --- | --- |
+| `forced_update` | Boolean | `false` | Makes a newer release mandatory: the update page covers the whole app, including a title or the player already open. |
+| `latest_version` | String | Empty | The newest release's version name. |
+| `latest_build_number` | Number | `0` | The newest release's build number; compared with the installed build when set. |
+| `min_build_number` | Number | `0` | Used in place of `latest_build_number` when that is `0`. |
+| `app_download_url` | String | Empty | The APK the update page downloads. |
+| `change_log` | String | Empty | Release notes, one item per line. |
+
+A device that fetched a mandatory update stays blocked offline, since the last
+activated values are kept. A device that launches offline before learning of
+it retries the fetch (after 15 s, doubling up to every 5 minutes, and at once
+when the app returns to the foreground), so the update page appears as soon as
+it is back online, over whatever page is open.
+
 ## Ad networks at a glance
 
 FlixQuest serves three ad formats, and each one picks its network with its own
@@ -682,8 +711,15 @@ catalog, `tv_popunder`, with the same fields as `popunder`. Only formats that
 open without a touch are accepted: `mode: "smartlink"` (Adsterra Smartlink, a
 Clickadu or Monetag Direct Link), or Clickadu's and Monetag's tags (`page` or
 `script`), which FlixQuest starts itself on Android. Any other `tv_popunder` is ignored. Without one, TV
-shows no popup; the selected `playback_popunder_network` still decides which
-catalog is read. The Social Bar and the experiment never run on TV.
+shows no popup. The Social Bar and the experiment never run on TV.
+
+TV picks its catalog with `tv_playback_popunder_network` and spaces its popups
+with `tv_playback_popup_frequency_minutes`. Until those are published, TV
+follows `playback_popunder_network` and `playback_popup_frequency_minutes`, so
+publish them to serve TV from a different network or at a different rate than
+phones. The selected network's own `<network>_playback_enabled` switch still
+applies on TV. To stop TV popups only, publish
+`tv_playback_popunder_network=none`.
 
 ```json
 {
@@ -818,7 +854,9 @@ The Social Bar before the loader is Adsterra-only and stays controlled by
 | Parameter | Type | Default | Purpose |
 | --- | --- | --- | --- |
 | `playback_popunder_network` | String | `adsterra` | `adsterra` uses `adsterra_playback_ads` (its `popunder` or experiment). `clickadu` uses `clickadu_playback_ads`. `monetag` uses `monetag_playback_ads`. `exoclick` uses `exoclick_playback_ads`. `none`, or any other value, shows no stream-found popup. Case-insensitive. |
-| `playback_popup_frequency_minutes` | Number | `0` | Minimum whole minutes between visible stream-found popup ads, shared by all networks and mobile/TV placements. `0` allows every eligible playback; positive values set an interval. |
+| `playback_popup_frequency_minutes` | Number | `0` | Minimum whole minutes between visible stream-found popup ads on phones, shared by all networks. `0` allows every eligible playback; positive values set an interval. Android TV uses it too until `tv_playback_popup_frequency_minutes` is published. |
+| `tv_playback_popunder_network` | String | Unpublished | The popup network on Android TV, with the same values as `playback_popunder_network`; the selected catalog's `tv_popunder` is shown. Until published, TV follows `playback_popunder_network`. `none` turns the TV popup off without touching phones. |
+| `tv_playback_popup_frequency_minutes` | Number | Unpublished | As `playback_popup_frequency_minutes`, for Android TV only. Until published, TV follows the phone interval. |
 | `clickadu_playback_enabled` | Boolean | `false` | Clickadu's own switch. Must be published remotely. |
 | `clickadu_playback_ads` | String (JSON) | `{}` | Clickadu's `popunder` placement. |
 | `monetag_playback_enabled` | Boolean | `false` | Monetag's own switch. Must be published remotely. |

@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../constants/app_constants.dart';
 import '../../design/app_tokens.dart';
@@ -182,6 +183,10 @@ class _LivePlayerState extends State<LivePlayer> {
       currentUrl: _currentVideoUrl,
     );
 
+    // Playback owns the screen for the whole session on both surfaces. Better
+    // Player only holds a wakelock inside its own fullscreen route, which TV
+    // and the inline portrait layout never enter.
+    unawaited(WakelockPlus.enable());
     betterPlayerBufferingConfiguration = liveBufferingConfiguration;
 
     betterPlayerControlsConfiguration =
@@ -238,12 +243,15 @@ class _LivePlayerState extends State<LivePlayer> {
   void _checkPlaybackProgress() {
     if (!mounted) return;
     final value = _betterPlayerController.videoPlayerController?.value;
+    // Offline, the player waits for the connection by itself; a stall then
+    // says nothing about the stream.
     if (_isSwitching ||
         _recoveryStartedAt != null ||
         _playbackFailure.value != null ||
         value == null ||
         !value.initialized ||
-        value.hasError) {
+        value.hasError ||
+        !value.isNetworkAvailable) {
       _watchdog.reset();
       return;
     }
@@ -620,6 +628,12 @@ class _LivePlayerState extends State<LivePlayer> {
       _scheduleAutomaticRecovery();
       return;
     }
+    if (!_isNetworkAvailable) {
+      // A replacement source would fail the same way. Check again later
+      // without spending an attempt.
+      _scheduleAutomaticRecovery();
+      return;
+    }
     _automaticRecoveryRunning = true;
     final generation = _recoveryGeneration;
     final operation = _beginSourceOperation();
@@ -792,8 +806,20 @@ class _LivePlayerState extends State<LivePlayer> {
     _betterPlayerController.setControlsEnabled(true);
   }
 
+  bool get _isNetworkAvailable =>
+      _betterPlayerController.videoPlayerController?.value.isNetworkAvailable ??
+      true;
+
   void _showTerminalPlaybackError(int generation) {
     if (!_isActiveRecovery(generation)) return;
+    if (!_isNetworkAvailable) {
+      // No connection is not a broken channel: keep waiting for it.
+      _recoveryDeadlineTimer = Timer(
+        const Duration(seconds: 30),
+        () => _showTerminalPlaybackError(generation),
+      );
+      return;
+    }
     final error = _lastPlaybackError ??
         tr('player_did_not_recover');
     _sourceOperationGeneration++;
@@ -908,9 +934,16 @@ class _LivePlayerState extends State<LivePlayer> {
         break;
       case BetterPlayerEventType.hideFullscreen:
         _trackPlayerEvent('fullscreen_closed');
+        // Leaving Better Player's fullscreen route unconditionally clears the
+        // screen-on flag. Re-asserting on the next frame lands after that
+        // cleanup and restores the player-lifetime hold.
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) unawaited(WakelockPlus.enable());
+        });
         break;
       case BetterPlayerEventType.pipStart:
         _trackPlayerEvent('pip_started');
+        if (mounted) closePlayerPopups(context);
         break;
       case BetterPlayerEventType.pipStop:
         _trackPlayerEvent('pip_stopped');
@@ -1218,6 +1251,7 @@ class _LivePlayerState extends State<LivePlayer> {
     _watchdogTimer?.cancel();
     _watchdogClock.stop();
     _cancelPlaybackRecovery();
+    unawaited(WakelockPlus.disable());
     _betterPlayerController.removeEventsListener(_onPlayerEvent);
     _playbackFailure.dispose();
     _stopWatchClock();

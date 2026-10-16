@@ -36,6 +36,9 @@ class AppRemoteConfig {
   static const playbackPopunderNetworkKey = 'playback_popunder_network';
   static const playbackPopupFrequencyMinutesKey =
       'playback_popup_frequency_minutes';
+  static const tvPlaybackPopunderNetworkKey = 'tv_playback_popunder_network';
+  static const tvPlaybackPopupFrequencyMinutesKey =
+      'tv_playback_popup_frequency_minutes';
   static const clickaduPlaybackEnabledKey = 'clickadu_playback_enabled';
   static const clickaduPlaybackAdsKey = 'clickadu_playback_ads';
   static const monetagPlaybackEnabledKey = 'monetag_playback_enabled';
@@ -45,6 +48,7 @@ class AppRemoteConfig {
   static const vastPrerollEnabledKey = 'vast_preroll_enabled';
   static const vastPrerollKey = 'vast_preroll';
   static const vastPrerollNetworkKey = 'vast_preroll_network';
+  static const telegramChannelUrlKey = 'telegram_channel_url';
 
   /// Live TV used to ride on the OTT flag before it got a dedicated key.
   static const legacyEnableLiveTvKey = 'enable_ott';
@@ -98,6 +102,8 @@ class AppRemoteConfig {
       vastPrerollEnabledKey: false,
       vastPrerollKey: '{}',
       vastPrerollNetworkKey: 'clickadu',
+      // Empty keeps the Home prompt to join the channel off.
+      telegramChannelUrlKey: '',
     });
   }
 
@@ -206,6 +212,20 @@ class AppRemoteConfig {
         AdNetwork.parse(remoteConfig.getString(playbackPopunderNetworkKey)));
     provider.setPlaybackPopupFrequencyMinutes(
         remoteConfig.getValue(playbackPopupFrequencyMinutesKey).asInt());
+    // Android TV follows the phone selector and interval until its own keys
+    // are published.
+    final tvNetwork = remoteConfig.getValue(tvPlaybackPopunderNetworkKey);
+    final tvNetworkPublished = tvNetwork.source == ValueSource.valueRemote;
+    provider.setTvPlaybackPopunderNetwork(
+      tvNetworkPublished ? AdNetwork.parse(tvNetwork.asString()) : null,
+      followMobile: !tvNetworkPublished,
+    );
+    final tvFrequency =
+        remoteConfig.getValue(tvPlaybackPopupFrequencyMinutesKey);
+    provider.setTvPlaybackPopupFrequencyMinutes(
+        tvFrequency.source == ValueSource.valueRemote
+            ? tvFrequency.asInt()
+            : null);
     if (kDebugMode) {
       final network = provider.playbackPopunderNetwork;
       final catalogKey = switch (network) {
@@ -234,6 +254,8 @@ class AppRemoteConfig {
       debugPrint('[PlaybackAdConfig] selected=${network?.name ?? 'none'} '
           'catalog=${catalogKey ?? 'none'} source=$source '
           'popupFrequencyMinutes=${provider.playbackPopupFrequencyMinutes} '
+          'tvNetwork=${provider.tvPlaybackPopunderNetwork?.name ?? 'none'} '
+          'tvPopupFrequencyMinutes=${provider.tvPlaybackPopupFrequencyMinutes} '
           'enabled=$enabled interstitialEnabled=$interstitialEnabled '
           'mode=${placement?.mode ?? 'disabled/invalid'} '
           'target=${target == null ? 'none' : '${target.origin}${target.path}'}');
@@ -265,6 +287,8 @@ class AppRemoteConfig {
       changeLog: remoteConfig.getString('change_log'),
     );
     provider.tmdbProxy = remoteConfig.getString('tmdb_proxy');
+    provider.setTelegramChannelUrl(
+        remoteConfig.getString(telegramChannelUrlKey));
     final remoteTmdbKey = remoteConfig.getString(tmdbApiKey).trim();
     if (remoteTmdbKey.isNotEmpty) {
       TMDB_API_KEY = remoteTmdbKey;

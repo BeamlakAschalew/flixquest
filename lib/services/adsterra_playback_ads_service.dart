@@ -15,7 +15,8 @@ export '../widgets/adsterra_playback_ad_screen.dart' show PlaybackAdPreload;
 
 /// One coordinator for every playback entry point, phone and TV. Skipped or
 /// failed ads continue immediately; an overlapping request never starts
-/// another loader. TV shows only a stream-found `tv_popunder`.
+/// another loader. TV shows only a stream-found `tv_popunder`, from its own
+/// network and interval.
 class AdsterraPlaybackAdsService {
   AdsterraPlaybackAdsService({
     Future<SharedPreferences> Function()? preferences,
@@ -89,14 +90,19 @@ class AdsterraPlaybackAdsService {
     final selection = provider?.playbackAdsSelection;
     final tv = television || DevicePresentationService.instance.isTelevision;
     if (provider == null || selection == null) return null;
-    if (_popupCoolingDown(selection.popupFrequencyMinutes)) return null;
-    final placement = switch (selection.network) {
+    if (_popupCoolingDown(tv
+        ? selection.tvPopupFrequencyMinutes
+        : selection.popupFrequencyMinutes)) {
+      return null;
+    }
+    final network = tv ? selection.tvNetwork : selection.network;
+    final placement = switch (network) {
       AdNetwork.adsterra => selection.adsterra
           .forStage(PlaybackAdStage.streamFound, television: tv),
       AdNetwork.clickadu ||
       AdNetwork.monetag ||
       AdNetwork.exoclick =>
-        selection.popunders[selection.network]?.activeFor(television: tv),
+        selection.popunders[network]?.activeFor(television: tv),
       null => null,
     };
     if (placement == null) return null;
@@ -144,7 +150,9 @@ class AdsterraPlaybackAdsService {
     final selection = provider?.playbackAdsSelection;
     final network = stage == PlaybackAdStage.beforeLoader
         ? AdNetwork.adsterra
-        : selection?.network;
+        : tv
+            ? selection?.tvNetwork
+            : selection?.network;
     final config = selection?.adsterra;
     var placement = switch (network) {
       AdNetwork.adsterra => config?.forStage(stage, television: tv),
@@ -161,9 +169,11 @@ class AdsterraPlaybackAdsService {
     }
     _busy = true;
     final host = ModalRoute.of(context);
+    final frequencyMinutes = tv
+        ? selection!.tvPopupFrequencyMinutes
+        : selection!.popupFrequencyMinutes;
     try {
-      if (stage == PlaybackAdStage.streamFound &&
-          selection!.popupFrequencyMinutes > 0) {
+      if (stage == PlaybackAdStage.streamFound && frequencyMinutes > 0) {
         await _loadPopupHistory();
         // A config update or navigation while reading storage must not hand
         // playback to an obsolete loader, even when the popup would be skipped.
@@ -174,10 +184,9 @@ class AdsterraPlaybackAdsService {
         }
         final state = WidgetsBinding.instance.lifecycleState;
         if (state != null && state != AppLifecycleState.resumed) return true;
-        if (_popupCoolingDown(selection.popupFrequencyMinutes)) {
+        if (_popupCoolingDown(frequencyMinutes)) {
           preload?.dispose();
-          _logSkip(stage,
-              'popup frequency=${selection.popupFrequencyMinutes} minutes');
+          _logSkip(stage, 'popup frequency=$frequencyMinutes minutes');
           return true;
         }
       }

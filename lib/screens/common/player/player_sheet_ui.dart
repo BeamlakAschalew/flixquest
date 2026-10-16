@@ -66,6 +66,19 @@ class PlayerTheme extends StatelessWidget {
   }
 }
 
+/// Closes the sheets, dialogs and menus open over the player, so Picture in
+/// Picture shows the video alone. They can sit on the player's own navigator
+/// or, over Better Player's fullscreen route, on the root one.
+void closePlayerPopups(BuildContext context) {
+  final navigators = {
+    Navigator.maybeOf(context),
+    Navigator.maybeOf(context, rootNavigator: true),
+  }.whereType<NavigatorState>();
+  for (final navigator in navigators) {
+    navigator.popUntil((route) => route is! PopupRoute);
+  }
+}
+
 /// A sheet from the player: a panel in the app's mode, rounded at the top
 /// and never wider than a tablet column.
 Future<T?> showPlayerSheet<T>({

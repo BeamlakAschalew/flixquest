@@ -43,6 +43,7 @@ BetterPlayerControlsStrings playerControlsStrings() =>
       stretchDescription: tr('player_stretch_description'),
       live: tr('player_live'),
       playbackFailed: tr('player_playback_failed'),
+      waitingForNetwork: tr('player_waiting_for_network'),
       settings: tr('settings'),
       playerSettings: tr('player_settings'),
       audioTrack: tr('player_audio_track'),

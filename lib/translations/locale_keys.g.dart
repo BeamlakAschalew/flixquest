@@ -528,6 +528,10 @@ abstract class  LocaleKeys {
   static const goto_update = 'goto_update';
   static const disable_notification_version = 'disable_notification_version';
   static const report_telegram = 'report_telegram';
+  static const telegram_prompt_title = 'telegram_prompt_title';
+  static const telegram_prompt_message = 'telegram_prompt_message';
+  static const telegram_prompt_join = 'telegram_prompt_join';
+  static const telegram_prompt_dont_show_again = 'telegram_prompt_dont_show_again';
   static const check_connection = 'check_connection';
   static const open_external = 'open_external';
   static const no_channels = 'no_channels';
@@ -1049,6 +1053,7 @@ abstract class  LocaleKeys {
   static const player_stretch_description = 'player_stretch_description';
   static const player_live = 'player_live';
   static const player_playback_failed = 'player_playback_failed';
+  static const player_waiting_for_network = 'player_waiting_for_network';
   static const player_playback_failed_hint = 'player_playback_failed_hint';
   static const player_playback_retry_hint = 'player_playback_retry_hint';
   static const player_backup_streams = 'player_backup_streams';
