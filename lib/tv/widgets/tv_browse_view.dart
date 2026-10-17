@@ -632,6 +632,8 @@ class _TvBrowseViewState extends State<TvBrowseView> {
       ),
       itemSpacing: _cardSpacing,
       itemFocusScale: _cardFocusScale,
+      // Rows run to the screen edge; the last card stops clear of overscan.
+      trailingInset: TvShellInsets.of(context).right,
       onItemActivated: row.onItemActivated ?? widget.onOpenMedia,
       onItemFocused: (item) {
         _showItem(item);
@@ -672,6 +674,7 @@ class _TvBrowseViewState extends State<TvBrowseView> {
       ),
       itemSpacing: _cardSpacing,
       itemFocusScale: _cardFocusScale,
+      trailingInset: TvShellInsets.of(context).right,
       onItemActivated: widget.onOpenMedia,
       onItemFocused: (item) {
         _showItem(item);
@@ -699,6 +702,7 @@ class _TvBrowseViewState extends State<TvBrowseView> {
       ),
       itemSpacing: _cardSpacing,
       itemFocusScale: _cardFocusScale,
+      trailingInset: TvShellInsets.of(context).right,
       onItemActivated: (shortcut) => shortcut.onActivate(),
       onItemMenu: row.onShortcutMenu,
       itemMenuHint: row.menuHint,
