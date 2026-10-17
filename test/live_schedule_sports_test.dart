@@ -101,4 +101,63 @@ void main() {
       ],
     });
   });
+
+  test('sports wearing another sport\'s emoji get sections of their own', () {
+    // As /api/v2/dlhd/epg served them on 2026-10-16.
+    final day =
+        DaddyLiveEpgDay(label: 'Fri', categories: <DaddyLiveEpgCategory>[
+      _category('Tennis 🎾', <DaddyLiveEpgEvent>[
+        _event('🎾 ATP Shanghai : A vs B'),
+      ]),
+      _category('Squash 🎾', <DaddyLiveEpgEvent>[
+        _event('🎾 Squash Open of Egypt 2026 🇪🇬'),
+        _event(
+            "🎾 Premier Padel. Milan (T2026): Women's Quarter-Finals 1 🇮🇹"),
+      ]),
+      _category('Rugby Union 🏉', <DaddyLiveEpgEvent>[
+        _event('🏉 URC : Leinster vs Munster'),
+      ]),
+      _category('Aussie rules (AFL) 🏉', <DaddyLiveEpgEvent>[
+        _event('🏉 AFL Women : Melbourne Demons W 🇦🇺 vs Richmond W 🇦🇺'),
+      ]),
+      // Named by the title even inside a tennis category.
+      _category('Tennis 🎾 Nottingham, Great Britain', <DaddyLiveEpgEvent>[
+        _event('🎾 Pickleball Masters'),
+      ]),
+      // An emoji of its own is kept: table tennis groups as before.
+      _category('Table Tennis 🏓', <DaddyLiveEpgEvent>[
+        _event('🏓 WTT Champions : C vs D'),
+      ]),
+    ]);
+
+    expect(_summary(day), <String, List<String>>{
+      '🎾 Tennis': <String>['🎾 ATP Shanghai : A vs B'],
+      'Squash': <String>['🎾 Squash Open of Egypt 2026 🇪🇬'],
+      'Padel': <String>[
+        "🎾 Premier Padel. Milan (T2026): Women's Quarter-Finals 1 🇮🇹",
+      ],
+      '🏉 Rugby Union': <String>['🏉 URC : Leinster vs Munster'],
+      'Aussie Rules': <String>[
+        '🏉 AFL Women : Melbourne Demons W 🇦🇺 vs Richmond W 🇦🇺',
+      ],
+      'Pickleball': <String>['🎾 Pickleball Masters'],
+      '🏓 Table Tennis': <String>['🏓 WTT Champions : C vs D'],
+    });
+  });
+
+  test('borrowed-sport words count as whole words only', () {
+    final day =
+        DaddyLiveEpgDay(label: 'Fri', categories: <DaddyLiveEpgCategory>[
+      _category('Tennis 🎾', <DaddyLiveEpgEvent>[
+        // "Squashed", "Daffle": no sport named.
+        _event('🎾 Squashed Rally Highlights'),
+        _event('🎾 Daffle Cup'),
+      ]),
+      _category('Rugby League 🏉', <DaddyLiveEpgEvent>[
+        _event('🏉 NRL : Broncos vs Storm'),
+      ]),
+    ]);
+
+    expect(_summary(day).keys, <String>['🎾 Tennis', '🏉 Rugby League']);
+  });
 }

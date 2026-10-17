@@ -10,6 +10,7 @@ import '../../controllers/live_tv_database_controller.dart';
 import '../../functions/function.dart';
 import '../../functions/live_channel_letters.dart';
 import '../../functions/live_schedule_sports.dart';
+import '../../functions/live_sport_preferences.dart';
 import '../../models/live_tv.dart';
 import '../../provider/app_dependency_provider.dart';
 import '../../provider/settings_provider.dart';
@@ -30,6 +31,7 @@ import '../widgets/tv_content_grid.dart';
 import '../widgets/tv_dialog.dart';
 import '../widgets/tv_loading_skeletons.dart';
 import '../widgets/tv_search_keyboard.dart';
+import '../widgets/tv_sport_picker.dart';
 
 enum _TvLiveScope { all, favorites, recent }
 
@@ -78,6 +80,12 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
   String? _letter;
   int _selectedDayIndex = 0;
   String? _sport;
+  // Sports the viewer follows, by [LiveSport.id]; their sections lead the
+  // schedule.
+  Set<String> _preferredSports = <String>{};
+  // Set once a link has asked for a channel, which the sports question must
+  // not cover.
+  bool _openedForChannel = false;
   // Schedule events start collapsed; keys come from [_eventKey].
   final Set<String> _expandedEvents = <String>{};
   String? _resolvingId;
@@ -94,8 +102,39 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
     LiveChannelFocus.pending.addListener(_onChannelFocusRequested);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _analytics.trackLiveTVScreenOpened(surface: _analyticsSurface);
-      _load();
+      _load().then((_) => _askSports());
     });
+  }
+
+  /// Asks a first-time viewer which sports they follow, once the catalog is
+  /// in. A link to a channel is not interrupted, and a failed load leaves the
+  /// question for the next visit.
+  Future<void> _askSports() async {
+    if (!mounted || _openedForChannel || _error != null) return;
+    if (await _daddyDatabase.getPreferredSports() != null || !mounted) return;
+    if (_openedForChannel) return;
+    await _editSports(firstTime: true);
+  }
+
+  /// Opens the sports picker. Backing out of it the first time counts as
+  /// skipping, so the viewer is not asked on every visit.
+  Future<void> _editSports({bool firstTime = false}) async {
+    final picked = await showTvSportPicker(
+      context,
+      initial: _preferredSports,
+      firstTime: firstTime,
+    );
+    if (!mounted || (picked == null && !firstTime)) return;
+    final sports = picked ?? const <String>{};
+    await _daddyDatabase.setPreferredSports(sports);
+    if (!mounted) return;
+    setState(() => _preferredSports = sports);
+    _analytics.trackLiveTVInteraction(
+      surface: _analyticsSurface,
+      action: 'preferred_sports_changed',
+      value: sports.isEmpty ? 'none' : (sports.toList()..sort()).join(','),
+      resultCount: sports.length,
+    );
   }
 
   void _onChannelFocusRequested() {
@@ -112,6 +151,7 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
     if (!mounted || _loading) return;
     final request = LiveChannelFocus.take();
     if (request == null) return;
+    _openedForChannel = true;
     final id = request.channelId;
     final channel = _channels.where((item) => item.id == id).firstOrNull;
     if (channel == null) {
@@ -196,6 +236,7 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
     try {
       final favorites = await _daddyDatabase.getFavoriteIds();
       final recent = await _daddyDatabase.getRecentIds();
+      final preferredSports = await _daddyDatabase.getPreferredSports();
       List<Channel> channels;
       DaddyLiveEpg? epg;
       if (!refresh && await _daddyDatabase.isCacheValid()) {
@@ -216,6 +257,7 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
         _epg = epg;
         _favorites = favorites;
         _recent = recent;
+        _preferredSports = preferredSports ?? <String>{};
         _loading = false;
       });
       _analytics.trackLiveTVCatalogLoad(
@@ -230,10 +272,12 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
     } catch (error) {
       final cached = await _daddyDatabase.getCachedChannels();
       final cachedEpg = await _daddyDatabase.getCachedEpg();
+      final preferredSports = await _daddyDatabase.getPreferredSports();
       if (!mounted) return;
       setState(() {
         _channels = cached;
         _epg = cachedEpg;
+        _preferredSports = preferredSports ?? <String>{};
         _loading = false;
         _error = cached.isEmpty ? friendlyLiveTvError(error) : null;
       });
@@ -318,8 +362,11 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
   List<LiveSportSection> get _sportSections {
     final epg = _epg;
     if (epg == null || epg.days.isEmpty) return const <LiveSportSection>[];
-    return groupScheduleBySport(
-      epg.days[_selectedDayIndex.clamp(0, epg.days.length - 1)],
+    return prioritizeSportSections(
+      groupScheduleBySport(
+        epg.days[_selectedDayIndex.clamp(0, epg.days.length - 1)],
+      ),
+      _preferredSports,
     );
   }
 
@@ -843,6 +890,20 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
           ),
         ),
         const SizedBox(width: 12),
+        if (isSchedule) ...<Widget>[
+          TvFocusable(
+            semanticLabel: tr('my_sports'),
+            onActivate: _editSports,
+            focusScale: 1.025,
+            child: _TvPill(
+              icon: _preferredSports.isEmpty
+                  ? PhosphorIcons.star()
+                  : PhosphorIcons.star(PhosphorIconsStyle.fill),
+              label: tr('my_sports'),
+            ),
+          ),
+          const SizedBox(width: 8),
+        ],
         TvFocusable(
           focusNode: _browseFocus,
           semanticLabel: tr('search_channels'),

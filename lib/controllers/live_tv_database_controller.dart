@@ -16,6 +16,7 @@ class LiveTVDatabaseController {
   String get _recentKey => '${_namespace}_recent_v2';
   String get _epgKey => '${_namespace}_epg_v3';
   String get _epgUpdatedKey => '${_namespace}_epg_updated_v3';
+  String get _preferredSportsKey => '${_namespace}_preferred_sports_v1';
 
   Future<void> cacheChannels(List<Channel> channels) async {
     final preferences = await SharedPreferences.getInstance();
@@ -129,5 +130,17 @@ class LiveTVDatabaseController {
       ..remove(channelId)
       ..insert(0, channelId);
     await preferences.setStringList(_recentKey, recent.take(20).toList());
+  }
+
+  /// The sport ids the viewer follows, or null when they have never been
+  /// asked. An empty set means they were asked and picked none.
+  Future<Set<String>?> getPreferredSports() async {
+    final preferences = await SharedPreferences.getInstance();
+    return preferences.getStringList(_preferredSportsKey)?.toSet();
+  }
+
+  Future<void> setPreferredSports(Set<String> sportIds) async {
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setStringList(_preferredSportsKey, sportIds.toList());
   }
 }
