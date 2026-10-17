@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:math' show min;
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
@@ -25,6 +25,7 @@ import 'services/deep_link_dispatcher.dart';
 import 'services/home_widget_service.dart';
 import 'services/recently_watched_sync_service.dart';
 import 'services/app_remote_config.dart';
+import 'services/remote_config_refresh_controller.dart';
 import 'mobile/app/mobile_shell.dart';
 import 'mobile/app/mobile_update_gate.dart';
 import 'tv/platform/device_presentation.dart';
@@ -56,17 +57,8 @@ class _FlixQuestState extends State<FlixQuest>
   StreamSubscription<RemoteConfigUpdate>? _remoteConfigSubscription;
   Timer? _widgetRefreshDebounce;
 
-  /// Set while the last config fetch failed (offline launch, flaky network).
-  /// Until one succeeds the app keeps retrying, so a mandatory update
-  /// published since the last good fetch still reaches this session.
-  bool _configFetchFailed = false;
-  bool _fetchingConfig = false;
-  int _configRetries = 0;
-  Timer? _configRetry;
-
-  /// Waits 15 s after the first failure, doubling up to five minutes.
-  static Duration configRetryDelay(int retries) =>
-      Duration(seconds: min(15 << min(retries, 5), 300));
+  final Connectivity _connectivity = Connectivity();
+  RemoteConfigRefreshController? _configRefresh;
 
   Future<void> _initConfig() async {
     try {
@@ -76,7 +68,20 @@ class _FlixQuestState extends State<FlixQuest>
       // A slow fetch must not leave playback using the disabled defaults
       // while the last activated settings are already stored on the device.
       AppRemoteConfig.apply(_remoteConfig, widget.appDependencyProvider);
-      await _fetchConfig();
+      _configRefresh = RemoteConfigRefreshController(
+        fetch: _fetchConfig,
+        lastFetchTime: () => _remoteConfig.lastFetchTime,
+        connectivityChanges: _connectivity.onConnectivityChanged
+            .map((results) => results.any((r) => r != ConnectivityResult.none)),
+        checkConnectivity: () async => (await _connectivity.checkConnectivity())
+            .any((r) => r != ConnectivityResult.none),
+      );
+      if (WidgetsBinding.instance.lifecycleState != null &&
+          WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) {
+        _configRefresh!.pause();
+      }
+      await _configRefresh!.refresh();
+      if (mounted) await requestNotificationPermissions();
     } catch (error) {
       if (kDebugMode) {
         debugPrint('[PlaybackAdConfig] initialization failed: $error');
@@ -96,10 +101,7 @@ class _FlixQuestState extends State<FlixQuest>
     }
   }
 
-  Future<void> _fetchConfig({bool requestPermissions = true}) async {
-    if (_fetchingConfig) return;
-    _fetchingConfig = true;
-    _configRetry?.cancel();
+  Future<bool> _fetchConfig() async {
     var fetched = false;
     try {
       final activated = await _remoteConfig.fetchAndActivate();
@@ -118,33 +120,10 @@ class _FlixQuestState extends State<FlixQuest>
       }
       // Cached/default values still provide a safe startup when offline.
     }
-    _fetchingConfig = false;
     if (mounted) {
       AppRemoteConfig.apply(_remoteConfig, widget.appDependencyProvider);
-      _afterConfigFetch(fetched: fetched);
     }
-    if (requestPermissions) await requestNotificationPermissions();
-  }
-
-  void _afterConfigFetch({required bool fetched}) {
-    _configFetchFailed = !fetched;
-    if (fetched) {
-      _configRetries = 0;
-      return;
-    }
-    _configRetry = Timer(configRetryDelay(_configRetries++),
-        () => unawaited(_fetchConfig(requestPermissions: false)));
-  }
-
-  /// Back in the app: retry a failed fetch now rather than at the next tick,
-  /// and refresh a config that has gone stale while the app sat in the
-  /// background.
-  void _refreshConfigOnResume() {
-    final stale = DateTime.now().difference(_remoteConfig.lastFetchTime) >
-        const Duration(hours: 1);
-    if (!_configFetchFailed && !stale) return;
-    _configRetries = 0;
-    unawaited(_fetchConfig(requestPermissions: false));
+    return fetched;
   }
 
   Future<void> _onRemoteConfigUpdated(RemoteConfigUpdate update) async {
@@ -176,7 +155,7 @@ class _FlixQuestState extends State<FlixQuest>
       // Hot reload preserves initState and the provider's old catalog. Fetch
       // and apply the current remote values without repeating permissions.
       await AppRemoteConfig.configure(_remoteConfig);
-      await _fetchConfig(requestPermissions: false);
+      await _configRefresh?.refresh();
     } catch (error) {
       if (kDebugMode) {
         debugPrint('[PlaybackAdConfig] reload refresh failed: $error');
@@ -219,6 +198,7 @@ class _FlixQuestState extends State<FlixQuest>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state != AppLifecycleState.resumed) {
+      _configRefresh?.pause();
       // Leaving the app is the last chance to hand off progress saved by the
       // player, so push it now instead of waiting out the debounce.
       unawaited(RecentlyWatchedSyncService.instance.flushPending());
@@ -227,7 +207,7 @@ class _FlixQuestState extends State<FlixQuest>
     DeepLinkDispatcher.onAppReady();
     unawaited(_refreshHomeWidgets());
     unawaited(RecentlyWatchedSyncService.instance.autoSyncIfSignedIn());
-    _refreshConfigOnResume();
+    unawaited(_configRefresh?.resume());
   }
 
   @override
@@ -236,7 +216,7 @@ class _FlixQuestState extends State<FlixQuest>
     WellnessProvider.instance.removeListener(_scheduleLocalWidgetRefresh);
     widget.bookmarkProvider.removeListener(_scheduleLocalWidgetRefresh);
     _widgetRefreshDebounce?.cancel();
-    _configRetry?.cancel();
+    _configRefresh?.dispose();
     _remoteConfigSubscription?.cancel();
     super.dispose();
   }

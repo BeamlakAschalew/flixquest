@@ -86,9 +86,14 @@ this launch. Publish an empty value to stop the invite everywhere.
 
 A device that fetched a mandatory update stays blocked offline, since the last
 activated values are kept. A device that launches offline before learning of
-it retries the fetch (after 15 s, doubling up to every 5 minutes, and at once
-when the app returns to the foreground), so the update page appears as soon as
-it is back online, over whatever page is open.
+it retries the fetch at most three times (after 15 s, 30 s and 60 s). A known
+disconnection pauses retries until connectivity returns. Reconnection or app
+resume can start a new retry burst after a failure, with a one-minute cooldown
+between recovery attempts. Retries stop while the app is in the background.
+Normal production fetches use a 30-minute minimum interval; debug builds use zero.
+The real-time listener still receives published updates independently of that
+interval. Once the required update configuration arrives, the update page appears
+over whatever page is open.
 
 ## Ad networks at a glance
 
