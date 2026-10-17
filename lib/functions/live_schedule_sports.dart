@@ -1,8 +1,9 @@
 import '../models/live_tv.dart';
 
-/// A sport group derived from one schedule day. Nothing here is a fixed
-/// list: groups come from the sport emoji the upstream schedule puts on every
-/// event, and names from the upstream category names inside each group.
+/// A sport group derived from one schedule day. Groups come from the sport
+/// emoji the upstream schedule puts on every event, and names from the
+/// upstream category names inside each group. The one fixed list is
+/// [_borrowedEmojiSports], for sports upstream marks with another's emoji.
 class LiveSportSection {
   const LiveSportSection({
     required this.name,
@@ -36,12 +37,21 @@ List<LiveSportSection> _group(DaddyLiveEpgDay day) {
   // emoji covers titles without one.
   final byMarker = <String, ({String emoji, List<_Entry> entries})>{};
   final unmarked = <_Entry>[];
+  final borrowed = <String, List<_Entry>>{};
   var index = 0;
   for (final category in day.categories) {
     for (final event in category.events) {
       final entry = (index: index++, category: category.name, event: event);
       final marker = _leadingEmoji(event.title) ?? _firstEmoji(category.name);
-      if (marker == null) {
+      // Squash under 🎾 is not tennis: a sport named by the title, or else
+      // the category, wearing an emoji it borrows keeps its own section.
+      final sport = marker == null
+          ? null
+          : _borrowedSport(marker.key, event.title) ??
+              _borrowedSport(marker.key, category.name);
+      if (sport != null) {
+        (borrowed[sport] ??= <_Entry>[]).add(entry);
+      } else if (marker == null) {
         unmarked.add(entry);
       } else {
         (byMarker[marker.key] ??= (emoji: marker.display, entries: []))
@@ -78,6 +88,10 @@ List<LiveSportSection> _group(DaddyLiveEpgDay day) {
     final name = _cleanCategoryName(entry.category);
     add(name.isEmpty ? entry.category : name, '', <_Entry>[entry]);
   }
+  // The emoji they came with belongs to another sport, so they show none.
+  for (final entry in borrowed.entries) {
+    add(entry.key, '', entry.value);
+  }
 
   int firstIndex(List<_Entry> entries) => entries.fold(
       entries.first.index, (min, e) => e.index < min ? e.index : min);
@@ -91,6 +105,61 @@ List<LiveSportSection> _group(DaddyLiveEpgDay day) {
         events: _byStartTime(_unique(section.entries)),
       ),
   ];
+}
+
+/// Sports the upstream schedule files under another sport's emoji: squash
+/// and padel wear 🎾, Australian rules 🏉. Each is named by its own words in
+/// an event title or category name, and split out only while it wears an
+/// emoji in [borrows]; under an emoji of its own (🏓 table tennis) it groups
+/// as any sport does.
+final List<({String name, Set<String> borrows, RegExp pattern})>
+    _borrowedEmojiSports =
+    <({String name, Set<String> borrows, RegExp pattern})>[
+  (name: 'Squash', borrows: {'🎾', '🏸'}, pattern: _words(r'squash')),
+  (
+    name: 'Padel',
+    borrows: {'🎾', '🏸'},
+    pattern: _words(r'padel|paddle tennis'),
+  ),
+  (
+    name: 'Pickleball',
+    borrows: {'🎾', '🏓'},
+    pattern: _words(r'pickleball'),
+  ),
+  (
+    name: 'Table Tennis',
+    borrows: {'🎾'},
+    pattern: _words(r'table tennis|ping pong'),
+  ),
+  (
+    name: 'Aussie Rules',
+    borrows: {'🏉', '🏈', '⚽'},
+    pattern: _words(r'aussie rules|australian (?:rules )?football|aflw?'),
+  ),
+  (
+    name: 'Gaelic Football',
+    borrows: {'🏉', '🏈', '⚽'},
+    pattern: _words(r'gaelic football'),
+  ),
+  (
+    name: 'Hurling',
+    borrows: {'🏑', '🏒'},
+    pattern: _words(r'hurling|camogie'),
+  ),
+];
+
+RegExp _words(String alternatives) =>
+    RegExp('(?<![A-Za-z0-9])(?:$alternatives)(?![A-Za-z0-9])',
+        caseSensitive: false);
+
+/// The sport [text] names among those that borrow the emoji [marker].
+String? _borrowedSport(String marker, String text) {
+  for (final sport in _borrowedEmojiSports) {
+    if (sport.borrows.contains(marker) && sport.pattern.hasMatch(text)) {
+      return sport.name;
+    }
+  }
+  return null;
 }
 
 List<DaddyLiveEpgEvent> _unique(List<_Entry> entries) {
