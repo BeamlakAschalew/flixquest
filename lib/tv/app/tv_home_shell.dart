@@ -32,6 +32,7 @@ import '../screens/tv_search_screen.dart';
 import '../screens/tv_settings_screen.dart';
 import '../screens/tv_wellness_screen.dart';
 import '../widgets/tv_navigation_rail.dart';
+import '../widgets/tv_telegram_channel_prompt.dart';
 import 'tv_design.dart';
 import 'tv_shell_layout.dart';
 
@@ -397,15 +398,18 @@ class _TvHomeShellState extends State<TvHomeShell> with RestorationMixin {
                     final metrics = TvShellMetrics.fromConstraints(constraints);
                     // The layout keeps its controls inside the TV-safe margins
                     // itself, so full-bleed artwork can still reach the edges.
-                    return TvShellLayout(
-                      key: _layoutKey,
-                      destinations: destinations,
-                      selectedId: selectedId,
-                      metrics: metrics,
-                      fullBleedDestinations: _fullBleedDestinations,
-                      onDestinationSelected: _selectDestination,
-                      screenBuilder: (context, id, focusController) =>
-                          _buildScreen(id, metrics, focusController),
+                    return TvTelegramChannelPrompt(
+                      enabled: selectedId == 'home',
+                      child: TvShellLayout(
+                        key: _layoutKey,
+                        destinations: destinations,
+                        selectedId: selectedId,
+                        metrics: metrics,
+                        fullBleedDestinations: _fullBleedDestinations,
+                        onDestinationSelected: _selectDestination,
+                        screenBuilder: (context, id, focusController) =>
+                            _buildScreen(id, metrics, focusController),
+                      ),
                     );
                   },
                 ),

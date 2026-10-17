@@ -528,6 +528,7 @@
   "telegram_prompt_message": "Be the first to hear about new releases, fixes and announcements.",
   "telegram_prompt_join": "Join channel",
   "telegram_prompt_dont_show_again": "Don't show again",
+  "telegram_prompt_scan": "Scan this QR code with your phone to join our Telegram channel.",
   "check_connection": "Connect to the internet to continue.",
   "open_external": "Open in external player",
   "no_channels": "No channels found :(",

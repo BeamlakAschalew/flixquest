@@ -528,6 +528,7 @@
   "telegram_prompt_message": "नए रिलीज़, सुधार और घोषणाओं के बारे में सबसे पहले जानें।",
   "telegram_prompt_join": "चैनल से जुड़ें",
   "telegram_prompt_dont_show_again": "फिर से न दिखाएँ",
+  "telegram_prompt_scan": "हमारे Telegram चैनल से जुड़ने के लिए अपने फ़ोन से यह QR कोड स्कैन करें।",
   "check_connection": "जारी रखने के लिए इंटरनेट से कनेक्ट करें.",
   "open_external": "बाहरी प्लेयर में खोलें",
   "no_channels": "कोई चैनल नहीं मिला :(",

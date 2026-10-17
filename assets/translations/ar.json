@@ -528,6 +528,7 @@
   "telegram_prompt_message": "كن أول من يعرف بالإصدارات الجديدة والإصلاحات والإعلانات.",
   "telegram_prompt_join": "الانضمام إلى القناة",
   "telegram_prompt_dont_show_again": "عدم الإظهار مرة أخرى",
+  "telegram_prompt_scan": "امسح رمز QR هذا بهاتفك للانضمام إلى قناتنا على Telegram.",
   "check_connection": "اتصل بالإنترنت للمتابعة.",
   "open_external": "فتح في مشغل خارجي",
   "no_channels": "لم يتم العثور على القنوات :(",

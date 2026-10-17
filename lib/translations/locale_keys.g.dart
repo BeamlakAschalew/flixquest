@@ -532,6 +532,7 @@ abstract class  LocaleKeys {
   static const telegram_prompt_message = 'telegram_prompt_message';
   static const telegram_prompt_join = 'telegram_prompt_join';
   static const telegram_prompt_dont_show_again = 'telegram_prompt_dont_show_again';
+  static const telegram_prompt_scan = 'telegram_prompt_scan';
   static const check_connection = 'check_connection';
   static const open_external = 'open_external';
   static const no_channels = 'no_channels';
