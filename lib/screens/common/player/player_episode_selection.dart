@@ -8,6 +8,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../constants/app_constants.dart';
+import '../../../models/adsterra_playback_ads_config.dart';
 import '../../../models/recently_watched.dart';
 import '../../../models/tv_stream_metadata.dart';
 import '../../../provider/app_dependency_provider.dart';
@@ -171,6 +172,8 @@ class PlayerEpisodeSelection {
                                                   allSeasons:
                                                       tvMetadata.allSeasons,
                                                 ),
+                                                adStage: PlaybackAdStage
+                                                    .episodeSwitch,
                                               )),
                                 ),
                               );

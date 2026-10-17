@@ -1137,7 +1137,7 @@ class _AdsterraPlaybackAdScreenState extends State<AdsterraPlaybackAdScreen>
             'Opening the advertiser\'s page',
             'Your video is paused. It picks up again when you come back.',
           )
-        : widget.stage == PlaybackAdStage.streamFound
+        : widget.stage.startsPlayback
             ? (
                 Icons.play_circle_outline,
                 'Your video is ready',
@@ -1262,8 +1262,8 @@ class _AdsterraPlaybackAdScreenState extends State<AdsterraPlaybackAdScreen>
   String get _continueLabel {
     if (!widget.holdClose) return 'Back to video';
     if (widget.stage == PlaybackAdStage.beforeLoader) return 'Continue';
-    // Nothing plays after the player-exit popup.
-    if (widget.stage == PlaybackAdStage.playerExit) return 'Close';
+    // Nothing plays after a player-exit or download popup.
+    if (!widget.stage.startsPlayback) return 'Close';
     return _phase == _Phase.script ? 'Skip' : 'Play now';
   }
 
@@ -1272,7 +1272,7 @@ class _AdsterraPlaybackAdScreenState extends State<AdsterraPlaybackAdScreen>
     if (widget.stage == PlaybackAdStage.beforeLoader) {
       return Icons.arrow_forward;
     }
-    if (widget.stage == PlaybackAdStage.playerExit) return Icons.close;
+    if (!widget.stage.startsPlayback) return Icons.close;
     return _phase == _Phase.script ? Icons.skip_next : Icons.play_arrow;
   }
 
@@ -1640,9 +1640,11 @@ String playbackAdHtml(PlaybackAdPlacement placement, PlaybackAdStage stage) {
       ? ''
       : ' $zoneAttribute="${escape.convert(placement.zoneId!)}"';
   final popunder = stage != PlaybackAdStage.beforeLoader;
-  final (title, ready) = stage == PlaybackAdStage.playerExit
-      ? ('Thanks for watching', 'Continue')
-      : ('Your video is ready', '\u25B6  Play now');
+  final (title, ready) = switch (stage) {
+    PlaybackAdStage.playerExit => ('Thanks for watching', 'Continue'),
+    PlaybackAdStage.download => ('Your download has started', 'Continue'),
+    _ => ('Your video is ready', '\u25B6  Play now'),
+  };
   // Clickadu's tag fetches its ad (`/adx/get/`) a few seconds after its script
   // loads, and a tap before that opens nothing. Enable Continue only once
   // that request has finished; the load timeout covers a tag that never arms.

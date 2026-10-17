@@ -187,29 +187,34 @@ class AppDependencyProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// The popup after a viewer leaves the player, from the phone's selected
-  /// network. Off unless published; [frequencyMinutes] is its own interval,
-  /// apart from the stream-found popup's, and zero allows every exit.
-  ({bool enabled, int frequencyMinutes, Duration minWatch}) _playerExitPopup = (
-    enabled: false,
-    frequencyMinutes: 0,
-    minWatch: const Duration(seconds: 60)
-  );
-  ({bool enabled, int frequencyMinutes, Duration minWatch})
-      get playerExitPopup => _playerExitPopup;
+  /// Each popup trigger's own switch and interval ([PlaybackAdStage.triggers]),
+  /// served on phones by the selected network. A missing trigger is
+  /// unpublished: switches then keep the stream-found popup, and the others
+  /// stay off.
+  Map<PlaybackAdStage, PopupTriggerConfig> _popupTriggers = const {};
+  PopupTriggerConfig? popupTrigger(PlaybackAdStage stage) =>
+      _popupTriggers[stage];
 
-  void setPlayerExitPopup({
+  void setPopupTrigger(
+    PlaybackAdStage stage, {
     required bool enabled,
     required int frequencyMinutes,
-    required int minWatchSeconds,
+    int minWatchSeconds = 0,
   }) {
     final config = (
       enabled: enabled,
       frequencyMinutes: frequencyMinutes < 0 ? 0 : frequencyMinutes,
       minWatch: Duration(seconds: minWatchSeconds < 0 ? 0 : minWatchSeconds),
     );
-    if (_playerExitPopup == config) return;
-    _playerExitPopup = config;
+    if (_popupTriggers[stage] == config) return;
+    _popupTriggers = Map.unmodifiable({..._popupTriggers, stage: config});
+    notifyListeners();
+  }
+
+  /// Unpublishes [stage]; see [popupTrigger].
+  void clearPopupTrigger(PlaybackAdStage stage) {
+    if (!_popupTriggers.containsKey(stage)) return;
+    _popupTriggers = Map.unmodifiable({..._popupTriggers}..remove(stage));
     notifyListeners();
   }
 

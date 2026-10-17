@@ -1,3 +1,4 @@
+import 'package:flixquest/models/adsterra_playback_ads_config.dart';
 import 'package:flixquest/services/adsterra_playback_ads_service.dart';
 // ignore_for_file: use_build_context_synchronously
 import 'dart:async';
@@ -43,12 +44,17 @@ class MovieVideoLoader extends StatefulWidget {
       required this.metadata,
       this.useTvPlayer = false,
       this.onTvPlayerExit,
+      this.adStage = PlaybackAdStage.streamFound,
       super.key});
 
   final bool download;
   final MovieStreamMetadata metadata;
   final bool useTvPlayer;
   final VoidCallback? onTvPlayerExit;
+
+  /// The popup once a source is found: [PlaybackAdStage.episodeSwitch] or
+  /// [PlaybackAdStage.movieSwitch] when the player itself started this load.
+  final PlaybackAdStage adStage;
 
   @override
   State<MovieVideoLoader> createState() => _MovieVideoLoaderState();
@@ -102,7 +108,9 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
   Future<void> _startPlayback() async {
     if (!mounted) return;
     _adPreload = AdsterraPlaybackAdsService.instance.preloadStreamFound(context,
-        download: widget.download, television: widget.useTvPlayer);
+        download: widget.download,
+        television: widget.useTvPlayer,
+        stage: widget.adStage);
     try {
       await loadVideo();
     } finally {
@@ -245,7 +253,8 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         if (!await AdsterraPlaybackAdsService.instance.streamFound(context,
                 download: widget.download,
                 television: widget.useTvPlayer,
-                preload: _adPreload) ||
+                preload: _adPreload,
+                stage: widget.adStage) ||
             !mounted) {
           return;
         }
@@ -471,6 +480,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
     final download = widget.download;
     final useTvPlayer = widget.useTvPlayer;
     final onTvPlayerExit = widget.onTvPlayerExit;
+    final adStage = widget.adStage;
     navigator.pop();
     ReportErrorWidget.show(
       navigator.context,
@@ -482,6 +492,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
             download: download,
             useTvPlayer: useTvPlayer,
             onTvPlayerExit: onTvPlayerExit,
+            adStage: adStage,
           ),
         ),
       ),
@@ -575,7 +586,10 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         provider: providerName,
         quality: quality,
       );
-      if (mounted) Navigator.pop(context, true);
+      if (mounted) {
+        AdsterraPlaybackAdsService.instance.afterDownloadQueued(context);
+        Navigator.pop(context, true);
+      }
     } catch (error) {
       settings.analytics.trackDownload(
         action: 'enqueue',

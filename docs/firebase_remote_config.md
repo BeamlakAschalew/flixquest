@@ -1032,33 +1032,64 @@ Activated Remote Config updates apply immediately, using the saved timestamp
 with the new interval. Publishing `0` restores every-playback eligibility.
 A future timestamp after a device clock correction does not block popup ads.
 
-### Player-exit popup
+### Popup triggers
 
-A second popup can open after the viewer leaves the movie, episode or Live TV
-player, over the screen they return to. Back is never held: the player closes first and
-the popup opens once its route has gone. It is off until published.
+Besides the stream-found popup, phones can show a popup at four more moments,
+each with its own switch, its own interval and its own saved timestamp, so no
+popup uses up another's interval:
+
+| Trigger | When it opens |
+| --- | --- |
+| `player_exit` | After the viewer leaves the movie, episode or Live TV player, over the screen they return to. |
+| `download` | After a movie or episode download is queued from its loader, over the screen the viewer returns to. A download started from inside the player shows none, so playback is not interrupted. |
+| `episode_switch` | In place of the stream-found popup when the player itself moves to another episode: next-episode card or autoplay, or the in-player episode picker. |
+| `movie_switch` | In place of the stream-found popup when the player itself moves to another movie from its recommendations. |
+
+For `player_exit` and `download`, Back is never held: the player or loader
+closes first, and the popup opens once its exit transition has finished.
 
 | Parameter | Type | Default | Purpose |
 | --- | --- | --- | --- |
-| `player_exit_popup_enabled` | Boolean | `false` | Switch for the player-exit popup on phones. Must be published remotely. Turning it off closes an open one. |
-| `player_exit_popup_frequency_minutes` | Number | `0` | Minimum whole minutes between visible player-exit popups. Its own interval and saved timestamp, separate from `playback_popup_frequency_minutes`: neither popup uses up the other. `0` allows every eligible exit. |
+| `player_exit_popup_enabled` | Boolean | Unpublished (off) | Switch for the player-exit popup. Must be published remotely. |
+| `player_exit_popup_frequency_minutes` | Number | `0` | Minimum whole minutes between visible player-exit popups. `0` allows every eligible exit. |
 | `player_exit_popup_min_watch_seconds` | Number | `60` | Seconds the viewer must have watched (buffering excluded) before an exit shows a popup, so a failed or bounced stream shows none. Movies and episodes count content only; Live TV also counts its pre-roll. Negative values fall back to `0`. |
+| `download_popup_enabled` | Boolean | Unpublished (off) | Switch for the download popup. Must be published remotely. |
+| `download_popup_frequency_minutes` | Number | `0` | Minimum whole minutes between visible download popups. |
+| `episode_switch_popup_enabled` | Boolean | Unpublished (follows stream found) | Unpublished, in-player episode switches show the ordinary stream-found popup under `playback_popup_frequency_minutes`, as before. `true` gives them their own interval; `false` turns their popup off. |
+| `episode_switch_popup_frequency_minutes` | Number | `0` | Minimum whole minutes between visible episode-switch popups, once `episode_switch_popup_enabled` is published. |
+| `movie_switch_popup_enabled` | Boolean | Unpublished (follows stream found) | As `episode_switch_popup_enabled`, for in-player movie switches. |
+| `movie_switch_popup_frequency_minutes` | Number | `0` | As `episode_switch_popup_frequency_minutes`, for movie switches. |
 
-The popup comes from the network `playback_popunder_network` selects, and that
+Missing, invalid or negative intervals fall back to `0`. Turning a switch off
+closes an open popup of that trigger.
+
+Every trigger uses the network `playback_popunder_network` selects, and that
 network's own `<network>_playback_enabled` switch still applies. Each popup
-catalog may name a `player_exit` placement, with the same fields as `popunder`,
-to report the exit popup under its own zone or Smartlink. Without one, the
-catalog's `popunder` is used (for Adsterra, the experiment's first arm when an
-experiment replaces it). The experiment never rotates on exit. Android TV and
-downloads show no player-exit popup. Switching channels inside the Live TV
-player is not an exit.
+catalog may name a placement per trigger, keyed `player_exit`, `download`,
+`episode_switch` or `movie_switch`, with the same fields as `popunder`, to
+report it under its own zone or Smartlink. Without one, the catalog's
+`popunder` is used (for Adsterra, the experiment's first arm when an
+experiment replaces it). Only an unpublished switch trigger, which is the
+ordinary stream-found popup, takes part in the experiment.
 
 ```json
 {
   "popunder": {"enabled": true, "mode": "smartlink", "url": "https://…stream-found Smartlink…"},
-  "player_exit": {"enabled": true, "mode": "smartlink", "url": "https://…exit Smartlink…"}
+  "player_exit": {"enabled": true, "mode": "smartlink", "url": "https://…exit Smartlink…"},
+  "download": {"enabled": true, "mode": "smartlink", "url": "https://…download Smartlink…"},
+  "episode_switch": {"enabled": true, "mode": "smartlink", "url": "https://…episode switch Smartlink…"},
+  "movie_switch": {"enabled": true, "mode": "smartlink", "url": "https://…movie switch Smartlink…"}
 }
 ```
+
+The Social Bar before the loader (`interstitial`) still runs on in-player
+switches when enabled, as before. Switching channels inside the Live TV player
+is not an exit.
+
+On Android TV, the player-exit and download popups never show, and episode and
+movie switches keep TV's stream-found popup: the selected catalog's
+`tv_popunder`, with `tv_playback_popunder_network` and
+`tv_playback_popup_frequency_minutes`. The trigger keys apply to phones only.
 
 ### Clickadu popup delivery
 

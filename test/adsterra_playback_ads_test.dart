@@ -1176,9 +1176,11 @@ void main() {
     }, variant: android);
   });
 
-  group('player exit popup', () {
+  group('popup triggers', () {
     const streamFoundKey = 'playback_ads.last_popup_shown_at';
     const playerExitKey = 'playback_ads.last_player_exit_popup_shown_at';
+    const downloadKey = 'playback_ads.last_download_popup_shown_at';
+    const episodeSwitchKey = 'playback_ads.last_episode_switch_popup_shown_at';
     const watched = Duration(minutes: 5);
     late DateTime now;
 
@@ -1188,8 +1190,10 @@ void main() {
         ..setAdsterraPlaybackAdsConfig(AdsterraPlaybackAdsConfig.parse(
             slowSmartlinkCatalog,
             enabled: true))
-        ..setPlayerExitPopup(
-            enabled: true, frequencyMinutes: 30, minWatchSeconds: 60);
+        ..setPopupTrigger(PlaybackAdStage.playerExit,
+            enabled: true, frequencyMinutes: 30, minWatchSeconds: 60)
+        ..setPopupTrigger(PlaybackAdStage.download,
+            enabled: true, frequencyMinutes: 30);
       service = AdsterraPlaybackAdsService(now: () => now);
     });
 
@@ -1211,91 +1215,148 @@ void main() {
       await result;
     }
 
-    test('Remote Config keeps it off until published', () async {
+    /// Pushes a route standing in for a player or loader and returns its
+    /// context.
+    Future<BuildContext> pushRoute(WidgetTester tester, String label) async {
+      late BuildContext route;
+      unawaited(
+          Navigator.of(host).push(MaterialPageRoute<void>(builder: (context) {
+        route = context;
+        return Text(label);
+      })));
+      await tester.pumpAndSettle();
+      return route;
+    }
+
+    test('Remote Config keys stay unpublished until set', () async {
+      expect([
+        for (final stage in PlaybackAdStage.triggers)
+          AppRemoteConfig.popupEnabledKey(stage)
+      ], [
+        'player_exit_popup_enabled',
+        'download_popup_enabled',
+        'episode_switch_popup_enabled',
+        'movie_switch_popup_enabled',
+      ]);
+      expect(AppRemoteConfig.popupFrequencyMinutesKey(PlaybackAdStage.download),
+          'download_popup_frequency_minutes');
       final remote = FakeFirebaseRemoteConfig();
       await AppRemoteConfig.configure(remote);
-      expect(remote.defaults[AppRemoteConfig.playerExitPopupEnabledKey], false);
+      expect(
+          remote.defaults[
+              AppRemoteConfig.popupEnabledKey(PlaybackAdStage.playerExit)],
+          false);
+      expect(remote.defaults[AppRemoteConfig.playerExitPopupMinWatchSecondsKey],
+          60);
       provider = AppDependencyProvider();
       AppRemoteConfig.apply(remote, provider);
-      expect(provider.playerExitPopup, (
-        enabled: false,
-        frequencyMinutes: 0,
-        minWatch: const Duration(seconds: 60),
-      ));
+      for (final stage in PlaybackAdStage.triggers) {
+        expect(provider.popupTrigger(stage), isNull);
+      }
       remote
-        ..setMockBool(AppRemoteConfig.playerExitPopupEnabledKey, true)
-        ..setMockInt(AppRemoteConfig.playerExitPopupFrequencyMinutesKey, 45)
-        ..setMockInt(AppRemoteConfig.playerExitPopupMinWatchSecondsKey, 120);
+        ..setMockBool(
+            AppRemoteConfig.popupEnabledKey(PlaybackAdStage.playerExit), true)
+        ..setMockInt(
+            AppRemoteConfig.popupFrequencyMinutesKey(
+                PlaybackAdStage.playerExit),
+            45)
+        ..setMockInt(AppRemoteConfig.playerExitPopupMinWatchSecondsKey, 120)
+        ..setMockBool(
+            AppRemoteConfig.popupEnabledKey(PlaybackAdStage.episodeSwitch),
+            false)
+        ..setMockBool(
+            AppRemoteConfig.popupEnabledKey(PlaybackAdStage.download), true)
+        ..setMockInt(
+            AppRemoteConfig.popupFrequencyMinutesKey(PlaybackAdStage.download),
+            -5);
       AppRemoteConfig.apply(remote, provider);
-      expect(provider.playerExitPopup, (
+      expect(provider.popupTrigger(PlaybackAdStage.playerExit), (
         enabled: true,
         frequencyMinutes: 45,
         minWatch: const Duration(seconds: 120),
       ));
-      remote
-        ..setMockInt(AppRemoteConfig.playerExitPopupFrequencyMinutesKey, -5)
-        ..setMockInt(AppRemoteConfig.playerExitPopupMinWatchSecondsKey, -5);
-      AppRemoteConfig.apply(remote, provider);
-      expect(provider.playerExitPopup.frequencyMinutes, 0);
-      expect(provider.playerExitPopup.minWatch, Duration.zero);
+      expect(provider.popupTrigger(PlaybackAdStage.download), (
+        enabled: true,
+        frequencyMinutes: 0,
+        minWatch: Duration.zero,
+      ));
+      expect(provider.popupTrigger(PlaybackAdStage.episodeSwitch)?.enabled,
+          isFalse);
+      expect(provider.popupTrigger(PlaybackAdStage.movieSwitch), isNull);
     });
 
-    test('a catalog may give it its own zone, else it uses the popunder', () {
-      const ownZone = '''{
+    test('a catalog may give each its own zone, else it uses the popunder', () {
+      const ownZones = '''{
         "popunder":{"enabled":true,"script_url":"https://ads.example/pop"},
-        "player_exit":{"enabled":true,"mode":"smartlink","url":"https://ads.example/exit"}
+        "player_exit":{"enabled":true,"mode":"smartlink","url":"https://ads.example/player_exit"},
+        "download":{"enabled":true,"mode":"smartlink","url":"https://ads.example/download"},
+        "episode_switch":{"enabled":true,"mode":"smartlink","url":"https://ads.example/episode_switch"},
+        "movie_switch":{"enabled":true,"mode":"smartlink","url":"https://ads.example/movie_switch"}
       }''';
-      final adsterra = AdsterraPlaybackAdsConfig.parse(ownZone, enabled: true);
-      expect(adsterra.forStage(PlaybackAdStage.playerExit)?.smartlinkUrl,
-          Uri.parse('https://ads.example/exit'));
-      expect(adsterra.forStage(PlaybackAdStage.playerExit, television: true),
-          isNull);
-      expect(
-          AdsterraPlaybackAdsConfig.parse(catalog, enabled: true)
-              .forStage(PlaybackAdStage.playerExit)
-              ?.scriptUrl,
-          Uri.parse('https://ads.example/pop'));
-      expect(
-          AdsterraPlaybackAdsConfig.parse(experimentCatalog, enabled: true)
-              .forStage(PlaybackAdStage.playerExit)
-              ?.scriptUrl,
-          Uri.parse('https://ads.example/pop'));
-      final clickadu = PopunderAdsConfig.parse(ownZone,
+      final adsterra = AdsterraPlaybackAdsConfig.parse(ownZones, enabled: true);
+      final clickadu = PopunderAdsConfig.parse(ownZones,
           network: AdNetwork.clickadu, enabled: true);
-      expect(clickadu.activePlayerExit?.smartlinkUrl,
-          Uri.parse('https://ads.example/exit'));
-      expect(
-          PopunderAdsConfig.parse(catalog,
-                  network: AdNetwork.monetag, enabled: true)
-              .activePlayerExit
-              ?.scriptUrl,
-          Uri.parse('https://ads.example/pop'));
-      expect(
-          PopunderAdsConfig.parse(ownZone,
-                  network: AdNetwork.clickadu, enabled: false)
-              .activePlayerExit,
-          isNull);
+      for (final stage in PlaybackAdStage.triggers) {
+        final own = Uri.parse('https://ads.example/${stage.triggerKey}');
+        expect(adsterra.forStage(stage)?.smartlinkUrl, own);
+        expect(adsterra.forStage(stage, television: true), isNull);
+        expect(clickadu.activeForTrigger(stage)?.smartlinkUrl, own);
+        expect(
+            AdsterraPlaybackAdsConfig.parse(catalog, enabled: true)
+                .forStage(stage)
+                ?.scriptUrl,
+            Uri.parse('https://ads.example/pop'));
+        expect(
+            AdsterraPlaybackAdsConfig.parse(experimentCatalog, enabled: true)
+                .forStage(stage)
+                ?.scriptUrl,
+            Uri.parse('https://ads.example/pop'));
+        expect(
+            PopunderAdsConfig.parse(catalog,
+                    network: AdNetwork.monetag, enabled: true)
+                .activeForTrigger(stage)
+                ?.scriptUrl,
+            Uri.parse('https://ads.example/pop'));
+        expect(
+            PopunderAdsConfig.parse(ownZones,
+                    network: AdNetwork.clickadu, enabled: false)
+                .activeForTrigger(stage),
+            isNull);
+      }
     });
 
-    test('its tag page does not promise a video', () {
-      final html = playbackAdHtml(
-          PlaybackAdPlacement.parse(
-              {'enabled': true, 'script_url': 'https://ads.example/pop'})!,
-          PlaybackAdStage.playerExit);
-      expect(html, contains('Thanks for watching'));
-      expect(html, contains('https://ads.example/pop'));
-      expect(html, isNot(contains('Play now')));
-      expect(html, isNot(contains('Your video is ready')));
+    test('tag pages promise a video only before playback', () {
+      final placement = PlaybackAdPlacement.parse(
+          {'enabled': true, 'script_url': 'https://ads.example/pop'})!;
+      for (final (stage, title) in [
+        (PlaybackAdStage.playerExit, 'Thanks for watching'),
+        (PlaybackAdStage.download, 'Your download has started'),
+      ]) {
+        final html = playbackAdHtml(placement, stage);
+        expect(html, contains(title));
+        expect(html, contains('https://ads.example/pop'));
+        expect(html, isNot(contains('Play now')));
+        expect(html, isNot(contains('Your video is ready')));
+      }
+      for (final stage in [
+        PlaybackAdStage.episodeSwitch,
+        PlaybackAdStage.movieSwitch,
+      ]) {
+        expect(
+            playbackAdHtml(placement, stage), contains('Your video is ready'));
+      }
     });
 
-    testWidgets('the switch, a short watch and TV show nothing',
+    testWidgets('the exit switch, a short watch and TV show nothing',
         (tester) async {
       await pumpHost(tester);
-      provider.setPlayerExitPopup(
+      provider.setPopupTrigger(PlaybackAdStage.playerExit,
           enabled: false, frequencyMinutes: 0, minWatchSeconds: 60);
       await service.playerExit(host, watched: watched);
       expect(await service.show(host, PlaybackAdStage.playerExit), isTrue);
-      provider.setPlayerExitPopup(
+      provider.clearPopupTrigger(PlaybackAdStage.playerExit);
+      expect(await service.show(host, PlaybackAdStage.playerExit), isTrue);
+      provider.setPopupTrigger(PlaybackAdStage.playerExit,
           enabled: true, frequencyMinutes: 0, minWatchSeconds: 60);
       await service.playerExit(host,
           watched: const Duration(seconds: 59, milliseconds: 999));
@@ -1306,31 +1367,38 @@ void main() {
       expect(platform.controllers, isEmpty);
     }, variant: android);
 
-    testWidgets('opens over the returned-to screen once the player has gone',
-        (tester) async {
-      await pumpHost(tester);
-      late BuildContext player;
-      unawaited(
-          Navigator.of(host).push(MaterialPageRoute<void>(builder: (context) {
-        player = context;
-        return const Text('Player');
-      })));
-      await tester.pumpAndSettle();
-      service.afterPlayerExit(player, watched: watched);
-      Navigator.of(player).pop();
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 100));
-      // Back is not held, and nothing opens while the player slides away.
-      expect(find.text('Player'), findsOneWidget);
-      expect(find.byType(AdsterraPlaybackAdScreen), findsNothing);
-      await tester.pump(const Duration(milliseconds: 300));
-      expect(find.text('Player'), findsNothing);
-      await pumpAd(tester);
-      expect(find.byType(AdsterraPlaybackAdScreen), findsOneWidget);
-      expect(find.text('Title details', skipOffstage: false), findsOneWidget);
-    }, variant: android);
+    for (final (label, leave) in [
+      (
+        'player exit',
+        (AdsterraPlaybackAdsService service, BuildContext context) =>
+            service.afterPlayerExit(context, watched: watched)
+      ),
+      (
+        'download',
+        (AdsterraPlaybackAdsService service, BuildContext context) =>
+            service.afterDownloadQueued(context)
+      ),
+    ]) {
+      testWidgets('$label opens over the returned-to screen once gone',
+          (tester) async {
+        await pumpHost(tester);
+        final route = await pushRoute(tester, 'Leaving');
+        leave(service, route);
+        Navigator.of(route).pop();
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 100));
+        // Back is not held, and nothing opens while the route slides away.
+        expect(find.text('Leaving'), findsOneWidget);
+        expect(find.byType(AdsterraPlaybackAdScreen), findsNothing);
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(find.text('Leaving'), findsNothing);
+        await pumpAd(tester);
+        expect(find.byType(AdsterraPlaybackAdScreen), findsOneWidget);
+        expect(find.text('Title details', skipOffstage: false), findsOneWidget);
+      }, variant: android);
+    }
 
-    testWidgets('keeps its own interval apart from stream found',
+    testWidgets('player exit keeps its own interval apart from stream found',
         (tester) async {
       provider.setPlaybackPopupFrequencyMinutes(60);
       await pumpHost(tester);
@@ -1356,6 +1424,127 @@ void main() {
       now = now.add(const Duration(minutes: 1));
       await showExitPopup(tester);
       expect(platform.controllers, hasLength(3));
+    }, variant: android);
+
+    testWidgets('download has its own switch and interval, and none on TV',
+        (tester) async {
+      provider.setPlaybackPopupFrequencyMinutes(60);
+      await pumpHost(tester);
+      // A download never shows the playback popups.
+      expect(await service.streamFound(host, download: true), isTrue);
+      expect(platform.controllers, isEmpty);
+
+      var shown = service.show(host, PlaybackAdStage.download);
+      await closeVisibleAd(tester);
+      expect(await shown, isTrue);
+      expect(
+          sharedPrefsSingleton.getInt(downloadKey), now.millisecondsSinceEpoch);
+      expect(sharedPrefsSingleton.getInt(streamFoundKey), isNull);
+
+      now = now.add(const Duration(minutes: 29));
+      expect(await service.show(host, PlaybackAdStage.download), isTrue);
+      expect(platform.controllers, hasLength(1));
+
+      now = now.add(const Duration(minutes: 1));
+      DevicePresentationService.instance.isTelevision = true;
+      expect(await service.show(host, PlaybackAdStage.download), isTrue);
+      DevicePresentationService.instance.isTelevision = false;
+      provider.setPopupTrigger(PlaybackAdStage.download,
+          enabled: false, frequencyMinutes: 30);
+      expect(await service.show(host, PlaybackAdStage.download), isTrue);
+      expect(platform.controllers, hasLength(1));
+
+      provider.setPopupTrigger(PlaybackAdStage.download,
+          enabled: true, frequencyMinutes: 30);
+      shown = service.show(host, PlaybackAdStage.download);
+      await closeVisibleAd(tester);
+      expect(await shown, isTrue);
+      expect(platform.controllers, hasLength(2));
+    }, variant: android);
+
+    testWidgets('unpublished switches keep the stream-found popup',
+        (tester) async {
+      provider.setPlaybackPopupFrequencyMinutes(60);
+      await pumpHost(tester);
+      for (final stage in [
+        PlaybackAdStage.episodeSwitch,
+        PlaybackAdStage.movieSwitch,
+      ]) {
+        expect(provider.popupTrigger(stage), isNull);
+      }
+      final shown =
+          service.streamFound(host, stage: PlaybackAdStage.episodeSwitch);
+      await closeVisibleAd(tester);
+      expect(await shown, isTrue);
+      expect(sharedPrefsSingleton.getInt(streamFoundKey),
+          now.millisecondsSinceEpoch);
+      expect(sharedPrefsSingleton.getInt(episodeSwitchKey), isNull);
+      // The stream-found interval now holds for both.
+      expect(
+          service.preloadStreamFound(host, stage: PlaybackAdStage.movieSwitch),
+          isNull);
+      expect(
+          await service.streamFound(host, stage: PlaybackAdStage.movieSwitch),
+          isTrue);
+      expect(platform.controllers, hasLength(1));
+    }, variant: android);
+
+    testWidgets('published switches use their own switch and interval',
+        (tester) async {
+      provider
+        ..setPlaybackPopupFrequencyMinutes(60)
+        ..setPopupTrigger(PlaybackAdStage.episodeSwitch,
+            enabled: true, frequencyMinutes: 10)
+        ..setPopupTrigger(PlaybackAdStage.movieSwitch,
+            enabled: false, frequencyMinutes: 0);
+      await pumpHost(tester);
+      final streamFound = service.streamFound(host);
+      await closeVisibleAd(tester);
+      expect(await streamFound, isTrue);
+
+      // Not held by the stream-found interval.
+      final preload = service.preloadStreamFound(host,
+          stage: PlaybackAdStage.episodeSwitch);
+      expect(preload, isNotNull);
+      final shown = service.streamFound(host,
+          stage: PlaybackAdStage.episodeSwitch, preload: preload);
+      await closeVisibleAd(tester);
+      expect(await shown, isTrue);
+      expect(sharedPrefsSingleton.getInt(episodeSwitchKey),
+          now.millisecondsSinceEpoch);
+      final controllers = platform.controllers.length;
+
+      now = now.add(const Duration(minutes: 9));
+      expect(
+          await service.streamFound(host, stage: PlaybackAdStage.episodeSwitch),
+          isTrue);
+      // A switch turned off plays on without a popup.
+      expect(
+          await service.streamFound(host, stage: PlaybackAdStage.movieSwitch),
+          isTrue);
+      expect(
+          service.preloadStreamFound(host, stage: PlaybackAdStage.movieSwitch),
+          isNull);
+      await tester.pump();
+      expect(find.byType(AdsterraPlaybackAdScreen), findsNothing);
+      expect(platform.controllers, hasLength(controllers));
+    }, variant: android);
+
+    testWidgets('TV switches keep the TV stream-found popup', (tester) async {
+      provider
+        ..setAdsterraPlaybackAdsConfig(
+            AdsterraPlaybackAdsConfig.parse(tvCatalog, enabled: true))
+        ..setPopupTrigger(PlaybackAdStage.episodeSwitch,
+            enabled: false, frequencyMinutes: 0);
+      await pumpHost(tester);
+      final shown = service.streamFound(host,
+          television: true, stage: PlaybackAdStage.episodeSwitch);
+      await closeVisibleAd(tester);
+      expect(await shown, isTrue);
+      expect(platform.controllers.first.requests.first.queryParameters['psid'],
+          'fqtv');
+      expect(sharedPrefsSingleton.getInt(streamFoundKey),
+          now.millisecondsSinceEpoch);
     }, variant: android);
   });
 

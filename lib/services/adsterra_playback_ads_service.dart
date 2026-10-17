@@ -16,8 +16,8 @@ export '../widgets/adsterra_playback_ad_screen.dart' show PlaybackAdPreload;
 /// One coordinator for every playback entry point, phone and TV. Skipped or
 /// failed ads continue immediately; an overlapping request never starts
 /// another loader. TV shows only a stream-found `tv_popunder`, from its own
-/// network and interval. Phones may also show a popup after leaving the
-/// player, with its own switch and interval.
+/// network and interval. Phones may also show popups for the triggers in
+/// [PlaybackAdStage.triggers], each with its own switch and interval.
 class AdsterraPlaybackAdsService {
   AdsterraPlaybackAdsService({
     Future<SharedPreferences> Function()? preferences,
@@ -27,10 +27,10 @@ class AdsterraPlaybackAdsService {
   })  : _preferences = preferences ?? SharedPreferences.getInstance,
         _now = now ?? DateTime.now;
   static final instance = AdsterraPlaybackAdsService();
-  static const _lastPopupShownKeys = {
-    PlaybackAdStage.streamFound: 'playback_ads.last_popup_shown_at',
-    PlaybackAdStage.playerExit: 'playback_ads.last_player_exit_popup_shown_at',
-  };
+  static String _lastPopupShownKey(PlaybackAdStage stage) =>
+      stage == PlaybackAdStage.streamFound
+          ? 'playback_ads.last_popup_shown_at'
+          : 'playback_ads.last_${stage.triggerKey}_popup_shown_at';
 
   final Future<SharedPreferences> Function() _preferences;
   final DateTime Function() _now;
@@ -67,32 +67,43 @@ class AdsterraPlaybackAdsService {
       show(context, PlaybackAdStage.beforeLoader,
           download: download, television: television);
 
+  /// A loader the player itself started passes [PlaybackAdStage.episodeSwitch]
+  /// or [PlaybackAdStage.movieSwitch] as [stage].
   Future<bool> streamFound(BuildContext context,
           {bool download = false,
           bool television = false,
-          PlaybackAdPreload? preload}) =>
-      show(context, PlaybackAdStage.streamFound,
+          PlaybackAdPreload? preload,
+          PlaybackAdStage stage = PlaybackAdStage.streamFound}) =>
+      show(context, stage,
           download: download, television: television, preload: preload);
 
-  /// Call from a phone player just before it pops itself. The popup opens
-  /// over the screen the viewer returns to once the player's route has gone,
-  /// so Back itself is never held.
+  /// Call from a phone player just before it pops itself.
   void afterPlayerExit(BuildContext playerContext,
-      {required Duration watched}) {
-    final navigator = Navigator.of(playerContext);
-    final playerRoute = ModalRoute.of(playerContext);
+          {required Duration watched}) =>
+      _afterRouteGone(
+          playerContext, (context) => playerExit(context, watched: watched));
+
+  /// Call from a loader that queued a download, just before it pops itself.
+  void afterDownloadQueued(BuildContext loaderContext) => _afterRouteGone(
+      loaderContext, (context) => show(context, PlaybackAdStage.download));
+
+  /// The popup opens over the screen the viewer returns to once the route
+  /// around [routeContext] has gone, so Back itself is never held.
+  void _afterRouteGone(BuildContext routeContext,
+      Future<void> Function(BuildContext context) present) {
+    final navigator = Navigator.of(routeContext);
+    final route = ModalRoute.of(routeContext);
     void showPopup() {
-      if (!navigator.mounted) return;
-      unawaited(playerExit(navigator.context, watched: watched));
+      if (navigator.mounted) unawaited(present(navigator.context));
     }
 
-    if (playerRoute == null) {
+    if (route == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) => showPopup());
       return;
     }
     // `completed` resolves as the pop starts; wait out the exit transition.
-    unawaited(playerRoute.completed.then((_) {
-      final animation = playerRoute.animation;
+    unawaited(route.completed.then((_) {
+      final animation = route.animation;
       if (animation == null || animation.isDismissed) return showPopup();
       void onStatus(AnimationStatus status) {
         if (status != AnimationStatus.dismissed) return;
@@ -109,8 +120,13 @@ class AdsterraPlaybackAdsService {
   Future<void> playerExit(BuildContext context,
       {required Duration watched}) async {
     if (!context.mounted) return;
-    final exit = context.read<AppDependencyProvider?>()?.playerExitPopup;
-    if (exit == null) return;
+    final exit = context
+        .read<AppDependencyProvider?>()
+        ?.popupTrigger(PlaybackAdStage.playerExit);
+    if (exit == null || !exit.enabled) {
+      _logSkip(PlaybackAdStage.playerExit, 'disabled');
+      return;
+    }
     if (watched < exit.minWatch) {
       _logSkip(PlaybackAdStage.playerExit,
           'watched=${watched.inSeconds}s min=${exit.minWatch.inSeconds}s');
@@ -124,7 +140,9 @@ class AdsterraPlaybackAdsService {
   /// keep selecting their arm at presentation, so cancelled lookups do not
   /// advance rotation.
   PlaybackAdPreload? preloadStreamFound(BuildContext context,
-      {bool download = false, bool television = false}) {
+      {bool download = false,
+      bool television = false,
+      PlaybackAdStage stage = PlaybackAdStage.streamFound}) {
     final lifecycle = WidgetsBinding.instance.lifecycleState;
     if (!context.mounted ||
         download ||
@@ -139,23 +157,12 @@ class AdsterraPlaybackAdsService {
     final selection = provider?.playbackAdsSelection;
     final tv = television || DevicePresentationService.instance.isTelevision;
     if (provider == null || selection == null) return null;
-    if (_popupCoolingDown(
-        PlaybackAdStage.streamFound,
-        tv
-            ? selection.tvPopupFrequencyMinutes
-            : selection.popupFrequencyMinutes)) {
+    final resolved = _resolveStage(provider, stage, tv);
+    if (_popupCoolingDown(resolved, _frequencyFor(provider, resolved, tv))) {
       return null;
     }
-    final network = tv ? selection.tvNetwork : selection.network;
-    final placement = switch (network) {
-      AdNetwork.adsterra => selection.adsterra
-          .forStage(PlaybackAdStage.streamFound, television: tv),
-      AdNetwork.clickadu ||
-      AdNetwork.monetag ||
-      AdNetwork.exoclick =>
-        selection.popunders[network]?.activeFor(television: tv),
-      null => null,
-    };
+    final placement = _placementFor(
+        provider, resolved, tv ? selection.tvNetwork : selection.network, tv);
     if (placement == null) return null;
     late final PlaybackAdPreload preload;
     void onConfigChanged() {
@@ -170,20 +177,22 @@ class AdsterraPlaybackAdsService {
     return preload;
   }
 
-  Future<bool> show(BuildContext context, PlaybackAdStage stage,
+  Future<bool> show(BuildContext context, PlaybackAdStage requested,
       {bool download = false,
       bool television = false,
       PlaybackAdPreload? preload}) async {
     if (!context.mounted) {
-      _logSkip(stage, 'playback screen disposed');
+      _logSkip(requested, 'playback screen disposed');
       return false;
     }
     final lifecycle = WidgetsBinding.instance.lifecycleState;
     if (lifecycle != null && lifecycle != AppLifecycleState.resumed) {
-      _logSkip(stage, 'app lifecycle=${lifecycle.name}');
+      _logSkip(requested, 'app lifecycle=${lifecycle.name}');
       return true;
     }
     final tv = television || DevicePresentationService.instance.isTelevision;
+    final provider = context.read<AppDependencyProvider?>();
+    final stage = _resolveStage(provider, requested, tv);
     if (download ||
         (tv && stage != PlaybackAdStage.streamFound) ||
         kIsWeb ||
@@ -197,7 +206,6 @@ class AdsterraPlaybackAdsService {
       _logSkip(stage, 'another playback ad is active');
       return false;
     }
-    final provider = context.read<AppDependencyProvider?>();
     final selection = provider?.playbackAdsSelection;
     final network = stage == PlaybackAdStage.beforeLoader
         ? AdNetwork.adsterra
@@ -205,37 +213,20 @@ class AdsterraPlaybackAdsService {
             ? selection?.tvNetwork
             : selection?.network;
     final config = selection?.adsterra;
-    var placement = switch (network) {
-      AdNetwork.adsterra => config?.forStage(stage, television: tv),
-      AdNetwork.clickadu ||
-      AdNetwork.monetag ||
-      AdNetwork.exoclick =>
-        stage == PlaybackAdStage.playerExit
-            ? selection?.popunders[network]?.activePlayerExit
-            : selection?.popunders[network]?.activeFor(television: tv),
-      null => null,
-    };
-    if (stage == PlaybackAdStage.playerExit &&
-        provider?.playerExitPopup.enabled != true) {
-      placement = null;
-    }
+    var placement =
+        provider == null ? null : _placementFor(provider, stage, network, tv);
     if (provider == null || placement == null) {
       _logSkip(stage,
-          'network=${network?.name ?? 'none'} television=$tv playerExitEnabled=${provider?.playerExitPopup.enabled ?? false} adsterraEnabled=${config?.enabled ?? false} popupEnabled=${selection?.popunders[network]?.enabled ?? false}; stage disabled or invalid/missing ${tv ? 'tv_popunder' : 'config'}');
+          'network=${network?.name ?? 'none'} television=$tv trigger=${provider?.popupTrigger(stage)} adsterraEnabled=${config?.enabled ?? false} popupEnabled=${selection?.popunders[network]?.enabled ?? false}; stage disabled or invalid/missing ${tv ? 'tv_popunder' : 'config'}');
       return true;
     }
     _busy = true;
     final host = ModalRoute.of(context);
-    final exitPopup = provider.playerExitPopup;
+    final trigger = provider.popupTrigger(stage);
     bool configChanged() =>
         provider.playbackAdsSelection != selection ||
-        (stage == PlaybackAdStage.playerExit &&
-            provider.playerExitPopup != exitPopup);
-    final frequencyMinutes = stage == PlaybackAdStage.playerExit
-        ? exitPopup.frequencyMinutes
-        : tv
-            ? selection!.tvPopupFrequencyMinutes
-            : selection!.popupFrequencyMinutes;
+        provider.popupTrigger(stage) != trigger;
+    final frequencyMinutes = _frequencyFor(provider, stage, tv);
     try {
       if (stage != PlaybackAdStage.beforeLoader && frequencyMinutes > 0) {
         await _loadPopupHistory(stage);
@@ -327,6 +318,44 @@ class AdsterraPlaybackAdsService {
     }
   }
 
+  /// Episode and movie switches keep the stream-found popup on TV, and on
+  /// phones until their own switch is published.
+  PlaybackAdStage _resolveStage(
+          AppDependencyProvider? provider, PlaybackAdStage stage, bool tv) =>
+      stage.isSwitch && (tv || provider?.popupTrigger(stage) == null)
+          ? PlaybackAdStage.streamFound
+          : stage;
+
+  PlaybackAdPlacement? _placementFor(AppDependencyProvider provider,
+      PlaybackAdStage stage, AdNetwork? network, bool tv) {
+    if (stage.triggerKey != null &&
+        provider.popupTrigger(stage)?.enabled != true) {
+      return null;
+    }
+    final selection = provider.playbackAdsSelection;
+    return switch (network) {
+      AdNetwork.adsterra => selection.adsterra.forStage(stage, television: tv),
+      AdNetwork.clickadu ||
+      AdNetwork.monetag ||
+      AdNetwork.exoclick =>
+        stage == PlaybackAdStage.streamFound
+            ? selection.popunders[network]?.activeFor(television: tv)
+            : selection.popunders[network]?.activeForTrigger(stage),
+      null => null,
+    };
+  }
+
+  int _frequencyFor(
+      AppDependencyProvider provider, PlaybackAdStage stage, bool tv) {
+    if (stage.triggerKey != null) {
+      return provider.popupTrigger(stage)?.frequencyMinutes ?? 0;
+    }
+    final selection = provider.playbackAdsSelection;
+    return tv
+        ? selection.tvPopupFrequencyMinutes
+        : selection.popupFrequencyMinutes;
+  }
+
   bool _popupCoolingDown(PlaybackAdStage stage, int minutes) {
     final lastShown = _lastPopupShownAt[stage];
     if (minutes <= 0 || lastShown == null) return false;
@@ -338,7 +367,7 @@ class AdsterraPlaybackAdsService {
   Future<void> _loadPopupHistory(PlaybackAdStage stage) async {
     try {
       final preferences = await _preferences();
-      final timestamp = preferences.getInt(_lastPopupShownKeys[stage]!);
+      final timestamp = preferences.getInt(_lastPopupShownKey(stage));
       if (timestamp == null || timestamp <= 0) return;
       final persisted = DateTime.fromMillisecondsSinceEpoch(timestamp);
       if (persisted.isAfter(_now())) return;
@@ -358,7 +387,7 @@ class AdsterraPlaybackAdsService {
     try {
       final preferences = await _preferences();
       if (!await preferences.setInt(
-          _lastPopupShownKeys[stage]!, shownAt.millisecondsSinceEpoch)) {
+          _lastPopupShownKey(stage), shownAt.millisecondsSinceEpoch)) {
         debugPrint(
             '[AdsterraPlayback] popup frequency persistence unavailable');
       }

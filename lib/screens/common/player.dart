@@ -1,4 +1,5 @@
 import 'package:flixquest/widgets/adsterra_playback_gate.dart';
+import 'package:flixquest/models/adsterra_playback_ads_config.dart';
 import 'package:flixquest/services/adsterra_playback_ads_service.dart';
 import 'package:flixquest/widgets/playback_action.dart';
 // ignore_for_file: deprecated_member_use
@@ -2639,6 +2640,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                       useTvPlayer: widget.useTvControls,
                       onTvPlayerExit: widget.onTvPlayerExit,
                       metadata: _metadataForTvEpisode(episode),
+                      adStage: PlaybackAdStage.episodeSwitch,
                     )),
           ),
         );
@@ -2672,6 +2674,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                       useTvPlayer: widget.useTvControls,
                       onTvPlayerExit: widget.onTvPlayerExit,
                       metadata: metadata,
+                      adStage: PlaybackAdStage.movieSwitch,
                     )),
           ),
         );
@@ -3558,6 +3561,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
               builder: (context) => TVVideoLoader(
                     download: false,
                     metadata: _metadataForTvEpisode(next),
+                    adStage: PlaybackAdStage.episodeSwitch,
                   )),
         ),
       );

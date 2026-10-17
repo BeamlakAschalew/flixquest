@@ -4,9 +4,57 @@ import 'ad_network.dart';
 
 export 'ad_network.dart';
 
-/// [playerExit] follows a viewer leaving the player after watching; it shows
-/// the stream-found popup unless the catalog names a `player_exit` placement.
-enum PlaybackAdStage { beforeLoader, streamFound, playerExit }
+/// Where a playback ad opens. Besides the Social Bar ([beforeLoader]) and the
+/// stream-found popup, each trigger has its own switch and interval:
+/// [playerExit] after leaving a player, [download] after a download is queued,
+/// and [episodeSwitch] / [movieSwitch] in place of stream found when the
+/// player itself moves to another episode or movie. A trigger shows the
+/// catalog's `popunder` unless the catalog names its own placement.
+enum PlaybackAdStage {
+  beforeLoader,
+  streamFound,
+  playerExit,
+  download,
+  episodeSwitch,
+  movieSwitch;
+
+  /// The trigger's own placement in a popup catalog and its Remote Config
+  /// prefix, such as `player_exit`; null for the two playback stages.
+  String? get triggerKey => switch (this) {
+        beforeLoader || streamFound => null,
+        playerExit => 'player_exit',
+        download => 'download',
+        episodeSwitch => 'episode_switch',
+        movieSwitch => 'movie_switch',
+      };
+
+  /// Replaces stream found for a load the player started itself.
+  bool get isSwitch => this == episodeSwitch || this == movieSwitch;
+
+  /// Playback follows the popup, so it ends with Play now.
+  bool get startsPlayback => this == streamFound || isSwitch;
+
+  static const triggers = [playerExit, download, episodeSwitch, movieSwitch];
+}
+
+/// A trigger's own switch and interval, apart from stream found's. [minWatch]
+/// applies to [PlaybackAdStage.playerExit] only.
+typedef PopupTriggerConfig = ({
+  bool enabled,
+  int frequencyMinutes,
+  Duration minWatch,
+});
+
+Map<PlaybackAdStage, PlaybackAdPlacement> _parseTriggerPlacements(
+    Map<String, dynamic> json,
+    {AdNetwork network = AdNetwork.adsterra}) {
+  return Map.unmodifiable({
+    for (final stage in PlaybackAdStage.triggers)
+      if (PlaybackAdPlacement.parse(json[stage.triggerKey], network: network)
+          case final placement?)
+        stage: placement,
+  });
+}
 
 /// Independent of banner settings; missing or malformed remote values disable
 /// playback ads. Codes belong in Remote Config, never in compiled defaults.
@@ -16,7 +64,7 @@ class AdsterraPlaybackAdsConfig {
     this.interstitial,
     this.popunder,
     this.tvPopunder,
-    this.playerExit,
+    this.triggerPlacements = const {},
     this.streamFoundExperiment,
   });
 
@@ -28,12 +76,12 @@ class AdsterraPlaybackAdsConfig {
   /// touch, so only formats that open without one qualify.
   final PlaybackAdPlacement? tvPopunder;
 
-  /// Its own zone for the player-exit popup, so the dashboard reports it apart.
-  final PlaybackAdPlacement? playerExit;
+  /// Triggers' own zones (`player_exit`, `download`, ...), so the dashboard
+  /// reports each apart.
+  final Map<PlaybackAdStage, PlaybackAdPlacement> triggerPlacements;
   final PlaybackAdExperiment? streamFoundExperiment;
 
-  /// TV has no Social Bar, no player-exit popup and no experiment: only
-  /// [tvPopunder].
+  /// TV has no Social Bar, no triggers and no experiment: only [tvPopunder].
   PlaybackAdPlacement? forStage(PlaybackAdStage stage,
           {bool television = false}) =>
       !enabled
@@ -42,14 +90,11 @@ class AdsterraPlaybackAdsConfig {
               ? stage == PlaybackAdStage.streamFound
                   ? tvPopunder
                   : null
-              : switch (stage) {
-                  PlaybackAdStage.beforeLoader => interstitial,
-                  PlaybackAdStage.streamFound =>
-                    streamFoundExperiment?.variants.first.placement ?? popunder,
-                  PlaybackAdStage.playerExit => playerExit ??
+              : stage == PlaybackAdStage.beforeLoader
+                  ? interstitial
+                  : triggerPlacements[stage] ??
                       streamFoundExperiment?.variants.first.placement ??
-                      popunder,
-                };
+                      popunder;
 
   static AdsterraPlaybackAdsConfig parse(String raw, {required bool enabled}) {
     try {
@@ -67,7 +112,7 @@ class AdsterraPlaybackAdsConfig {
             ? null
             : PlaybackAdPlacement.parse(json['popunder']),
         tvPopunder: PlaybackAdPlacement.parseTv(json['tv_popunder']),
-        playerExit: PlaybackAdPlacement.parse(json['player_exit']),
+        triggerPlacements: _parseTriggerPlacements(json),
         streamFoundExperiment:
             PlaybackAdExperiment.parse(json['stream_found_experiment']),
       );
@@ -253,7 +298,10 @@ class PlaybackAdPlacement {
 /// Missing or malformed values disable it.
 class PopunderAdsConfig {
   const PopunderAdsConfig(this.network,
-      {this.enabled = false, this.popunder, this.tvPopunder, this.playerExit});
+      {this.enabled = false,
+      this.popunder,
+      this.tvPopunder,
+      this.triggerPlacements = const {}});
 
   final AdNetwork network;
   final bool enabled;
@@ -263,13 +311,14 @@ class PopunderAdsConfig {
   /// [PlaybackAdPlacement.playsWithoutTouch].
   final PlaybackAdPlacement? tvPopunder;
 
-  /// The player-exit popup's own zone; [popunder] serves it when absent.
-  final PlaybackAdPlacement? playerExit;
+  /// Triggers' own zones; [popunder] serves a trigger without one.
+  final Map<PlaybackAdStage, PlaybackAdPlacement> triggerPlacements;
 
   PlaybackAdPlacement? get activePopunder => enabled ? popunder : null;
 
-  PlaybackAdPlacement? get activePlayerExit =>
-      enabled ? playerExit ?? popunder : null;
+  /// A phone trigger's popup ([PlaybackAdStage.triggers]).
+  PlaybackAdPlacement? activeForTrigger(PlaybackAdStage stage) =>
+      enabled ? triggerPlacements[stage] ?? popunder : null;
 
   PlaybackAdPlacement? activeFor({required bool television}) => !enabled
       ? null
@@ -288,8 +337,7 @@ class PopunderAdsConfig {
         popunder: PlaybackAdPlacement.parse(json['popunder'], network: network),
         tvPopunder:
             PlaybackAdPlacement.parseTv(json['tv_popunder'], network: network),
-        playerExit:
-            PlaybackAdPlacement.parse(json['player_exit'], network: network),
+        triggerPlacements: _parseTriggerPlacements(json, network: network),
       );
     } catch (_) {
       return PopunderAdsConfig(network);

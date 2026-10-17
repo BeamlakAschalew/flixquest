@@ -46,9 +46,6 @@ class AppRemoteConfig {
   static const tvPlaybackPopunderNetworkKey = 'tv_playback_popunder_network';
   static const tvPlaybackPopupFrequencyMinutesKey =
       'tv_playback_popup_frequency_minutes';
-  static const playerExitPopupEnabledKey = 'player_exit_popup_enabled';
-  static const playerExitPopupFrequencyMinutesKey =
-      'player_exit_popup_frequency_minutes';
   static const playerExitPopupMinWatchSecondsKey =
       'player_exit_popup_min_watch_seconds';
   static const clickaduPlaybackEnabledKey = 'clickadu_playback_enabled';
@@ -67,6 +64,14 @@ class AppRemoteConfig {
   /// that ABI to the universal [appDownloadUrlKey] build.
   static String abiDownloadUrlKey(String abi) =>
       '${appDownloadUrlKey}_${abi.replaceAll('-', '_')}';
+
+  /// A popup trigger's switch, e.g. `download_popup_enabled`.
+  static String popupEnabledKey(PlaybackAdStage stage) =>
+      '${stage.triggerKey}_popup_enabled';
+
+  /// A popup trigger's own interval, e.g. `download_popup_frequency_minutes`.
+  static String popupFrequencyMinutesKey(PlaybackAdStage stage) =>
+      '${stage.triggerKey}_popup_frequency_minutes';
 
   /// Live TV used to ride on the OTT flag before it got a dedicated key.
   static const legacyEnableLiveTvKey = 'enable_ott';
@@ -118,8 +123,10 @@ class AppRemoteConfig {
       adsterraPlaybackAdsKey: '{}',
       playbackPopunderNetworkKey: 'adsterra',
       playbackPopupFrequencyMinutesKey: 0,
-      playerExitPopupEnabledKey: false,
-      playerExitPopupFrequencyMinutesKey: 0,
+      for (final stage in PlaybackAdStage.triggers) ...{
+        popupEnabledKey(stage): false,
+        popupFrequencyMinutesKey(stage): 0,
+      },
       playerExitPopupMinWatchSecondsKey: 60,
       clickaduPlaybackEnabledKey: false,
       clickaduPlaybackAdsKey: '{}',
@@ -289,13 +296,24 @@ class AppRemoteConfig {
         AdNetwork.parse(remoteConfig.getString(playbackPopunderNetworkKey)));
     provider.setPlaybackPopupFrequencyMinutes(
         remoteConfig.getValue(playbackPopupFrequencyMinutesKey).asInt());
-    provider.setPlayerExitPopup(
-      enabled: _remoteBool(remoteConfig, playerExitPopupEnabledKey),
-      frequencyMinutes:
-          remoteConfig.getValue(playerExitPopupFrequencyMinutesKey).asInt(),
-      minWatchSeconds:
-          remoteConfig.getValue(playerExitPopupMinWatchSecondsKey).asInt(),
-    );
+    for (final stage in PlaybackAdStage.triggers) {
+      final enabled = remoteConfig.getValue(popupEnabledKey(stage));
+      // Unpublished, episode and movie switches keep the stream-found popup;
+      // the other triggers stay off.
+      if (enabled.source != ValueSource.valueRemote) {
+        provider.clearPopupTrigger(stage);
+        continue;
+      }
+      provider.setPopupTrigger(
+        stage,
+        enabled: enabled.asBool(),
+        frequencyMinutes:
+            remoteConfig.getValue(popupFrequencyMinutesKey(stage)).asInt(),
+        minWatchSeconds: stage == PlaybackAdStage.playerExit
+            ? remoteConfig.getValue(playerExitPopupMinWatchSecondsKey).asInt()
+            : 0,
+      );
+    }
     // Android TV follows the phone selector and interval until its own keys
     // are published.
     final tvNetwork = remoteConfig.getValue(tvPlaybackPopunderNetworkKey);
@@ -340,7 +358,10 @@ class AppRemoteConfig {
           'popupFrequencyMinutes=${provider.playbackPopupFrequencyMinutes} '
           'tvNetwork=${provider.tvPlaybackPopunderNetwork?.name ?? 'none'} '
           'tvPopupFrequencyMinutes=${provider.tvPlaybackPopupFrequencyMinutes} '
-          'playerExit=${provider.playerExitPopup} '
+          'triggers=${{
+        for (final stage in PlaybackAdStage.triggers)
+          stage.name: provider.popupTrigger(stage)
+      }} '
           'enabled=$enabled interstitialEnabled=$interstitialEnabled '
           'mode=${placement?.mode ?? 'disabled/invalid'} '
           'target=${target == null ? 'none' : '${target.origin}${target.path}'}');

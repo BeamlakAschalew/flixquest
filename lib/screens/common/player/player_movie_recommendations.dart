@@ -8,6 +8,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../../constants/app_constants.dart';
+import '../../../models/adsterra_playback_ads_config.dart';
 import '../../../models/movie_stream_metadata.dart';
 import '../../../ui_components/app_ui_components.dart';
 import '../../movie/movie_video_loader.dart';
@@ -63,6 +64,7 @@ class PlayerMovieRecommendations {
                       download: false,
                       useTvPlayer: useTvPlayer,
                       metadata: newMetadata,
+                      adStage: PlaybackAdStage.movieSwitch,
                     )),
           ),
         );
