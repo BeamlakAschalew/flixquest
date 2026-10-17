@@ -1104,6 +1104,36 @@ closes first, and the popup opens once its exit transition has finished.
 Missing, invalid or negative intervals fall back to `0`. Turning a switch off
 closes an open popup of that trigger.
 
+#### Player-exit popup owed after closing the app
+
+Closing the app from the player, instead of leaving it, would skip the
+player-exit popup. With these keys published, the popup stays owed and opens on
+the next launch:
+
+| Parameter | Type | Default | Purpose |
+| --- | --- | --- | --- |
+| `player_exit_popup_relaunch_enabled` | Boolean | Unpublished (off) | Saves an owed player-exit popup and shows it on the next launch. Must be published remotely; needs `player_exit_popup_enabled`. |
+| `player_exit_popup_relaunch_max_hours` | Number | `24` | An owed popup older than this is dropped instead of shown. `0` drops every owed popup. |
+
+- The popup is owed the moment the viewer's watch time reaches
+  `player_exit_popup_min_watch_seconds`, and saved on the device then, so it
+  survives the app being closed or killed. It covers the movie, episode and
+  Live TV players. An in-player episode or movie switch carries it to the next
+  player.
+- It is settled once the player-exit popup finishes in the running app: shown
+  (as soon as its ad becomes visible), skipped by its switch or interval, or
+  unfilled. An attempt cut short by closing the app, another ad or navigation
+  leaves it owed.
+- On the next launch it opens over the first phone screen as soon as the stored
+  Remote Config is applied, within 5 seconds of the screen appearing; otherwise
+  it waits for a later launch rather than interrupt later. It does not open
+  over a page the viewer has already opened, behind a mandatory update, or in
+  TV mode, where it is dropped.
+- The launch popup is the ordinary player-exit popup: its switch, interval,
+  network, placement and its close fallback (at most 15 seconds) all apply.
+  Back is held until the ad is served, as on every popup; an ad that cannot
+  load or fill lets the viewer in and settles it.
+
 Every trigger uses the network `playback_popunder_network` selects, and that
 network's own `<network>_playback_enabled` switch still applies. Each popup
 catalog may name a placement per trigger, keyed `player_exit`, `download`,

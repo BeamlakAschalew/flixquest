@@ -877,6 +877,10 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
 
   void _startPlaybackMonitor() {
     _progressCheckTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!widget.useTvControls) {
+        AdsterraPlaybackAdsService.instance.notePlayerWatch(
+            context, Duration(milliseconds: _wellnessTracker.watchedMs()));
+      }
       bool initialized;
       try {
         initialized = _betterPlayerController.isVideoInitialized() == true;

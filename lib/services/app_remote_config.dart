@@ -50,6 +50,10 @@ class AppRemoteConfig {
       'tv_playback_popup_frequency_minutes';
   static const playerExitPopupMinWatchSecondsKey =
       'player_exit_popup_min_watch_seconds';
+  static const playerExitPopupRelaunchEnabledKey =
+      'player_exit_popup_relaunch_enabled';
+  static const playerExitPopupRelaunchMaxHoursKey =
+      'player_exit_popup_relaunch_max_hours';
   static const clickaduPlaybackEnabledKey = 'clickadu_playback_enabled';
   static const clickaduPlaybackAdsKey = 'clickadu_playback_ads';
   static const monetagPlaybackEnabledKey = 'monetag_playback_enabled';
@@ -133,6 +137,8 @@ class AppRemoteConfig {
         popupFrequencyMinutesKey(stage): 0,
       },
       playerExitPopupMinWatchSecondsKey: 60,
+      playerExitPopupRelaunchEnabledKey: false,
+      playerExitPopupRelaunchMaxHoursKey: 24,
       clickaduPlaybackEnabledKey: false,
       clickaduPlaybackAdsKey: '{}',
       monetagPlaybackEnabledKey: false,
@@ -320,6 +326,11 @@ class AppRemoteConfig {
             : 0,
       );
     }
+    provider.setPlayerExitRelaunch(
+      enabled: _remoteBool(remoteConfig, playerExitPopupRelaunchEnabledKey),
+      maxHours:
+          remoteConfig.getValue(playerExitPopupRelaunchMaxHoursKey).asInt(),
+    );
     // Android TV follows the phone selector and interval until its own keys
     // are published.
     final tvNetwork = remoteConfig.getValue(tvPlaybackPopunderNetworkKey);
@@ -409,6 +420,7 @@ class AppRemoteConfig {
     if (remoteTmdbKey.isNotEmpty) {
       TMDB_API_KEY = remoteTmdbKey;
     }
+    provider.markRemoteConfigApplied();
   }
 
   static Map<String, BannerDisplayConfig> parseBannerConfigs(String rawJson) {
