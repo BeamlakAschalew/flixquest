@@ -21,6 +21,7 @@ import '../../models/wellness.dart';
 import '../../provider/app_dependency_provider.dart';
 import '../../provider/settings_provider.dart';
 import '../../provider/wellness_provider.dart';
+import '../../services/adsterra_playback_ads_service.dart';
 import '../../services/analytics_service.dart';
 import '../../services/daddylive_service.dart';
 import '../../services/stream_intro_service.dart';
@@ -820,8 +821,7 @@ class _LivePlayerState extends State<LivePlayer> {
       );
       return;
     }
-    final error = _lastPlaybackError ??
-        tr('player_did_not_recover');
+    final error = _lastPlaybackError ?? tr('player_did_not_recover');
     _sourceOperationGeneration++;
     _cancelPlaybackRecovery();
     _playbackFailure.value = _LivePlaybackFailure(
@@ -1502,6 +1502,10 @@ class _LivePlayerState extends State<LivePlayer> {
   }
 
   void _exitPlayer() {
+    if (!widget.useTvControls) {
+      AdsterraPlaybackAdsService.instance.afterPlayerExit(context,
+          watched: Duration(milliseconds: _wellnessTracker.watchedMs()));
+    }
     Navigator.of(context).pop();
   }
 }
@@ -1611,8 +1615,8 @@ class _LiveChannelBrowserState extends State<_LiveChannelBrowser> {
       category: _category,
     );
     if (!narrowed) {
-      final index =
-          channels.indexWhere((channel) => channel.id == widget.currentChannelId);
+      final index = channels
+          .indexWhere((channel) => channel.id == widget.currentChannelId);
       if (index > 0) {
         channels = <Channel>[
           channels[index],

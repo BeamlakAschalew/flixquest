@@ -211,7 +211,7 @@ class _AdsterraPlaybackAdScreenState extends State<AdsterraPlaybackAdScreen>
   bool get _automaticContinue =>
       const {AdNetwork.clickadu, AdNetwork.monetag}
           .contains(widget.placement.network) &&
-      widget.stage == PlaybackAdStage.streamFound &&
+      widget.stage != PlaybackAdStage.beforeLoader &&
       !widget.placement.isSmartlink;
 
   bool get _automaticMonetag =>
@@ -237,7 +237,7 @@ class _AdsterraPlaybackAdScreenState extends State<AdsterraPlaybackAdScreen>
       unawaited(_openPage(smartlink));
     } else {
       // The tag page's own Play button leads on; Skip is the fallback.
-      if (widget.stage == PlaybackAdStage.streamFound) _holdClose();
+      if (widget.stage != PlaybackAdStage.beforeLoader) _holdClose();
       unawaited(_loadScript());
     }
   }
@@ -473,7 +473,7 @@ class _AdsterraPlaybackAdScreenState extends State<AdsterraPlaybackAdScreen>
             _loadTimer = Timer(widget.placement.loadTimeout,
                 () => _finish('automatic_popup_timeout'));
           } else if (!_automaticContinue &&
-              widget.stage == PlaybackAdStage.streamFound) {
+              widget.stage != PlaybackAdStage.beforeLoader) {
             _loadTimer?.cancel();
           }
           final script = _script;
@@ -1137,7 +1137,7 @@ class _AdsterraPlaybackAdScreenState extends State<AdsterraPlaybackAdScreen>
             'Opening the advertiser\'s page',
             'Your video is paused. It picks up again when you come back.',
           )
-        : widget.stage == PlaybackAdStage.streamFound
+        : widget.stage.startsPlayback
             ? (
                 Icons.play_circle_outline,
                 'Your video is ready',
@@ -1262,6 +1262,8 @@ class _AdsterraPlaybackAdScreenState extends State<AdsterraPlaybackAdScreen>
   String get _continueLabel {
     if (!widget.holdClose) return 'Back to video';
     if (widget.stage == PlaybackAdStage.beforeLoader) return 'Continue';
+    // Nothing plays after a player-exit or download popup.
+    if (!widget.stage.startsPlayback) return 'Close';
     return _phase == _Phase.script ? 'Skip' : 'Play now';
   }
 
@@ -1270,6 +1272,7 @@ class _AdsterraPlaybackAdScreenState extends State<AdsterraPlaybackAdScreen>
     if (widget.stage == PlaybackAdStage.beforeLoader) {
       return Icons.arrow_forward;
     }
+    if (!widget.stage.startsPlayback) return Icons.close;
     return _phase == _Phase.script ? Icons.skip_next : Icons.play_arrow;
   }
 
@@ -1636,7 +1639,12 @@ String playbackAdHtml(PlaybackAdPlacement placement, PlaybackAdStage stage) {
   final zone = placement.zoneId == null || zoneAttribute == null
       ? ''
       : ' $zoneAttribute="${escape.convert(placement.zoneId!)}"';
-  final popunder = stage == PlaybackAdStage.streamFound;
+  final popunder = stage != PlaybackAdStage.beforeLoader;
+  final (title, ready) = switch (stage) {
+    PlaybackAdStage.playerExit => ('Thanks for watching', 'Continue'),
+    PlaybackAdStage.download => ('Your download has started', 'Continue'),
+    _ => ('Your video is ready', '\u25B6  Play now'),
+  };
   // Clickadu's tag fetches its ad (`/adx/get/`) a few seconds after its script
   // loads, and a tap before that opens nothing. Enable Continue only once
   // that request has finished; the load timeout covers a tag that never arms.
@@ -1664,12 +1672,12 @@ catch(e){window.fqTagLoaded=function(){fqSignal('script');arm();};}})();</script
 #fq-continue:disabled{opacity:.5}
 #fq-note{max-width:320px;font-size:13px;line-height:1.4;color:#aaa}</style>
 <script>
-function fqSignal(event,url,detail){if(event==='loaded'){var b=document.getElementById("fq-continue");if(b){b.disabled=false;b.textContent="\u25B6  Play now";}}PlaybackAd.postMessage(JSON.stringify({event:event,url:url,detail:detail}));}
+function fqSignal(event,url,detail){if(event==='loaded'){var b=document.getElementById("fq-continue");if(b){b.disabled=false;b.textContent="$ready";}}PlaybackAd.postMessage(JSON.stringify({event:event,url:url,detail:detail}));}
 window.addEventListener('error',function(event){fqSignal('failed',null,event.message||'script resource failed');});
 </script>
 ${popunder ? '$armed$trace<script defer data-cfasync="false"$zone src="$script" onload="$onLoad" onerror="fqSignal(\'failed\')"></script>' : ''}
 </head><body>
-${popunder ? '''<main id="fq-controls"><div id="fq-title">Your video is ready</div><button id="fq-continue" type="button" disabled>One moment…</button><div id="fq-note">Sponsored: an ad may open first. Ads like this keep FlixQuest free.</div></main><script>
+${popunder ? '''<main id="fq-controls"><div id="fq-title">$title</div><button id="fq-continue" type="button" disabled>One moment…</button><div id="fq-note">Sponsored: an ad may open first. Ads like this keep FlixQuest free.</div></main><script>
 window.addEventListener("click",function(event){
  if(!event.target||event.target.id!=="fq-continue")return;
  setTimeout(function(){fqSignal("done");},750);

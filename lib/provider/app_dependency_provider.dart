@@ -187,6 +187,37 @@ class AppDependencyProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Each popup trigger's own switch and interval ([PlaybackAdStage.triggers]),
+  /// served on phones by the selected network. A missing trigger is
+  /// unpublished: switches then keep the stream-found popup, and the others
+  /// stay off.
+  Map<PlaybackAdStage, PopupTriggerConfig> _popupTriggers = const {};
+  PopupTriggerConfig? popupTrigger(PlaybackAdStage stage) =>
+      _popupTriggers[stage];
+
+  void setPopupTrigger(
+    PlaybackAdStage stage, {
+    required bool enabled,
+    required int frequencyMinutes,
+    int minWatchSeconds = 0,
+  }) {
+    final config = (
+      enabled: enabled,
+      frequencyMinutes: frequencyMinutes < 0 ? 0 : frequencyMinutes,
+      minWatch: Duration(seconds: minWatchSeconds < 0 ? 0 : minWatchSeconds),
+    );
+    if (_popupTriggers[stage] == config) return;
+    _popupTriggers = Map.unmodifiable({..._popupTriggers, stage: config});
+    notifyListeners();
+  }
+
+  /// Unpublishes [stage]; see [popupTrigger].
+  void clearPopupTrigger(PlaybackAdStage stage) {
+    if (!_popupTriggers.containsKey(stage)) return;
+    _popupTriggers = Map.unmodifiable({..._popupTriggers}..remove(stage));
+    notifyListeners();
+  }
+
   /// Everything that decides a playback ad. A change closes an active one.
   ({
     AdNetwork? network,
