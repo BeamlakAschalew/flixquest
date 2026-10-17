@@ -1112,6 +1112,83 @@ closes first, and the popup opens once its exit transition has finished.
 Missing, invalid or negative intervals fall back to `0`. Turning a switch off
 closes an open popup of that trigger.
 
+#### When a key is not published
+
+Nothing new turns on by itself. Only a published switch counts:
+
+| Switch | Not published |
+| --- | --- |
+| `player_exit_popup_enabled` | Off: no popup after leaving the player. |
+| `download_popup_enabled` | Off: no popup after a download. |
+| `episode_switch_popup_enabled` | Episode switches keep the ordinary stream-found popup, as before (see below). |
+| `movie_switch_popup_enabled` | Movie switches keep the ordinary stream-found popup, as before. |
+| `player_exit_popup_relaunch_enabled` | Off: nothing is saved and nothing opens on launch. |
+
+The other keys have built-in defaults, used once their switch is on:
+
+| Key | Built-in default |
+| --- | --- |
+| `<trigger>_popup_frequency_minutes` | `0`: a popup at every eligible moment |
+| `player_exit_popup_min_watch_seconds` | `60` |
+| `player_exit_popup_relaunch_max_hours` | `24` |
+
+Publish each switch together with its `_frequency_minutes`. A switch published
+alone, such as `download_popup_enabled=true`, runs with an interval of `0`: a
+popup on every download.
+
+The triggers also need what every popup needs: the network selected by
+`playback_popunder_network` switched on (for Adsterra,
+`adsterra_playback_enabled=true`, which is off by default) and a valid
+`popunder` in its catalog. With none of these published, no popups show at
+all.
+
+A parameter counts as published only when the Remote Config template gives it
+a value, as its default or under a condition. A parameter set to **Use in-app
+default** does not. Deleting a parameter is not instant: devices keep their
+last activated values until their next fetch, then fall back to the defaults
+above.
+
+#### Episode and movie switches: as before, own interval, or off
+
+Every video start, whether from Home, a details page or the player's own next
+episode, finds a stream and then shows the stream-found popup ("Your video is
+ready / Play now"), limited by the shared `playback_popup_frequency_minutes`.
+So switching episodes inside the player already showed a popup, but on the same
+interval as every other start. `episode_switch_popup_enabled` decides that
+moment:
+
+| `episode_switch_popup_enabled` | When the player moves to another episode |
+| --- | --- |
+| Not published | The ordinary stream-found popup, on the shared `playback_popup_frequency_minutes`, exactly as before. |
+| `true` | A popup at the same moment, on its own `episode_switch_popup_frequency_minutes` and, if the catalog names one, its own `episode_switch` placement. |
+| `false` | No popup when switching episodes. |
+
+For example, with `playback_popup_frequency_minutes=30`, a viewer sees the
+popup when starting episode 1 and taps next episode ten minutes later:
+
+- Not published: no popup on episode 2; the shared 30 minutes have not passed.
+- `true` with `episode_switch_popup_frequency_minutes=5`: a popup on episode 2;
+  its own 5 minutes have passed.
+- `false`: no popup on episode switches at all.
+
+`movie_switch_popup_enabled` works the same way for moving to a recommended
+movie inside the player.
+
+#### How watch time is measured
+
+`player_exit_popup_min_watch_seconds`, and the moment an owed popup is saved,
+use real time spent playing, not the position in the video:
+
+- Time counts only while the video plays, from play until the next pause or
+  buffering, added up across the session; it need not be continuous.
+- Seeking adds nothing: dragging from 0:10 to 1:30:00 does not count as
+  watched.
+- Playback speed does not change it: 60 seconds at 2x is 60 seconds.
+- Movies and episodes leave out their pre-roll ad; Live TV counts its pre-roll.
+- A playback error that arrives without a pause or buffering event first does
+  not stop the count, so a stream that fails that way can still reach the
+  minimum.
+
 #### Player-exit popup owed after closing the app
 
 Closing the app from the player, instead of leaving it, would skip the
@@ -1143,13 +1220,24 @@ the next launch:
   load or fill lets the viewer in and settles it.
 
 Every trigger uses the network `playback_popunder_network` selects, and that
-network's own `<network>_playback_enabled` switch still applies. Each popup
+network's own `<network>_playback_enabled` switch still applies. Switching the
+network, for example to `exoclick`, moves every trigger with it. Each popup
 catalog may name a placement per trigger, keyed `player_exit`, `download`,
 `episode_switch` or `movie_switch`, with the same fields as `popunder`, to
 report it under its own zone or Smartlink. Without one, the catalog's
 `popunder` is used (for Adsterra, the experiment's first arm when an
 experiment replaces it). Only an unpublished switch trigger, which is the
 ordinary stream-found popup, takes part in the experiment.
+
+On Adsterra, the triggers can share one Smartlink and still be reported apart
+by giving each its own `sub_id`; the supplied
+[adsterra_playback_ads.json](adsterra_playback_ads.json) does this. Other
+networks reject `sub_id`: to see each trigger in ExoClick's, Clickadu's or
+Monetag's statistics, create a zone per trigger in that network and put its URL
+in the trigger's placement. The ExoClick rotating endpoint
+(`https://flix.quest/api/exoclick-popup`) is set up for zone 6050984, so every
+trigger placed on it reports under that zone; serving other zones through it
+needs a change to the endpoint in the landing repo.
 
 ```json
 {
@@ -1169,6 +1257,39 @@ On Android TV, the player-exit and download popups never show, and episode and
 movie switches keep TV's stream-found popup: the selected catalog's
 `tv_popunder`, with `tv_playback_popunder_network` and
 `tv_playback_popup_frequency_minutes`. The trigger keys apply to phones only.
+
+"Phones" here means FlixQuest's handheld interface: phones and tablets, on
+Android and iOS. "TV" means the TV interface: Android TV and Google TV, which
+are detected automatically, or any device whose app mode is set to TV in
+settings. What counts is the interface showing, not the hardware.
+
+#### Example starting configuration
+
+Starting points to tune against revenue per user and retention, not tested
+values. Roll the switches out to a percentage of users first.
+
+| Key | Type | Example |
+| --- | --- | --- |
+| `playback_popunder_network` | String | `adsterra` or `exoclick` |
+| `adsterra_playback_enabled` or `exoclick_playback_enabled` | Boolean | `true` |
+| `playback_popup_frequency_minutes` | Number | `30` |
+| `player_exit_popup_enabled` | Boolean | `true` |
+| `player_exit_popup_frequency_minutes` | Number | `30` |
+| `player_exit_popup_min_watch_seconds` | Number | `60` |
+| `player_exit_popup_relaunch_enabled` | Boolean | `true` |
+| `player_exit_popup_relaunch_max_hours` | Number | `24` |
+| `download_popup_enabled` | Boolean | `true` |
+| `download_popup_frequency_minutes` | Number | `60` |
+| `episode_switch_popup_enabled` | Boolean | `true` |
+| `episode_switch_popup_frequency_minutes` | Number | `20` |
+| `movie_switch_popup_enabled` | Boolean | `true` |
+| `movie_switch_popup_frequency_minutes` | Number | `30` |
+| `tv_playback_popunder_network` | String | Unpublished (follows phones), or a network or `none` |
+| `tv_playback_popup_frequency_minutes` | Number | `30` |
+
+The catalog for the selected network (`adsterra_playback_ads`,
+`exoclick_playback_ads`, ...) needs a `popunder`, and a `tv_popunder` for TV.
+Per-trigger placements are optional.
 
 ### Clickadu popup delivery
 
