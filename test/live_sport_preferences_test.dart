@@ -125,9 +125,80 @@ void main() {
     }
   });
 
+  group('category names from the live EPG, without their emoji', () {
+    // Every category /api/v2/dlhd/epg served on 2026-10-16, emoji removed,
+    // so the names alone are known to file correctly.
+    const cases = <String, String?>{
+      'AHL Ice Hockey': 'ice_hockey',
+      'All Soccer Events': 'soccer',
+      'Am. Football (CFL)': 'american_football',
+      'Am. Football (NCAAF)': 'american_football',
+      'Aussie rules (AFL)': null,
+      'Badminton': null,
+      'Baseball (MLB)': 'baseball',
+      'Baseball': 'baseball',
+      'Basketball': 'basketball',
+      'Boxing': 'combat',
+      'Cricket': 'cricket',
+      'Curling': null,
+      'Cycling': 'cycling',
+      'Darts': 'darts',
+      'ECHL Ice Hockey': 'ice_hockey',
+      'Euroleague Basketball': 'basketball',
+      'Field Hockey': null,
+      'Futsal': 'soccer',
+      'Golf': 'golf',
+      'Handball': 'handball',
+      'High School Football': 'american_football',
+      'Horse Racing': 'horse_racing',
+      'Ice Hockey': 'ice_hockey',
+      'KHL Ice Hockey': 'ice_hockey',
+      'MMA': 'combat',
+      "Men's College Basketball": 'basketball',
+      "Men's College Hockey": 'ice_hockey',
+      "Men's College Soccer": 'soccer',
+      'Motorsport': 'motorsport',
+      'NBA': 'basketball',
+      'NHL Ice Hockey': 'ice_hockey',
+      'NWSL Soccer': 'soccer',
+      'OHL Ice Hockey': 'ice_hockey',
+      'PPV Events': null,
+      'QMJHL Ice Hockey': 'ice_hockey',
+      'Rugby League': 'rugby',
+      'Rugby Union': 'rugby',
+      'Sailing / Boating': null,
+      'Ski Jumping': null,
+      'Snooker': 'snooker',
+      'Socca Champions League': 'soccer',
+      'Soccer': 'soccer',
+      'Squash': null,
+      'TV Shows': null,
+      'Tennis': 'tennis',
+      'Tennis ATP - Doubles: Shanghai (China)': 'tennis',
+      'Tennis Challenger Women - Singles: Mallorca (Spain)': 'tennis',
+      'Tennis Nottingham, Great Britain': 'tennis',
+      'Tennis WTA - Singles: Wuhan (China)': 'tennis',
+      'USL Super League': 'soccer',
+      'Upcoming Events': null,
+      'Volleyball': 'volleyball',
+      'WHL Ice Hockey': 'ice_hockey',
+      'Water Sports': null,
+      "Women's College Hockey": 'ice_hockey',
+      "Women's College Soccer": 'soccer',
+      "Women's College Volleyball": 'volleyball',
+      'Wrestling (SmackDown)': 'combat',
+    };
+    for (final entry in cases.entries) {
+      test('"${entry.key}" -> ${entry.value}', () {
+        expect(_sportOf(entry.key), entry.value);
+      });
+    }
+  });
+
   test('emoji with or without a variation selector are the same marker', () {
     expect(_sportOf('Racing', '🏎'), 'motorsport');
     expect(_sportOf('Racing', '🏎️'), 'motorsport');
+    expect(_sportOf('Horse Racing', '🐎'), 'horse_racing');
     // An emoji that names no sport leaves it to the name.
     expect(_sportOf('Golf', '🏆'), 'golf');
     expect(_sportOf('Big Brother', '👁️'), isNull);

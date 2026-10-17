@@ -79,6 +79,7 @@ final List<LiveSport> liveSports = <LiveSport>[
       'am football',
       'amer football',
       'college football',
+      'high school football',
       'canadian football',
       'arena football',
       'flag football',
@@ -123,6 +124,7 @@ final List<LiveSport> liveSports = <LiveSport>[
       'am football',
       'amer football',
       'college football',
+      'high school football',
       'canadian football',
       'arena football',
       'flag football',
@@ -198,6 +200,7 @@ final List<LiveSport> liveSports = <LiveSport>[
       'hockey',
       'ice hockey',
       'nhl',
+      'echl',
       'khl',
       'ahl',
       'ohl',
@@ -287,7 +290,7 @@ final List<LiveSport> liveSports = <LiveSport>[
   LiveSport(
     id: 'horse_racing',
     emoji: '🏇',
-    markers: <String>{'🏇'},
+    markers: <String>{'🏇', '🐎'},
     names: <String>[
       'horse racing',
       'horse race',
