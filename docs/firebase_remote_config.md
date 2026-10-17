@@ -65,13 +65,21 @@ splash remains bundled because it appears before Firebase initializes.
 
 | Parameter | Firebase type | Default | Purpose |
 | --- | --- | --- | --- |
-| `telegram_channel_url` | String | Empty | The channel phone users are invited to join from Home, e.g. `https://t.me/flixquestapp`. Empty, unpublished or not an `http(s)`/`tg:` link turns the invite off. |
+| `telegram_channel_url` | String | Empty | The channel users are invited to join from Home, e.g. `https://t.me/flixquestapp`. Empty, unpublished or not an `http(s)`/`tg:` link turns the invite off. |
 
-On phones and tablets (never Android TV), Home shows the invite two seconds
-after it is on screen, at most once a launch. **Join channel** opens the link
-outside the app and stops the invite for good, until a different link is
-published. **Don't show again** hides it for 14 days. Closing it only skips
-this launch. Publish an empty value to stop the invite everywhere.
+On phones, tablets and Android TV, Home shows the invite two seconds
+after it is on screen, at most once a launch. It waits while another page is
+covering Home. **Don't show again** hides it for 14 days; closing it only
+skips this launch. Publish an empty value to stop the invite everywhere.
+
+On phones and tablets, **Join channel** opens the link outside the app. A
+successful launch stops the invite for good, until a different link is
+published.
+
+On Android TV, the invite renders the configured link as a QR code for viewers
+to scan with their phone, with remote-operable **Close** and **Don't show again**
+buttons. Scanning cannot confirm membership, so it does not mark the channel as
+joined. Closing or pressing Back restores focus to Home.
 
 ## App updates
 
@@ -371,7 +379,7 @@ device before rolling out the new selector.
 
 ### Loading and clicks
 
-The banner WebView loads a minimal local HTML document with the network's generated code, JavaScript enabled, an `AD` label, and the exact unit dimensions. Adsterra, Clickadu and ExoClick banners share this view. The local document uses `https://appassets.androidplatform.net/adsterra/` as its HTTPS base URL, giving it an isolated app-content origin where `document.cookie` and storage work. Loading without a base URL creates an opaque origin and makes cookie-dependent scripts fail. This URL is not fetched and does not adopt the ad server or publisher website's origin. Ads use the actual system WebView user agent. Script load/runtime errors, main-document failures, or a script that fails to load within 20 seconds collapse the slot without blocking browsing or playback.
+The banner WebView loads a minimal local HTML document with the network's generated code, JavaScript enabled, an `AD` label, and the exact unit dimensions. Adsterra, Clickadu and ExoClick banners share this view. The local document uses `https://appassets.androidplatform.net/adsterra/` as its HTTPS base URL, giving it an isolated app-content origin where `document.cookie` and storage work. Loading without a base URL creates an opaque origin and makes cookie-dependent scripts fail. This URL is not fetched and does not adopt the ad server or publisher website's origin. Ads use the system WebView user agent with the `; wv` marker removed on Android before the banner document loads. Script load/runtime errors, main-document failures, or a script that fails to load within 20 seconds collapse the slot without blocking browsing or playback.
 
 HTTP(S) offer navigation opens the external browser only following a recent pointer interaction on a phone/tablet. Programmatic main-frame redirects and non-web schemes are blocked; iframe resource navigation stays in the WebView. There are no forced clicks or Smartlink countdowns. Confirm the WebView inventory with Adsterra before publishing real codes, and use Adsterra's reporting to verify monetization; a script-load signal is not a billable-impression callback.
 

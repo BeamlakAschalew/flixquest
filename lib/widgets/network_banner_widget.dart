@@ -55,6 +55,20 @@ class _NetworkBannerWidgetState extends State<NetworkBannerWidget> {
     try {
       final controller = WebViewController();
       _controller = controller;
+      if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+        try {
+          final userAgent = await controller.getUserAgent();
+          if (userAgent != null && userAgent.isNotEmpty) {
+            final bannerAgent =
+                userAgent.replaceAll(RegExp(r';\s*wv(?=[;)])'), '');
+            if (bannerAgent != userAgent) {
+              await controller.setUserAgent(bannerAgent);
+            }
+          }
+        } catch (_) {
+          // Keep banners available if the system user agent cannot be changed.
+        }
+      }
       await controller.setJavaScriptMode(JavaScriptMode.unrestricted);
       await controller.setBackgroundColor(Colors.transparent);
       await controller.addJavaScriptChannel(BannerAdUnit.statusChannel,

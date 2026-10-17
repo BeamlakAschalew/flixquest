@@ -528,6 +528,7 @@
   "telegram_prompt_message": "Entérate antes que nadie de nuevas versiones, correcciones y anuncios.",
   "telegram_prompt_join": "Unirme al canal",
   "telegram_prompt_dont_show_again": "No volver a mostrar",
+  "telegram_prompt_scan": "Escanea este código QR con tu teléfono para unirte a nuestro canal de Telegram.",
   "check_connection": "Conéctese a Internet para continuar.",
   "open_external": "Abierta en reproductor externo",
   "no_channels": "No se encontraron canales :(",
