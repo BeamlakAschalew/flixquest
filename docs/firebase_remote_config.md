@@ -106,7 +106,10 @@ the format off. Selectors are case-insensitive and apply while the app runs.
 
 Monetag serves only the stream-found popup: `playback_popunder_network=monetag` with `monetag_playback_enabled` and `monetag_playback_ads`. See [Monetag popup](#monetag-popup).
 
-ExoClick serves the stream-found popup through `exoclick_playback_enabled` and
+ExoClick banners use `banner_ad_network=exoclick`, `exoclick_banner_enabled`,
+`exoclick_tv_enabled` and `exoclick_banners`. See [ExoClick banners](#exoclick-banners).
+`banner_ad_network_overrides` can migrate individual slots between networks.
+ExoClick also serves the stream-found popup through `exoclick_playback_enabled` and
 `exoclick_playback_ads`, selected by `playback_popunder_network=exoclick`. See
 [ExoClick popup](#exoclick-popup). Its video pre-roll uses
 `vast_preroll.exoclick`. The pre-roll selector also takes a priority list such
@@ -130,15 +133,63 @@ named after the enum value.
 
 | Parameter | Firebase type | Default | Purpose |
 | --- | --- | --- | --- |
-| `banner_ad_network` | String | `adsterra` | Which network's WebView banners fill the slots: `adsterra` or `clickadu`. `none` hides all banners including hosted announcements. Published legacy values `native`, `unity`, and `startio` select Adsterra, but cannot enable requests without its switch and valid codes. Unknown values show no network banner but keep hosted announcements. |
+| `banner_ad_network` | String | `adsterra` | Which network's WebView banners fill the slots: `adsterra`, `clickadu` or `exoclick`. `none` hides all banners including hosted announcements and overrides. Published legacy values `native`, `unity`, and `startio` select Adsterra, but cannot enable requests without its switch and valid codes. Unknown values show no network banner but keep hosted announcements. |
+| `banner_ad_network_test` | String | empty | Dev-flavor-only selector for real banner testing: `adsterra`, `clickadu`, `exoclick`, or `none`. Applies to dev debug/profile/release builds. Prod and unflavored builds ignore it. A valid value locally replaces the normal selector and slot overrides, locally enables the selected network (including TV), and hides hosted announcements. Empty/unknown values restore normal behavior. Uses the existing real network catalog. |
+| `banner_ad_network_overrides` | String (JSON) | `{}` | Optional slot-to-network mapping, e.g. `{"downloads":"exoclick","movie_detail":"adsterra","bookmarks":"none"}`. Unlisted slots use the global selector. An override of `none` or an unknown value hides only that slot's network ad. TV uses explicit `_tv` slot names. Each selected network still requires its own enabled switch. |
 | `adsterra_banner_enabled` | Boolean | `false` | Adsterra banner switch. Must be explicitly enabled remotely; no demo ads or hardcoded publisher codes ship in the app. |
 | `adsterra_tv_enabled` | Boolean | `false` | Additional gate for Android TV; the global switch must also be on. TV placements use `_tv` names and TV-specific defaults. |
 | `adsterra_banners` | String (JSON) | `{"units":{},"defaults":{},"placements":{}}` | Central catalog of banner codes, sizes, default variants and placement overrides. See below. |
 | `clickadu_banner_enabled` | Boolean | `false` | Clickadu banner switch. Must be published remotely. |
 | `clickadu_tv_enabled` | Boolean | `false` | Android TV gate for Clickadu banners, like `adsterra_tv_enabled`. |
 | `clickadu_banners` | String (JSON) | `{"units":{},"defaults":{},"placements":{}}` | Clickadu's catalog: the same `units` / `defaults` / `placements` schema as Adsterra's, with Clickadu unit fields. See [Clickadu banners](#clickadu-banners). |
+| `exoclick_banner_enabled` | Boolean | `false` | ExoClick banner switch; must be explicitly published remotely. |
+| `exoclick_tv_enabled` | Boolean | `false` | Additional Android TV gate for ExoClick banners. |
+| `exoclick_banners` | String (JSON) | `{"units":{},"defaults":{},"placements":{}}` | ExoClick Mobile Banner and web Banner zones in the shared catalog schema. See [ExoClick banners](#exoclick-banners). |
 | `hosted_banner_mode` | String | `stack` | How `/ads` announcements share a slot with the network banner. `stack`: hosted above the network banner. `priority`: an eligible hosted banner takes the slot and the network banner loads only where no hosted ad exists. `off`: show only the network banner. Unknown values use `stack`. |
 | `banners` | String (JSON) | `{"banners":[]}` | Existing per-announcement overrides for `/ads`, keyed by `key` (`enabled`, `placements`, `shape`, `width`, `height`, `aspectRatio`). Separate from the network catalogs. |
+
+### Test real banners in development
+
+Publish `banner_ad_network_test=exoclick` and the real
+[exoclick_banners.json](exoclick_banners.json) catalog as `exoclick_banners`.
+Run the **dev flavor** (`flutter run --flavor dev`); the next Remote Config
+activation selects ExoClick locally, including TV placements. The same behavior
+applies to `flutter run --flavor dev --profile` and
+`flutter run --flavor dev --release`. The selected network's
+banner and TV switches do not need to be enabled in Firebase. The app still
+honors valid codes, available slot dimensions, and unit/placement enable flags.
+
+While the test selector is active, dev builds ignore production slot network
+overrides and hide hosted announcements so they cannot mask the test banners.
+`banner_ad_network_test=none` hides all banners in the dev flavor. Set the value to
+empty to restore the production selector, slot overrides, hosted mode and
+network switches on the next activation. Unknown values also use normal
+behavior. You can switch between `adsterra`, `clickadu` and `exoclick`.
+
+**The prod flavor always uses production banner settings**, including prod
+debug builds, even when the test value is published. Unflavored and unknown
+flavors also use production settings. `prod` is the default in `pubspec.yaml`,
+so plain `flutter run` and `flutter build apk --release` use production settings.
+Leave `banner_ad_network`,
+`banner_ad_network_overrides` and production enable switches unchanged when
+testing. The test selector uses the same real catalogs: edits to a catalog
+still apply wherever that catalog is selected. This is a development network
+override, not a source of sandbox creatives. Playback popups and VAST selectors
+remain independent.
+
+Android's `dev` and `prod` flavors reuse the existing package ID
+`dev.beamlak.flixquest_v2` and its Firebase registration. The launcher label is
+`FlixQuest Dev` for dev and `FlixQuest` for prod. They share an install slot and
+cannot be installed side by side; replacing an installed APK also requires a
+compatible signing certificate. A separate dev package would require its own
+Firebase Android registration and Google services configuration.
+
+To verify both paths locally:
+
+```bash
+flutter test --flavor prod test/banner_ads_config_test.dart
+flutter test --flavor dev test/banner_ads_config_test.dart
+```
 
 ### Activate Adsterra banners
 
@@ -242,9 +293,80 @@ approved for. A desktop test page on `localhost` loaded `bn.js` but got no
 creative, so confirm with Clickadu that the spot accepts in-app WebView
 traffic.
 
+### ExoClick banners
+
+**Ready-to-publish catalog:** [exoclick_banners.json](exoclick_banners.json)
+contains three Mobile Banner zones and five web Banner zones created for
+FlixQuest. It maps every current Adsterra slot to ExoClick, with 300x100
+standard banners (300x50 when height is constrained), 300x250 rectangles,
+728x90 leaderboards on wide surfaces, and 900x250 on wide Home hero slots.
+The 300x500 and 160x600 units are available for explicit placement experiments.
+[banner_ad_network_overrides.example.json](banner_ad_network_overrides.example.json)
+is a small rollout mapping for Home All hero, Downloads and Movie Detail.
+
+Mobile Banner and web Banner zones share the same `ExoclickBannerUnit` and
+`NetworkBannerWidget` used by the common banner slot. Web Banner here means
+ExoClick's zone type: these creatives render inside the Android/iOS app's
+WebViews, including Android TV when enabled. It does not enable Flutter Web,
+which the existing banner renderer does not support.
+
+The [ExoClick asynchronous tag](https://www.exoclick.com/get-faster-banner-ad-load-times-with-asynchronous-tags/?id=83006&snippet=a58d732f8e)
+contains an `ad-provider.js` script, an `<ins>` with a CSS class and
+`data-zoneid`, and an `AdProvider` serve call. Copy the exact generated
+`script_url`, `class_name` and `zone_id`; each size needs its own dashboard
+zone. Never reuse a zone ID with different dimensions. The catalog accepts
+the mobile sizes `300x50`, `300x100`, `300x250` and web sizes `160x600`,
+`300x250`, `300x500`, `728x90`, `900x250` shown in the dashboard.
+
+| Field | Where | Rules |
+| --- | --- | --- |
+| `script_url` | Catalog or unit | Exact HTTPS `src` from the asynchronous tag. Unit value overrides the catalog. |
+| `class_name` | Catalog or unit | Exact class on the generated `<ins>`, e.g. `eas6a97888e10`; one CSS class token. Unit value overrides the catalog. |
+| `zone_id` | Unit | Positive digits, string or integer, from `data-zoneid`. |
+| `size` | Unit | Exact `WxH` used when creating that zone. |
+| `enabled` | Unit, optional | `false` removes that unit from selection. |
+| `min_width` | Unit, optional | Minimum available slot width in logical pixels (integer 0–10000; default 0). The supplied web 300x250 unit uses 600, allowing the mobile 300x250 unit to serve narrower slots. This changes eligibility, not the creative dimensions. |
+
+`defaults` and `placements` use the same ordered size selection as the other
+networks. The first valid size that fits the available width **and** height
+wins; this is a size preference, not an ad auction or a no-fill waterfall.
+An empty zone collapses after 20 seconds without requesting another network.
+The provider script loading alone does not mark a zone filled.
+
+Publish the completed catalog as `exoclick_banners`, then publish
+`exoclick_banner_enabled=true`. For a full replacement use
+`banner_ad_network=exoclick`. To migrate one slot at a time, keep
+`banner_ad_network=adsterra` and publish, for example:
+
+```json
+{
+  "home_all_hero": "exoclick",
+  "downloads": "exoclick",
+  "movie_detail": "exoclick"
+}
+```
+
+Use that JSON as `banner_ad_network_overrides`. Removing an entry restores
+the global network for that slot. Switching to `banner_ad_network=none`
+removes all banners even when overrides exist. Keep the Adsterra and Clickadu
+catalogs published to make switching back immediate. To use TV slots, also
+publish `exoclick_tv_enabled=true`; a phone override never applies to TV.
+
+For revenue experiments, compare 300x50 versus 300x100 in standard slots,
+300x250 versus 300x500 in suitable scrolling slots, and 728x90 or 900x250 on
+wide surfaces. Keep tall/large formats in explicit placements so a global
+default does not enlarge every slot. A 160x600 zone can be selected explicitly
+where vertical space permits; the app does not add a new sidebar slot.
+Responsive Display Ads remain enabled in the generated dashboard zones to
+allow additional eligible creatives. Larger formats do not guarantee higher
+earnings; compare revenue per session and retention alongside fill and eCPM.
+Dashboard auto-refresh, if enabled, is controlled by ExoClick; the app does
+not add its own refresh timer. Verify actual WebView fill and reporting on a
+device before rolling out the new selector.
+
 ### Loading and clicks
 
-The banner WebView loads a minimal local HTML document with the network's generated code, JavaScript enabled, an `AD` label, and the exact unit dimensions. Adsterra and Clickadu banners share this view. The local document uses `https://appassets.androidplatform.net/adsterra/` as its HTTPS base URL, giving it an isolated app-content origin where `document.cookie` and storage work. Loading without a base URL creates an opaque origin and makes cookie-dependent scripts fail. This URL is not fetched and does not adopt the ad server or publisher website's origin. Ads use the actual system WebView user agent. Script load/runtime errors, main-document failures, or a script that fails to load within 20 seconds collapse the slot without blocking browsing or playback.
+The banner WebView loads a minimal local HTML document with the network's generated code, JavaScript enabled, an `AD` label, and the exact unit dimensions. Adsterra, Clickadu and ExoClick banners share this view. The local document uses `https://appassets.androidplatform.net/adsterra/` as its HTTPS base URL, giving it an isolated app-content origin where `document.cookie` and storage work. Loading without a base URL creates an opaque origin and makes cookie-dependent scripts fail. This URL is not fetched and does not adopt the ad server or publisher website's origin. Ads use the actual system WebView user agent. Script load/runtime errors, main-document failures, or a script that fails to load within 20 seconds collapse the slot without blocking browsing or playback.
 
 HTTP(S) offer navigation opens the external browser only following a recent pointer interaction on a phone/tablet. Programmatic main-frame redirects and non-web schemes are blocked; iframe resource navigation stays in the WebView. There are no forced clicks or Smartlink countdowns. Confirm the WebView inventory with Adsterra before publishing real codes, and use Adsterra's reporting to verify monetization; a script-load signal is not a billable-impression callback.
 

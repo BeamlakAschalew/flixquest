@@ -57,6 +57,9 @@ abstract class BannerAdUnit {
 
   BannerSize get size;
 
+  /// Optional slot-width threshold, for same-size mobile and web zones.
+  int get minWidth => 0;
+
   String get html;
 
   /// The document shell every network's code is placed in.
@@ -226,6 +229,109 @@ onerror="$status.postMessage('failed')"></script>''');
   int get hashCode => Object.hash(spotId, scriptUrl, size);
 }
 
+/// ExoClick's asynchronous tag, shared by Mobile Banner and web Banner zones.
+/// Copy the class and script URL from the generated tag for the zone.
+class ExoclickBannerUnit extends BannerAdUnit {
+  const ExoclickBannerUnit({
+    required this.zoneId,
+    required this.scriptUrl,
+    required this.className,
+    required this.size,
+    this.minWidth = 0,
+  });
+
+  static const sizes = {
+    '300x50',
+    '300x100',
+    '300x250',
+    '300x500',
+    '728x90',
+    '900x250',
+    '160x600',
+  };
+
+  final String zoneId;
+  final Uri scriptUrl;
+  final String className;
+  @override
+  final BannerSize size;
+
+  @override
+  final int minWidth;
+
+  @override
+  AdNetwork get network => AdNetwork.exoclick;
+  @override
+  String get code => zoneId;
+
+  static ExoclickBannerUnit? parse(Object? raw,
+      {Object? scriptUrl, Object? className}) {
+    if (raw is! Map || raw['enabled'] == false) return null;
+    final zone = raw['zone_id'];
+    final zoneId = zone is int ? '$zone' : zone;
+    final script = _scriptUrl(raw['script_url'] ?? scriptUrl);
+    final cssClass = raw['class_name'] ?? className;
+    final size = BannerSize.parse(raw['size']);
+    final minWidth = raw['min_width'] ?? 0;
+    if (zoneId is! String ||
+        !RegExp(r'^[0-9]{1,12}$').hasMatch(zoneId) ||
+        int.parse(zoneId) <= 0 ||
+        script == null ||
+        cssClass is! String ||
+        !RegExp(r'^[a-zA-Z_][a-zA-Z0-9_-]{0,127}$').hasMatch(cssClass) ||
+        !sizes.contains(size?.value) ||
+        minWidth is! int ||
+        minWidth < 0 ||
+        minWidth > 10000) {
+      return null;
+    }
+    return ExoclickBannerUnit(
+        zoneId: zoneId,
+        scriptUrl: script,
+        className: cssClass,
+        size: size!,
+        minWidth: minWidth);
+  }
+
+  @override
+  String get html {
+    final script = const HtmlEscape(HtmlEscapeMode.attribute)
+        .convert(scriptUrl.toString());
+    final status = BannerAdUnit.statusChannel;
+    // A loaded provider script alone is not a filled zone. The shared view
+    // collapses the slot if no creative appears within twenty seconds.
+    return document('''<ins class="$className" data-zoneid="$zoneId"></ins>
+<script>
+(function(){
+  var spot=document.querySelector('ins[data-zoneid]');
+  var poll=setInterval(function(){
+    var filled=Array.prototype.some.call(spot.querySelectorAll('iframe,img,video'),function(el){
+      var r=el.getBoundingClientRect();
+      return r.width>=20&&r.height>=20&&
+        (el.tagName!=='IMG'||(el.complete&&el.naturalWidth>0));
+    });
+    if(filled){clearInterval(poll);$status.postMessage('loaded');}
+  },500);
+})();
+(AdProvider = window.AdProvider || []).push({"serve": {}});
+</script>
+<script async type="application/javascript" src="$script"
+onerror="$status.postMessage('failed')"></script>''');
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      other is ExoclickBannerUnit &&
+      zoneId == other.zoneId &&
+      scriptUrl == other.scriptUrl &&
+      className == other.className &&
+      minWidth == other.minWidth &&
+      size == other.size;
+
+  @override
+  int get hashCode => Object.hash(zoneId, scriptUrl, className, size, minWidth);
+}
+
 Uri? _scriptUrl(Object? raw) {
   if (raw is! String) return null;
   final uri = Uri.tryParse(raw);
@@ -293,7 +399,9 @@ class BannerAdsConfig {
             AdNetwork.adsterra => AdsterraBannerUnit.parse(entry.value),
             AdNetwork.clickadu => ClickaduBannerUnit.parse(entry.value,
                 scriptUrl: json['script_url']),
-            AdNetwork.monetag || AdNetwork.exoclick => null,
+            AdNetwork.exoclick => ExoclickBannerUnit.parse(entry.value,
+                scriptUrl: json['script_url'], className: json['class_name']),
+            AdNetwork.monetag => null,
           };
           if (entry.key is String && unit != null) units[entry.key] = unit;
         }
@@ -347,6 +455,7 @@ class BannerAdsConfig {
     for (final id in rule.units) {
       final unit = units[id];
       if (unit != null &&
+          unit.minWidth <= maxWidth &&
           unit.size.width <= maxWidth &&
           unit.size.height <= maxHeight) {
         return unit;

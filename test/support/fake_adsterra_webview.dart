@@ -43,6 +43,34 @@ BannerAdsConfig testClickaduConfig(
     BannerAdsConfig.parse(testClickaduCatalog,
         network: AdNetwork.clickadu, enabled: enabled, tvEnabled: tvEnabled);
 
+const testExoclickCatalog = '''{
+  "script_url": "https://exo.example/ad-provider.js",
+  "class_name": "eas6a97888e10",
+  "units": {
+    "mobile": {"zone_id":"3001","size":"300x100"},
+    "small": {"zone_id":"3002","size":"300x50"},
+    "rectangle": {"zone_id":3003,"size":"300x250"},
+    "portrait": {"zone_id":"3004","size":"300x500"},
+    "wide": {"zone_id":"3005","size":"728x90"},
+    "footer": {"zone_id":"3006","size":"900x250"},
+    "skyscraper": {"zone_id":"3007","size":"160x600"}
+  },
+  "defaults": {
+    "standard": ["wide", "mobile", "small"],
+    "tall": ["rectangle"],
+    "tv_standard": ["wide", "mobile"], "tv_tall": ["rectangle"]
+  },
+  "placements": {
+    "movie_detail": ["portrait", "rectangle"],
+    "home_all_hero": ["footer", "wide", "mobile", "small"]
+  }
+}''';
+
+BannerAdsConfig testExoclickConfig(
+        {bool enabled = true, bool tvEnabled = true}) =>
+    BannerAdsConfig.parse(testExoclickCatalog,
+        network: AdNetwork.exoclick, enabled: enabled, tvEnabled: tvEnabled);
+
 class FakeAdsterraWebViewPlatform extends WebViewPlatform {
   final controllers = <FakeAdsterraWebViewController>[];
   bool signalLoaded = true;

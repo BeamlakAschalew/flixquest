@@ -1,12 +1,15 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flixquest/models/banner_ads_config.dart';
+import 'package:flixquest/models/banner_ad.dart';
 import 'package:flixquest/constants/app_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flixquest/provider/app_dependency_provider.dart';
 import 'package:flixquest/services/app_remote_config.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/services.dart' show appFlavor;
 
 import 'support/fake_adsterra_webview.dart';
 import 'support/fake_remote_config.dart';
@@ -17,6 +20,316 @@ void main() {
     dotenv.testLoad(fileInput: 'FLIXQUEST_API_URL=https://api.test');
     SharedPreferences.setMockInitialValues({});
     sharedPrefsSingleton = await SharedPreferences.getInstance();
+  });
+
+  test('banner test selector is restricted to the dev flavor', () {
+    for (final flavor in ['prod', 'staging', '', null]) {
+      for (final value in ['adsterra', 'clickadu', 'exoclick', 'none']) {
+        final selection = AppRemoteConfig.resolveBannerNetworkSelection(
+            ' Adsterra ', value,
+            flavor: flavor);
+        expect(selection.network, 'adsterra');
+        expect(selection.testMode, isFalse);
+      }
+    }
+    expect(
+        AppRemoteConfig.resolveBannerNetworkSelection('', 'exoclick',
+                flavor: 'prod')
+            .network,
+        'adsterra');
+    for (final value in ['', ' ', 'unknown', 'monetag']) {
+      final selection = AppRemoteConfig.resolveBannerNetworkSelection(
+          'clickadu', value,
+          flavor: 'dev');
+      expect(selection.network, 'clickadu');
+      expect(selection.testMode, isFalse);
+    }
+    for (final value in ['adsterra', 'clickadu', 'exoclick', 'none']) {
+      final selection = AppRemoteConfig.resolveBannerNetworkSelection(
+          'adsterra', ' ${value.toUpperCase()} ',
+          flavor: 'dev');
+      expect(selection.network, value);
+      expect(selection.testMode, isTrue);
+    }
+  });
+
+  test('compiled non-dev flavor ignores the published test selector', () async {
+    final remote = FakeFirebaseRemoteConfig();
+    final provider = AppDependencyProvider();
+    await AppRemoteConfig.configure(remote);
+    remote
+      ..setMockString(AppRemoteConfig.bannerAdNetworkKey, 'adsterra')
+      ..setMockBool(AppRemoteConfig.adsterraBannerEnabledKey, true)
+      ..setMockString(AppRemoteConfig.adsterraBannersKey, testAdsterraCatalog)
+      ..setMockString(AppRemoteConfig.exoclickBannersKey, testExoclickCatalog)
+      ..setMockString(AppRemoteConfig.hostedBannerModeKey, 'priority')
+      ..setMockString(
+          AppRemoteConfig.bannerAdNetworkOverridesKey, '{"downloads":"none"}');
+    for (final testNetwork in ['exoclick', 'clickadu', 'none']) {
+      remote.setMockString(AppRemoteConfig.bannerAdNetworkTestKey, testNetwork);
+      AppRemoteConfig.apply(remote, provider);
+      expect(provider.bannerNetwork, AdNetwork.adsterra);
+      expect(provider.bannerAdsForPlacement('downloads'), isNull);
+      expect(provider.bannerAdsForPlacement('movie_detail')?.network,
+          AdNetwork.adsterra);
+      expect(provider.hostedBannerMode, HostedBannerMode.priority);
+      expect(provider.bannerAdsFor(AdNetwork.exoclick).enabled, isFalse);
+      expect(provider.bannerAdsFor(AdNetwork.exoclick).tvEnabled, isFalse);
+    }
+  }, skip: appFlavor == 'dev');
+
+  group('compiled dev flavor', () {
+    test('banner tests use real catalogs without production enable flags',
+        () async {
+      final remote = FakeFirebaseRemoteConfig();
+      final provider = AppDependencyProvider();
+      await AppRemoteConfig.configure(remote);
+      expect(remote.defaults[AppRemoteConfig.bannerAdNetworkTestKey], '');
+      remote
+        ..setMockString(AppRemoteConfig.bannerAdNetworkKey, 'none')
+        ..setMockString(AppRemoteConfig.bannerAdNetworkOverridesKey,
+            '{"downloads":"none","title_detail_tv":"none"}')
+        ..setMockString(AppRemoteConfig.hostedBannerModeKey, 'priority')
+        ..setMockString(AppRemoteConfig.adsterraBannersKey, testAdsterraCatalog)
+        ..setMockString(AppRemoteConfig.clickaduBannersKey, testClickaduCatalog)
+        ..setMockString(
+            AppRemoteConfig.exoclickBannersKey, testExoclickCatalog);
+      for (final network in [
+        AdNetwork.adsterra,
+        AdNetwork.clickadu,
+        AdNetwork.exoclick
+      ]) {
+        remote.setMockString(AppRemoteConfig.bannerAdNetworkTestKey,
+            ' ${network.name.toUpperCase()} ');
+        AppRemoteConfig.apply(remote, provider);
+        expect(provider.bannerNetwork, network);
+        expect(provider.hostedBannerMode, HostedBannerMode.off);
+        expect(
+            provider.bannerAdsForPlacement('downloads')?.resolve('downloads'),
+            isNotNull);
+        expect(
+            provider
+                .bannerAdsForPlacement('title_detail', television: true)
+                ?.resolve('title_detail', television: true),
+            isNotNull);
+        for (final other in [
+          AdNetwork.adsterra,
+          AdNetwork.clickadu,
+          AdNetwork.exoclick
+        ]) {
+          expect(provider.bannerAdsFor(other).enabled, other == network);
+          expect(provider.bannerAdsFor(other).tvEnabled, other == network);
+        }
+      }
+      // Test activation never rewrites any Firebase production settings.
+      expect(remote.getString(AppRemoteConfig.bannerAdNetworkKey), 'none');
+      expect(remote.getBool(AppRemoteConfig.exoclickBannerEnabledKey), isFalse);
+      expect(remote.getBool(AppRemoteConfig.exoclickTvEnabledKey), isFalse);
+    });
+
+    test('clearing banner test mode restores production slot rules and gates',
+        () async {
+      final remote = FakeFirebaseRemoteConfig();
+      final provider = AppDependencyProvider();
+      await AppRemoteConfig.configure(remote);
+      remote
+        ..setMockString(AppRemoteConfig.bannerAdNetworkKey, 'adsterra')
+        ..setMockBool(AppRemoteConfig.adsterraBannerEnabledKey, true)
+        ..setMockString(AppRemoteConfig.adsterraBannersKey, testAdsterraCatalog)
+        ..setMockString(AppRemoteConfig.exoclickBannersKey, testExoclickCatalog)
+        ..setMockString(
+            AppRemoteConfig.bannerAdNetworkOverridesKey, '{"downloads":"none"}')
+        ..setMockString(AppRemoteConfig.hostedBannerModeKey, 'priority')
+        ..setMockString(AppRemoteConfig.bannerAdNetworkTestKey, 'exoclick');
+      AppRemoteConfig.apply(remote, provider);
+      expect(provider.bannerAdsForPlacement('downloads')?.network,
+          AdNetwork.exoclick);
+      for (final value in ['', 'invalid']) {
+        remote.setMockString(AppRemoteConfig.bannerAdNetworkTestKey, value);
+        AppRemoteConfig.apply(remote, provider);
+        expect(provider.bannerNetwork, AdNetwork.adsterra);
+        expect(provider.bannerAdsForPlacement('downloads'), isNull);
+        expect(provider.bannerAdsForPlacement('movie_detail')?.network,
+            AdNetwork.adsterra);
+        expect(provider.hostedBannerMode, HostedBannerMode.priority);
+        expect(provider.bannerAdsFor(AdNetwork.exoclick).enabled, isFalse);
+        expect(provider.bannerAdsFor(AdNetwork.exoclick).tvEnabled, isFalse);
+      }
+      remote.setMockString(AppRemoteConfig.bannerAdNetworkTestKey, 'none');
+      AppRemoteConfig.apply(remote, provider);
+      expect(provider.bannerAdNetwork, 'none');
+      expect(provider.bannerAdsForPlacement('movie_detail'), isNull);
+      expect(provider.isHostedBannerActive, isFalse);
+    });
+
+    test('banner test mode still requires a valid catalog', () async {
+      final remote = FakeFirebaseRemoteConfig();
+      final provider = AppDependencyProvider();
+      await AppRemoteConfig.configure(remote);
+      remote.setMockString(AppRemoteConfig.bannerAdNetworkTestKey, 'exoclick');
+      AppRemoteConfig.apply(remote, provider);
+      expect(provider.activeBannerAds?.resolve('downloads'), isNull);
+      remote.setMockString(AppRemoteConfig.exoclickBannersKey, '{');
+      AppRemoteConfig.apply(remote, provider);
+      expect(provider.bannerAdsForPlacement('downloads'), isNull);
+    });
+  }, skip: appFlavor != 'dev');
+
+  test(
+      'published ExoClick catalog replaces every current slot at fitting sizes',
+      () {
+    final raw = File('docs/exoclick_banners.json').readAsStringSync();
+    final catalog = BannerAdsConfig.parse(raw,
+        network: AdNetwork.exoclick, enabled: true, tvEnabled: true);
+    expect(catalog.units.length, 8);
+    final inherited = BannerAdsConfig.parse(
+        File('docs/adsterra_banners.json').readAsStringSync(),
+        network: AdNetwork.adsterra,
+        enabled: true,
+        tvEnabled: true);
+    for (final name in inherited.placements.keys) {
+      final tv = name.endsWith('_tv');
+      final placement = tv ? name.substring(0, name.length - 3) : name;
+      expect(
+          catalog.resolve(placement, television: tv, maxWidth: 360), isNotNull,
+          reason: 'Missing replacement for $name');
+    }
+    expect(catalog.resolve('movie_detail', maxWidth: 360)?.code, '6057770');
+    expect(catalog.resolve('movie_detail', maxWidth: 600)?.code, '6057778');
+    expect(catalog.resolve('home_all_hero', maxWidth: 1000)?.code, '6057786');
+    expect(catalog.resolve('home_all_hero', maxWidth: 800)?.code, '6057784');
+    expect(catalog.resolve('downloads', maxWidth: 360, maxHeight: 60)?.code,
+        '6057772');
+    expect(catalog.resolve('downloads', maxWidth: 360)?.code, '6057766');
+    expect((catalog.units['mobile_rectangle']! as ExoclickBannerUnit).className,
+        'eas6a97888e10');
+    expect((catalog.units['web_rectangle']! as ExoclickBannerUnit).className,
+        'eas6a97888e2');
+  });
+
+  test('ExoClick mobile and web formats select the first size that fits', () {
+    final config = testExoclickConfig();
+    expect(config.units.length, 7);
+    expect(config.resolve('downloads', maxWidth: 360)?.size,
+        const BannerSize(300, 100));
+    expect(config.resolve('downloads', maxWidth: 360, maxHeight: 60)?.size,
+        const BannerSize(300, 50));
+    expect(config.resolve('downloads', maxWidth: 800)?.size,
+        const BannerSize(728, 90));
+    expect(config.resolve('home_all_hero', maxWidth: 1000)?.size,
+        const BannerSize(900, 250));
+    expect(config.resolve('movie_detail', maxHeight: 400)?.size,
+        const BannerSize(300, 250));
+    expect(config.resolve('movie_detail', maxHeight: 600)?.size,
+        const BannerSize(300, 500));
+    expect(config.resolve('downloads', maxWidth: 299), isNull);
+    final unit = config.units['mobile']! as ExoclickBannerUnit;
+    expect(unit.html, contains('class="eas6a97888e10" data-zoneid="3001"'));
+    expect(unit.html, contains('(AdProvider = window.AdProvider || []).push'));
+    expect(unit.html, contains('body{width:300px;height:100px;}'));
+    expect(unit.html, isNot(contains('onload=')));
+    expect(unit.html, contains('spot.querySelectorAll'));
+  });
+
+  test('ExoClick rejects invalid tags and permits per-unit tag overrides', () {
+    const valid = {'zone_id': '3001', 'size': '300x250'};
+    ExoclickBannerUnit? parse(Map<String, Object?> raw) =>
+        ExoclickBannerUnit.parse(raw,
+            scriptUrl: 'https://exo.example/ad-provider.js',
+            className: 'eas6a97888e10');
+    expect(parse(valid), isNotNull);
+    for (final change in <Map<String, Object?>>[
+      {'zone_id': 0},
+      {'zone_id': -1},
+      {'zone_id': '"3001'},
+      {'zone_id': 1.2},
+      {'zone_id': null},
+      {'size': '320x50'},
+      {'size': '300x999'},
+      {'class_name': 'x" onclick="bad'},
+      {'class_name': 'two classes'},
+      {'script_url': 'http://exo.example/ad-provider.js'},
+      {'script_url': 'https://user:pass@exo.example/ad-provider.js'},
+      {'enabled': false},
+      {'min_width': -1},
+      {'min_width': 600.5},
+    ]) {
+      expect(parse({...valid, ...change}), isNull, reason: '$change');
+    }
+    expect(ExoclickBannerUnit.parse(valid), isNull);
+    final unit = parse({
+      ...valid,
+      'class_name': 'adsbyexoclick',
+      'script_url': 'https://other.example/ad-provider.js?x="&y=1'
+    })!;
+    expect(unit.html, contains('class="adsbyexoclick"'));
+    expect(unit.html, contains('%22&amp;y=1'));
+  });
+
+  test('ExoClick remote gates and slot overrides update independently',
+      () async {
+    final remote = FakeFirebaseRemoteConfig();
+    final provider = AppDependencyProvider();
+    await AppRemoteConfig.configure(remote);
+    expect(remote.defaults[AppRemoteConfig.exoclickBannerEnabledKey], false);
+    expect(remote.defaults[AppRemoteConfig.exoclickTvEnabledKey], false);
+    remote
+      ..setMockString(AppRemoteConfig.adsterraBannersKey, testAdsterraCatalog)
+      ..setMockBool(AppRemoteConfig.adsterraBannerEnabledKey, true)
+      ..setMockString(AppRemoteConfig.exoclickBannersKey, testExoclickCatalog)
+      ..setMockString(AppRemoteConfig.bannerAdNetworkOverridesKey,
+          '{"downloads":" ExoClick ","bookmarks":"none"}');
+    AppRemoteConfig.apply(remote, provider);
+    expect(provider.bannerAdsForPlacement('downloads'), isNull);
+    remote.setMockBool(AppRemoteConfig.exoclickBannerEnabledKey, true);
+    AppRemoteConfig.apply(remote, provider);
+    expect(provider.bannerAdsForPlacement('downloads')?.network,
+        AdNetwork.exoclick);
+    expect(provider.bannerAdsForPlacement('movie_detail')?.network,
+        AdNetwork.adsterra);
+    expect(provider.bannerAdsForPlacement('bookmarks'), isNull);
+    // A mobile override never changes the corresponding television slot.
+    expect(
+        provider.bannerAdsForPlacement('downloads', television: true), isNull);
+    remote
+      ..setMockString(AppRemoteConfig.bannerAdNetworkKey, 'exoclick')
+      ..setMockString(AppRemoteConfig.bannerAdNetworkOverridesKey, '{}');
+    AppRemoteConfig.apply(remote, provider);
+    expect(provider.bannerAdsForPlacement('movie_detail')?.network,
+        AdNetwork.exoclick);
+    expect(provider.bannerAdsForPlacement('title_detail', television: true),
+        isNull);
+    remote.setMockBool(AppRemoteConfig.exoclickTvEnabledKey, true);
+    AppRemoteConfig.apply(remote, provider);
+    expect(
+        provider
+            .bannerAdsForPlacement('title_detail', television: true)
+            ?.network,
+        AdNetwork.exoclick);
+    remote.setMockString(AppRemoteConfig.exoclickBannersKey, '{');
+    AppRemoteConfig.apply(remote, provider);
+    expect(provider.bannerAdsForPlacement('downloads')?.resolve('downloads'),
+        isNull);
+    provider
+      ..setBannerAdsConfig(testExoclickConfig())
+      ..setBannerAdNetworkOverrides({'downloads': 'exoclick'})
+      ..setBannerAdNetwork('none');
+    expect(provider.bannerAdsForPlacement('downloads'), isNull);
+    expect(provider.isHostedBannerActive, isFalse);
+  });
+
+  test('malformed slot overrides clear safely and unknown networks stay off',
+      () {
+    for (final raw in ['', '{', '[]', '{"downloads":3}']) {
+      expect(AppRemoteConfig.parseBannerNetworkOverrides(raw), isEmpty);
+    }
+    final provider = AppDependencyProvider()
+      ..setBannerAdsConfig(testAdsterraConfig())
+      ..setBannerAdNetworkOverrides({'downloads': 'unknown'});
+    expect(provider.bannerAdsForPlacement('downloads'), isNull);
+    provider.setBannerAdNetworkOverrides({});
+    expect(provider.bannerAdsForPlacement('downloads')?.network,
+        AdNetwork.adsterra);
   });
 
   test('default and malformed configs make no placement eligible', () {

@@ -27,7 +27,7 @@
       </queries>
     <application
         android:name=".FlixQuestApplication"
-        android:label="FlixQuest"
+        android:label="${appLabel}"
         android:icon="@mipmap/ic_launcher"
         android:banner="@drawable/tv_banner"
         android:requestLegacyExternalStorage="true"

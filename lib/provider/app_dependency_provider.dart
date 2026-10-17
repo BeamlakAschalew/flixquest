@@ -69,6 +69,28 @@ class AppDependencyProvider extends ChangeNotifier {
   String _bannerAdNetwork = 'adsterra';
   String get bannerAdNetwork => _bannerAdNetwork;
 
+  Map<String, String> _bannerAdNetworkOverrides = const {};
+
+  void setBannerAdNetworkOverrides(Map<String, String> overrides) {
+    if (mapEquals(_bannerAdNetworkOverrides, overrides)) return;
+    _bannerAdNetworkOverrides = Map.unmodifiable(overrides);
+    notifyListeners();
+  }
+
+  /// A slot can migrate independently. TV uses only its own `_tv` override.
+  /// The global `none` value remains the emergency switch for every banner.
+  BannerAdsConfig? bannerAdsForPlacement(String placement,
+      {bool television = false}) {
+    if (_bannerAdNetwork == 'none') return null;
+    final name = television ? '${placement}_tv' : placement;
+    final override = _bannerAdNetworkOverrides[name];
+    final network =
+        override == null ? bannerNetwork : AdNetwork.parse(override);
+    if (network == null) return null;
+    final config = bannerAdsFor(network);
+    return config.enabled && (!television || config.tvEnabled) ? config : null;
+  }
+
   /// The network `banner_ad_network` selects; null for `none` and unknown
   /// values. Names published before Adsterra (`native`, `unity`, `startio`)
   /// still select Adsterra.
