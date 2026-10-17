@@ -32,6 +32,7 @@ class TvContentGrid<T> extends StatefulWidget {
     this.padding = const EdgeInsets.all(TvDesign.focusOutset),
     this.horizontalSpacing = 22,
     this.verticalSpacing = 24,
+    this.shrinkWrap = false,
     super.key,
   });
 
@@ -54,6 +55,10 @@ class TvContentGrid<T> extends StatefulWidget {
   final EdgeInsets padding;
   final double horizontalSpacing;
   final double verticalSpacing;
+
+  /// Lays out every item at its full height instead of scrolling, for a grid
+  /// inside a page that moves itself, such as a title's details.
+  final bool shrinkWrap;
 
   @override
   State<TvContentGrid<T>> createState() => _TvContentGridState<T>();
@@ -353,7 +358,12 @@ class _TvContentGridState<T> extends State<TvContentGrid<T>> {
           policy: ReadingOrderTraversalPolicy(),
           child: GridView.builder(
             controller: _scrollController,
-            clipBehavior: Clip.hardEdge,
+            shrinkWrap: widget.shrinkWrap,
+            physics:
+                widget.shrinkWrap ? const NeverScrollableScrollPhysics() : null,
+            // Nothing scrolls under a shrink-wrapped grid's edges, so the
+            // focused item's growth and shadow can spill past them.
+            clipBehavior: widget.shrinkWrap ? Clip.none : Clip.hardEdge,
             padding: widget.padding,
             itemCount: widget.items.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

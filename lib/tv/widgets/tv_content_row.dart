@@ -38,6 +38,7 @@ class TvContentRow<T> extends StatefulWidget {
     this.itemSpacing = 14,
     this.itemFocusScale = 1.04,
     this.itemFocusRadius = TvDesign.cardRadius + 2,
+    this.trailingInset = 0,
     this.controller,
     super.key,
   });
@@ -80,6 +81,10 @@ class TvContentRow<T> extends StatefulWidget {
 
   /// Corner radius of the focus outline around each item.
   final double itemFocusRadius;
+
+  /// Clearance after the last item, such as the screen's overscan margin for
+  /// a row that runs to the edge.
+  final double trailingInset;
   final TvContentRowController? controller;
 
   @override
@@ -119,6 +124,11 @@ class _TvContentRowState<T> extends State<TvContentRow<T>> {
   final GlobalKey _trackKey = GlobalKey();
   bool _scheduledInitialFocus = false;
   bool _rowHasFocus = false;
+
+  /// How far a pinned row's focused item grows past its trailing edge. The
+  /// last item cannot pin to the leading edge, so the track leaves this much
+  /// room after it rather than letting the screen edge cut it off.
+  double _trailingGrowth = 0;
   Timer? _holdTimer;
   String? _holdItemId;
   bool _holdReached = false;
@@ -393,6 +403,17 @@ class _TvContentRowState<T> extends State<TvContentRow<T>> {
     ));
   }
 
+  void _measureTrailingGrowth() {
+    if (!mounted || !widget.pinFocusedItem || widget.items.isEmpty) return;
+    final lastId = widget.itemId(widget.items.last);
+    final box = _focusNodes[lastId]?.context?.findRenderObject();
+    if (box is! RenderBox || !box.hasSize) return;
+    final growth = box.size.width * (widget.itemFocusScale - 1);
+    if ((growth - _trailingGrowth).abs() >= 0.5) {
+      setState(() => _trailingGrowth = growth);
+    }
+  }
+
   void _handleItemFocusChanged({required String id, required bool hasFocus}) {
     if (!hasFocus && _holdItemId == id) _cancelHold();
     final rowHasFocus = _focusNodes.values.any((node) => node.hasFocus);
@@ -407,6 +428,10 @@ class _TvContentRowState<T> extends State<TvContentRow<T>> {
     final memory = TvFocusMemoryScope.maybeOf(context);
     final onItemMenu = widget.onItemMenu;
     final hint = onItemMenu == null ? null : widget.itemMenuHint;
+    if (widget.pinFocusedItem) {
+      WidgetsBinding.instance
+          .addPostFrameCallback((_) => _measureTrailingGrowth());
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -459,9 +484,11 @@ class _TvContentRowState<T> extends State<TvContentRow<T>> {
             // A pinned row scrolls earlier items clear of its leading edge, so
             // it can leave the grown focused item and its shadow unclipped.
             clipBehavior: widget.pinFocusedItem ? Clip.none : Clip.hardEdge,
-            padding: const EdgeInsets.symmetric(
-              vertical: 8,
-              horizontal: TvDesign.focusOutset,
+            padding: EdgeInsets.fromLTRB(
+              TvDesign.focusOutset,
+              8,
+              TvDesign.focusOutset + widget.trailingInset + _trailingGrowth,
+              8,
             ),
             child: Row(
               key: _trackKey,

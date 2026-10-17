@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -28,6 +29,7 @@ import '../controllers/tv_title_logos.dart';
 import '../focus/tv_focus_memory.dart';
 import '../focus/tv_focusable.dart';
 import '../models/tv_media_item.dart';
+import '../widgets/tv_content_grid.dart';
 import '../widgets/tv_content_row.dart';
 import '../widgets/tv_dialog.dart';
 import '../widgets/tv_media_card.dart';
@@ -35,7 +37,7 @@ import '../widgets/tv_spotlight.dart';
 
 /// A title's page, laid out like the browse pages: its backdrop fills the
 /// screen, the logo, facts and actions sit bottom left, and the episodes and
-/// "More like this" rows wait below.
+/// a "More like this" grid wait below.
 ///
 /// The page opens straight away from what the card already knows; details,
 /// seasons and recommendations fill in as they load.
@@ -91,7 +93,7 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
   final TvContentRowController _seasonRow = TvContentRowController();
   final Map<int, TvContentRowController> _episodeRows =
       <int, TvContentRowController>{};
-  final TvContentRowController _similarRow = TvContentRowController();
+  final TvContentGridController _similarGrid = TvContentGridController();
 
   /// Where each row was left, for this page only.
   final TvFocusMemory _memory = TvFocusMemory();
@@ -101,7 +103,8 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
   final GlobalKey _episodesKey = GlobalKey();
   final GlobalKey _similarKey = GlobalKey();
 
-  /// How far the page is slid up, so the focused section sits at the top.
+  /// How far the page is slid up, so the focused section sits at the top, or
+  /// in the recommendations far enough to show the focused card's row.
   double _shift = 0;
 
   TvMediaItem get _item => widget.item;
@@ -230,14 +233,22 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
             (resume?.seasonNum == season ? '${resume?.episodeNum}' : null);
         return _episodeRows[season]?.requestFocus(itemId) ?? false;
       case _Stop.similar:
-        return _similarRow.requestFocus();
+        // The grid holds a request made before it mounts and acts on it
+        // later; only ask once it is there.
+        if (_similarKey.currentContext == null) return false;
+        return _similarGrid.requestFocus();
     }
   }
 
   void _enterStop(_Stop stop) {
     if (_stop != stop) setState(() => _stop = stop);
+    _scheduleShift();
+  }
+
+  void _scheduleShift() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || _stop != stop) return;
+      if (!mounted) return;
+      final stop = _stop;
       final section = switch (stop) {
         _Stop.actions => null,
         _Stop.seasons || _Stop.episodes => _episodesKey,
@@ -250,6 +261,21 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
         // Measured in the column's own coordinates, which the slide does not
         // move.
         shift = box.localToGlobal(Offset.zero, ancestor: column).dy;
+        // The grid runs taller than the screen: below its first rows the
+        // page follows the focused card down.
+        final card =
+            FocusManager.instance.primaryFocus?.context?.findRenderObject();
+        final page = context.size;
+        if (stop == _Stop.similar &&
+            card is RenderBox &&
+            card.hasSize &&
+            page != null) {
+          final cardBottom = card
+              .localToGlobal(Offset(0, card.size.height), ancestor: column)
+              .dy;
+          final inset = _insetFor(BoxConstraints.tight(page));
+          shift = math.max(shift, cardBottom - page.height + inset * 2);
+        }
       }
       if (shift != _shift) setState(() => _shift = shift);
     });
@@ -548,6 +574,12 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
 
   // Layout.
 
+  double _insetFor(BoxConstraints constraints) {
+    final metrics = TvShellMetrics.fromConstraints(constraints);
+    final system = MediaQuery.paddingOf(context);
+    return metrics.safeInset > system.left ? metrics.safeInset : system.left;
+  }
+
   @override
   Widget build(BuildContext context) {
     Localizations.localeOf(context);
@@ -560,10 +592,7 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
         body: LayoutBuilder(
           builder: (context, constraints) {
             final metrics = TvShellMetrics.fromConstraints(constraints);
-            final system = MediaQuery.paddingOf(context);
-            final inset = metrics.safeInset > system.left
-                ? metrics.safeInset
-                : system.left;
+            final inset = _insetFor(constraints);
             final height = constraints.maxHeight;
             final browsing = _stop != _Stop.actions;
 
@@ -633,7 +662,11 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
                                     ),
                                   ),
                                 ),
-                                ..._buildSections(metrics, resume),
+                                ..._buildSections(
+                                  metrics,
+                                  resume,
+                                  inset: inset,
+                                ),
                                 // Room for the last section to slide to the top.
                                 SizedBox(height: height * 0.6),
                               ],
@@ -907,7 +940,11 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
     }
   }
 
-  List<Widget> _buildSections(TvShellMetrics metrics, TvResumePoint? resume) {
+  List<Widget> _buildSections(
+    TvShellMetrics metrics,
+    TvResumePoint? resume, {
+    required double inset,
+  }) {
     final compact = metrics.compact;
     final gap = SizedBox(height: compact ? 16 : 24);
     return <Widget>[
@@ -929,7 +966,7 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
             children: <Widget>[
               if (data.seasons.isNotEmpty) ...<Widget>[
                 _buildSeasons(data.seasons),
-                _buildEpisodes(metrics, data, resume),
+                _buildEpisodes(metrics, data, resume, inset: inset),
                 gap,
               ],
               if (data.recommendations.isNotEmpty)
@@ -937,24 +974,7 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
                   key: _similarKey,
                   child: _stopRegion(
                     _Stop.similar,
-                    TvContentRow<TvMediaItem>(
-                      controller: _similarRow,
-                      title: tr('tv_more_like_this'),
-                      scopeId: 'details-similar:${_item.stableId}',
-                      items:
-                          data.recommendations.take(16).toList(growable: false),
-                      itemId: (item) => item.stableId,
-                      semanticLabel: (item) => item.title,
-                      itemBuilder: (_, item) => TvMediaCard(
-                        item: item,
-                        width: metrics.mediaCardWidth,
-                        badge: TvMediaBadge.recencyOf(item),
-                      ),
-                      itemSpacing: 18,
-                      itemFocusScale: 1.06,
-                      pinFocusedItem: true,
-                      onItemActivated: _openRecommendation,
-                    ),
+                    _buildSimilar(metrics, data, inset: inset),
                   ),
                 ),
             ],
@@ -962,6 +982,61 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
         },
       ),
     ];
+  }
+
+  /// A grid rather than a row, so the recommendations fill the page below
+  /// the episodes instead of leaving its lower half empty.
+  Widget _buildSimilar(
+    TvShellMetrics metrics,
+    TvMediaDetailsData data, {
+    required double inset,
+  }) {
+    final palette = TvPalette.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Padding(
+          // Lines up with the artwork, as the rows' titles do.
+          padding: const EdgeInsets.only(left: TvDesign.focusOutset + 6),
+          child: Text(
+            tr('tv_more_like_this'),
+            style: TextStyle(
+              color: palette.foreground,
+              fontFamily: 'FigtreeSB',
+              fontSize: 21,
+              letterSpacing: -0.15,
+            ),
+          ),
+        ),
+        TvContentGrid<TvMediaItem>(
+          controller: _similarGrid,
+          scopeId: 'details-similar:${_item.stableId}',
+          items: data.recommendations,
+          itemId: (item) => item.stableId,
+          semanticLabel: (item) => item.title,
+          targetItemWidth: metrics.mediaCardWidth,
+          itemAspectRatio: TvMediaCard.artworkAspectRatio,
+          itemDetailsExtent: TvMediaCard.detailsHeight,
+          itemBuilder: (_, item, width) => TvMediaCard(
+            item: item,
+            width: width,
+            badge: TvMediaBadge.recencyOf(item),
+          ),
+          shrinkWrap: true,
+          // The page runs to the screen edge; the grid stops at its margin.
+          padding: EdgeInsets.fromLTRB(
+            TvDesign.focusOutset,
+            8,
+            TvDesign.focusOutset + inset,
+            TvDesign.focusOutset,
+          ),
+          horizontalSpacing: 18,
+          verticalSpacing: 20,
+          onItemActivated: _openRecommendation,
+          onItemFocused: (_) => _scheduleShift(),
+        ),
+      ],
+    );
   }
 
   Widget _buildSeasons(List<Seasons> seasons) {
@@ -1001,8 +1076,9 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
   Widget _buildEpisodes(
     TvShellMetrics metrics,
     TvMediaDetailsData data,
-    TvResumePoint? resume,
-  ) {
+    TvResumePoint? resume, {
+    required double inset,
+  }) {
     final season = _selectedSeason;
     final width = metrics.mediaCardWidth * 1.75;
     final cardHeight = width * 9 / 16 + _EpisodeCard.captionHeight;
@@ -1066,6 +1142,7 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
             ),
             itemSpacing: 18,
             itemFocusScale: 1.06,
+            trailingInset: inset,
             pinFocusedItem: true,
             onItemActivated: (episode) => _activateEpisode(episode, items),
             onItemMenu: (episode) => _showEpisode(episode, items),

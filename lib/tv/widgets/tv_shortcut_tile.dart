@@ -33,7 +33,7 @@ class TvBrowseShortcut {
   final VoidCallback onActivate;
 }
 
-/// A 16:9 tile for a [TvBrowseShortcut]: a service's logo on a dark plate, or
+/// A 16:9 tile for a [TvBrowseShortcut]: a service's logo on a light plate, or
 /// a genre's name on a tinted one.
 class TvShortcutTile extends StatelessWidget {
   const TvShortcutTile({
@@ -45,6 +45,10 @@ class TvShortcutTile extends StatelessWidget {
   });
 
   static const aspectRatio = 16 / 9;
+
+  /// Behind a service's logo. Light, because several of the logos are black
+  /// artwork (Max, Apple TV+, Disney+) that a dark plate swallowed whole.
+  static const _logoPlate = <Color>[Color(0xfff4f5f7), Color(0xffd9dce1)];
 
   /// Muted two-stop washes for genre tiles, so a row of names still reads as
   /// distinct tiles without competing with the artwork rows around it.
@@ -80,31 +84,28 @@ class TvShortcutTile extends StatelessWidget {
             children: <Widget>[
               DecoratedBox(
                 decoration: BoxDecoration(
-                  gradient: logo != null
-                      ? const LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: <Color>[Color(0xff1e1f22), Color(0xff111214)],
-                        )
-                      : LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: wash,
-                        ),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: logo != null ? _logoPlate : wash,
+                  ),
                 ),
               ),
               if (logo != null)
                 Padding(
                   padding: EdgeInsets.symmetric(
                     horizontal: width * 0.2,
-                    vertical: width * 0.12,
+                    vertical: width * 0.1,
                   ),
                   child: Image.asset(
                     logo,
                     fit: BoxFit.contain,
                     cacheWidth: (width * MediaQuery.devicePixelRatioOf(context))
                         .round(),
-                    errorBuilder: (_, __, ___) => _TileTitle(shortcut.title),
+                    errorBuilder: (_, __, ___) => _TileTitle(
+                      shortcut.title,
+                      color: const Color(0xff1e1f22),
+                    ),
                   ),
                 )
               else
@@ -122,10 +123,16 @@ class TvShortcutTile extends StatelessWidget {
 }
 
 class _TileTitle extends StatelessWidget {
-  const _TileTitle(this.title, {this.icon});
+  const _TileTitle(
+    this.title, {
+    this.icon,
+    // Over the tile's dark wash in every theme.
+    this.color = const Color(0xfff7f7f7),
+  });
 
   final String title;
   final IconData? icon;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -142,8 +149,7 @@ class _TileTitle extends StatelessWidget {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              // Over the tile's dark wash or plate in every theme.
-              color: const Color(0xfff7f7f7),
+              color: color,
               fontFamily: 'FigtreeBold',
               fontSize: 18,
               height: 1.1,
