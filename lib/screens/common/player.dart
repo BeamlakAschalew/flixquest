@@ -3568,21 +3568,8 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     final playerRoute = ModalRoute.of(context);
     final onTvPlayerExit = widget.onTvPlayerExit;
     if (!widget.useTvControls) {
-      // The popup opens over the screen the viewer returns to, once the pop
-      // has finished; Back itself is never held.
-      final navigator = Navigator.of(context);
-      final watched = Duration(milliseconds: _wellnessTracker.watchedMs());
-      void showExitPopup() {
-        if (!navigator.mounted) return;
-        unawaited(AdsterraPlaybackAdsService.instance
-            .playerExit(navigator.context, watched: watched));
-      }
-
-      if (playerRoute == null) {
-        WidgetsBinding.instance.addPostFrameCallback((_) => showExitPopup());
-      } else {
-        unawaited(playerRoute.completed.then((_) => showExitPopup()));
-      }
+      AdsterraPlaybackAdsService.instance.afterPlayerExit(context,
+          watched: Duration(milliseconds: _wellnessTracker.watchedMs()));
     }
     Navigator.pop(
       context,

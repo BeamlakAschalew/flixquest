@@ -74,6 +74,36 @@ class AdsterraPlaybackAdsService {
       show(context, PlaybackAdStage.streamFound,
           download: download, television: television, preload: preload);
 
+  /// Call from a phone player just before it pops itself. The popup opens
+  /// over the screen the viewer returns to once the player's route has gone,
+  /// so Back itself is never held.
+  void afterPlayerExit(BuildContext playerContext,
+      {required Duration watched}) {
+    final navigator = Navigator.of(playerContext);
+    final playerRoute = ModalRoute.of(playerContext);
+    void showPopup() {
+      if (!navigator.mounted) return;
+      unawaited(playerExit(navigator.context, watched: watched));
+    }
+
+    if (playerRoute == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => showPopup());
+      return;
+    }
+    // `completed` resolves as the pop starts; wait out the exit transition.
+    unawaited(playerRoute.completed.then((_) {
+      final animation = playerRoute.animation;
+      if (animation == null || animation.isDismissed) return showPopup();
+      void onStatus(AnimationStatus status) {
+        if (status != AnimationStatus.dismissed) return;
+        animation.removeStatusListener(onStatus);
+        showPopup();
+      }
+
+      animation.addStatusListener(onStatus);
+    }));
+  }
+
   /// After the viewer leaves the player, once its route has popped. Only a
   /// real watch counts: an exit after a failed or bounced stream shows nothing.
   Future<void> playerExit(BuildContext context,

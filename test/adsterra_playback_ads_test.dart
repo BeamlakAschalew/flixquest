@@ -1306,6 +1306,30 @@ void main() {
       expect(platform.controllers, isEmpty);
     }, variant: android);
 
+    testWidgets('opens over the returned-to screen once the player has gone',
+        (tester) async {
+      await pumpHost(tester);
+      late BuildContext player;
+      unawaited(
+          Navigator.of(host).push(MaterialPageRoute<void>(builder: (context) {
+        player = context;
+        return const Text('Player');
+      })));
+      await tester.pumpAndSettle();
+      service.afterPlayerExit(player, watched: watched);
+      Navigator.of(player).pop();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+      // Back is not held, and nothing opens while the player slides away.
+      expect(find.text('Player'), findsOneWidget);
+      expect(find.byType(AdsterraPlaybackAdScreen), findsNothing);
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(find.text('Player'), findsNothing);
+      await pumpAd(tester);
+      expect(find.byType(AdsterraPlaybackAdScreen), findsOneWidget);
+      expect(find.text('Title details', skipOffstage: false), findsOneWidget);
+    }, variant: android);
+
     testWidgets('keeps its own interval apart from stream found',
         (tester) async {
       provider.setPlaybackPopupFrequencyMinutes(60);

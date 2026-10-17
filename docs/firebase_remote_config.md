@@ -1034,23 +1034,24 @@ A future timestamp after a device clock correction does not block popup ads.
 
 ### Player-exit popup
 
-A second popup can open after the viewer leaves the movie or episode player,
-over the screen they return to. Back is never held: the player closes first and
+A second popup can open after the viewer leaves the movie, episode or Live TV
+player, over the screen they return to. Back is never held: the player closes first and
 the popup opens once its route has gone. It is off until published.
 
 | Parameter | Type | Default | Purpose |
 | --- | --- | --- | --- |
 | `player_exit_popup_enabled` | Boolean | `false` | Switch for the player-exit popup on phones. Must be published remotely. Turning it off closes an open one. |
 | `player_exit_popup_frequency_minutes` | Number | `0` | Minimum whole minutes between visible player-exit popups. Its own interval and saved timestamp, separate from `playback_popup_frequency_minutes`: neither popup uses up the other. `0` allows every eligible exit. |
-| `player_exit_popup_min_watch_seconds` | Number | `60` | Content seconds the viewer must have watched (pre-roll and buffering excluded) before an exit shows a popup, so a failed or bounced stream shows none. Negative values fall back to `0`. |
+| `player_exit_popup_min_watch_seconds` | Number | `60` | Seconds the viewer must have watched (buffering excluded) before an exit shows a popup, so a failed or bounced stream shows none. Movies and episodes count content only; Live TV also counts its pre-roll. Negative values fall back to `0`. |
 
 The popup comes from the network `playback_popunder_network` selects, and that
 network's own `<network>_playback_enabled` switch still applies. Each popup
 catalog may name a `player_exit` placement, with the same fields as `popunder`,
 to report the exit popup under its own zone or Smartlink. Without one, the
 catalog's `popunder` is used (for Adsterra, the experiment's first arm when an
-experiment replaces it). The experiment never rotates on exit. Android TV, Live
-TV and downloads show no player-exit popup.
+experiment replaces it). The experiment never rotates on exit. Android TV and
+downloads show no player-exit popup. Switching channels inside the Live TV
+player is not an exit.
 
 ```json
 {
