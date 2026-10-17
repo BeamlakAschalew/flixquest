@@ -33,7 +33,8 @@ enum HostedBannerVariant {
 /// The hosted `/ads` banner (announcements and calls to action from our own
 /// backend) and the ad network's banner are independent: each has its own
 /// switch and either can be live without the other. `banner_ad_network`
-/// picks the network (Adsterra or Clickadu). [HostedBannerMode] decides what
+/// picks the network (Adsterra, Clickadu or ExoClick), with optional per-slot
+/// `banner_ad_network_overrides`. [HostedBannerMode] decides what
 /// happens when both are live in the same slot. A remotely configured
 /// `banner_ad_network=none` still hides everything.
 class RemoteHostedAdsBanner extends StatefulWidget {
@@ -71,7 +72,9 @@ class _RemoteHostedAdsBannerState extends State<RemoteHostedAdsBanner> {
     final television = DevicePresentationService.instance.isTelevision;
     final hostedActive = dependencies.isHostedBannerActive;
     // Both sources can show on Android TV; their widgets stay display-only.
-    final networkActive = dependencies.isNetworkBannerActive;
+    final networkActive = dependencies.bannerAdsForPlacement(widget.placement,
+            television: television) !=
+        null;
     if (!hostedActive) return _network(dependencies, widget.padding);
     final ads = _ads ??= _load(dependencies);
     final priority = dependencies.hostedBannerMode == HostedBannerMode.priority;
@@ -125,11 +128,12 @@ class _RemoteHostedAdsBannerState extends State<RemoteHostedAdsBanner> {
     AppDependencyProvider dependencies,
     EdgeInsetsGeometry padding,
   ) {
-    final ads = dependencies.activeBannerAds;
+    final television = DevicePresentationService.instance.isTelevision;
+    final ads = dependencies.bannerAdsForPlacement(widget.placement,
+        television: television);
     if (ads == null || !NetworkBannerWidget.isSupported) {
       return const SizedBox.shrink();
     }
-    final television = DevicePresentationService.instance.isTelevision;
     return LayoutBuilder(builder: (context, constraints) {
       final insets = padding.resolve(Directionality.of(context));
       final unit = ads.resolve(

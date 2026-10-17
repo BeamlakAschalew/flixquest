@@ -12,7 +12,7 @@ enum AdNetwork {
   /// Popup only (stream-found stage); it has no banner or VAST formats here.
   monetag,
 
-  /// Stream-found popup (redirect URL) and video pre-roll (VAST).
+  /// Mobile/web banners, stream-found popup and video pre-roll (VAST).
   exoclick;
 
   /// `none` and unknown values select no network.

@@ -248,11 +248,29 @@ better_player_plus:
    TV** or **Mobile**. The interface switches immediately and the choice is saved
    across launches. Choose **Automatic** to return to device detection.
 
+   Android has two flavors: `prod` (the default) and `dev`. To test real banner
+   ads using Firebase's `banner_ad_network_test` selector, run the dev flavor:
+
+   ```bash
+   flutter run --flavor dev
+   flutter run --flavor dev --release
+   ```
+
+   The test selector works in dev debug/profile/release builds. Prod ignores it
+   in every build mode. See [banner testing setup](docs/firebase_remote_config.md#test-real-banners-in-development).
+   Both flavors reuse the existing Android package and Firebase registration;
+   they share an install slot. The dev launcher label is **FlixQuest Dev**.
+
 6. **Build Release APK**:
 
    ```bash
    flutter build apk --release
    ```
+
+   This uses the default `prod` flavor and outputs
+   `build/app/outputs/flutter-apk/app-prod-release.apk`. You can also specify
+   `--flavor prod` explicitly. A development release APK is built with
+   `flutter build apk --flavor dev --release`.
 
    For smaller per-device downloads, also build split APKs:
 

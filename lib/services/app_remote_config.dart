@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart' show appFlavor;
 
 import '../constants/api_constants.dart';
 import '../models/banner_ad.dart';
@@ -25,6 +26,8 @@ class AppRemoteConfig {
   static const enableLiveTvKey = 'enable_live_tv';
   static const bannersKey = 'banners';
   static const bannerAdNetworkKey = 'banner_ad_network';
+  static const bannerAdNetworkTestKey = 'banner_ad_network_test';
+  static const bannerAdNetworkOverridesKey = 'banner_ad_network_overrides';
   static const hostedBannerModeKey = 'hosted_banner_mode';
   static const adsterraBannerEnabledKey = 'adsterra_banner_enabled';
   static const adsterraTvEnabledKey = 'adsterra_tv_enabled';
@@ -32,6 +35,9 @@ class AppRemoteConfig {
   static const clickaduBannerEnabledKey = 'clickadu_banner_enabled';
   static const clickaduTvEnabledKey = 'clickadu_tv_enabled';
   static const clickaduBannersKey = 'clickadu_banners';
+  static const exoclickBannerEnabledKey = 'exoclick_banner_enabled';
+  static const exoclickTvEnabledKey = 'exoclick_tv_enabled';
+  static const exoclickBannersKey = 'exoclick_banners';
   static const adsterraPlaybackEnabledKey = 'adsterra_playback_enabled';
   static const adsterraPlaybackAdsKey = 'adsterra_playback_ads';
   static const playbackPopunderNetworkKey = 'playback_popunder_network';
@@ -91,6 +97,8 @@ class AppRemoteConfig {
       legacyEnableLiveTvKey: true,
       bannersKey: '{"banners":[]}',
       bannerAdNetworkKey: 'adsterra',
+      bannerAdNetworkTestKey: '',
+      bannerAdNetworkOverridesKey: '{}',
       hostedBannerModeKey: 'stack',
       adsterraBannerEnabledKey: false,
       adsterraTvEnabledKey: false,
@@ -98,6 +106,9 @@ class AppRemoteConfig {
       clickaduBannerEnabledKey: false,
       clickaduTvEnabledKey: false,
       clickaduBannersKey: '{"units":{},"defaults":{},"placements":{}}',
+      exoclickBannerEnabledKey: false,
+      exoclickTvEnabledKey: false,
+      exoclickBannersKey: '{"units":{},"defaults":{},"placements":{}}',
       adsterraPlaybackEnabledKey: false,
       adsterraPlaybackAdsKey: '{}',
       playbackPopunderNetworkKey: 'adsterra',
@@ -114,6 +125,40 @@ class AppRemoteConfig {
       // Empty keeps the Home prompt to join the channel off.
       telegramChannelUrlKey: '',
     });
+  }
+
+  /// Only the dev flavor may exercise real banner catalogs independently of
+  /// production settings. Build mode (debug/profile/release) is irrelevant.
+  @visibleForTesting
+  static ({String network, bool testMode}) resolveBannerNetworkSelection(
+    String production,
+    String test, {
+    String? flavor = appFlavor,
+  }) {
+    final testNetwork = test.trim().toLowerCase();
+    final testMode = flavor == 'dev' &&
+        const {'adsterra', 'clickadu', 'exoclick', 'none'}
+            .contains(testNetwork);
+    final network = production.trim().toLowerCase();
+    return (
+      network:
+          testMode ? testNetwork : (network.isEmpty ? 'adsterra' : network),
+      testMode: testMode,
+    );
+  }
+
+  static Map<String, String> parseBannerNetworkOverrides(String raw) {
+    try {
+      final json = jsonDecode(raw);
+      if (json is! Map) return const {};
+      return Map.unmodifiable({
+        for (final entry in json.entries)
+          if (entry.key is String && entry.value is String)
+            entry.key as String: (entry.value as String).trim().toLowerCase(),
+      });
+    } catch (_) {
+      return const {};
+    }
   }
 
   static List<String> parseApiInstances(String rawJson) {
@@ -167,13 +212,20 @@ class AppRemoteConfig {
     provider.setBannerConfigs(
         parseBannerConfigs(remoteConfig.getString(bannersKey)));
 
-    final bannerNetwork = remoteConfig.getString(bannerAdNetworkKey).trim();
-    provider.setBannerAdNetwork(
-      bannerNetwork.isNotEmpty ? bannerNetwork : 'adsterra',
+    final bannerSelection = resolveBannerNetworkSelection(
+      remoteConfig.getString(bannerAdNetworkKey),
+      remoteConfig.getString(bannerAdNetworkTestKey),
     );
+    provider.setBannerAdNetwork(bannerSelection.network);
+    provider.setBannerAdNetworkOverrides(bannerSelection.testMode
+        ? const {}
+        : parseBannerNetworkOverrides(
+            remoteConfig.getString(bannerAdNetworkOverridesKey)));
 
     provider.setHostedBannerMode(
-      HostedBannerMode.parse(remoteConfig.getString(hostedBannerModeKey)),
+      bannerSelection.testMode
+          ? HostedBannerMode.off
+          : HostedBannerMode.parse(remoteConfig.getString(hostedBannerModeKey)),
     );
 
     // Every network's catalog is kept; `banner_ad_network` picks the live one.
@@ -190,12 +242,20 @@ class AppRemoteConfig {
         clickaduTvEnabledKey,
         clickaduBannersKey
       ),
+      (
+        AdNetwork.exoclick,
+        exoclickBannerEnabledKey,
+        exoclickTvEnabledKey,
+        exoclickBannersKey
+      ),
     ]) {
+      final testingNetwork =
+          bannerSelection.testMode && bannerSelection.network == network.name;
       provider.setBannerAdsConfig(BannerAdsConfig.parse(
         remoteConfig.getString(catalogKey),
         network: network,
-        enabled: _remoteBool(remoteConfig, enabledKey),
-        tvEnabled: _remoteBool(remoteConfig, tvKey),
+        enabled: testingNetwork || _remoteBool(remoteConfig, enabledKey),
+        tvEnabled: testingNetwork || _remoteBool(remoteConfig, tvKey),
       ));
     }
 
@@ -300,8 +360,8 @@ class AppRemoteConfig {
       changeLog: remoteConfig.getString('change_log'),
     );
     provider.tmdbProxy = remoteConfig.getString('tmdb_proxy');
-    provider.setTelegramChannelUrl(
-        remoteConfig.getString(telegramChannelUrlKey));
+    provider
+        .setTelegramChannelUrl(remoteConfig.getString(telegramChannelUrlKey));
     final remoteTmdbKey = remoteConfig.getString(tmdbApiKey).trim();
     if (remoteTmdbKey.isNotEmpty) {
       TMDB_API_KEY = remoteTmdbKey;

@@ -260,6 +260,52 @@ void main() {
   );
 
   testWidgets(
+    'one slot migrates to ExoClick and back without affecting other slots',
+    (tester) async {
+      provider.setBannerAdsConfig(testExoclickConfig());
+      await pump(tester, width: 360);
+      final original = platform.controllers.single;
+      provider.setBannerAdNetworkOverrides({'downloads': 'exoclick'});
+      await tester.pump();
+      await tester.pump();
+      expect(platform.controllers, hasLength(2));
+      expect(original.requests.last, Uri.parse('about:blank'));
+      expect(platform.controllers.last.htmlLoads.single,
+          contains('data-zoneid="3001"'));
+      expect(tester.getSize(find.byType(WebViewWidget)), const Size(300, 100));
+      expect(provider.bannerAdsForPlacement('movie_detail')?.network,
+          AdNetwork.adsterra);
+      provider.setBannerAdNetworkOverrides({});
+      await tester.pump();
+      await tester.pump();
+      expect(platform.controllers.last.htmlLoads.single,
+          contains('mobile_key/invoke.js'));
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump();
+    },
+    variant: const TargetPlatformVariant({TargetPlatform.android}),
+  );
+
+  testWidgets(
+    'ExoClick web leaderboard fits wide slots and empty zones time out',
+    (tester) async {
+      platform.signalLoaded = false;
+      provider
+        ..setBannerAdsConfig(testExoclickConfig())
+        ..setBannerAdNetwork('exoclick');
+      await pump(tester);
+      expect(tester.getSize(find.byType(WebViewWidget)), const Size(728, 90));
+      expect(platform.controllers.single.htmlLoads.single,
+          contains('data-zoneid="3005"'));
+      await tester.pump(const Duration(seconds: 21));
+      await tester.pump();
+      expect(find.byType(WebViewWidget), findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+    variant: const TargetPlatformVariant({TargetPlatform.android}),
+  );
+
+  testWidgets(
     'programmatic main-frame redirects and non-web schemes are blocked',
     (tester) async {
       await pump(tester);
