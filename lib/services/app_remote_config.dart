@@ -24,6 +24,7 @@ class AppRemoteConfig {
   static const enableWatchNowKey = 'enable_stream';
   static const enableDownloadKey = 'enable_download';
   static const enableLiveTvKey = 'enable_live_tv';
+  static const adBlockGateEnabledKey = 'ad_block_gate_enabled';
   static const bannersKey = 'banners';
   static const bannerAdNetworkKey = 'banner_ad_network';
   static const bannerAdNetworkTestKey = 'banner_ad_network_test';
@@ -105,6 +106,8 @@ class AppRemoteConfig {
       enableDownloadKey: true,
       enableLiveTvKey: true,
       legacyEnableLiveTvKey: true,
+      // Off until published, so a misbehaving check can be withdrawn remotely.
+      adBlockGateEnabledKey: false,
       bannersKey: '{"banners":[]}',
       bannerAdNetworkKey: 'adsterra',
       bannerAdNetworkTestKey: '',
@@ -224,6 +227,7 @@ class AppRemoteConfig {
     provider.displayWatchNowButton = remoteConfig.getBool(enableWatchNowKey);
     provider.displayDownloadButton = remoteConfig.getBool(enableDownloadKey);
     provider.displayLiveTV = _resolveLiveTv(remoteConfig);
+    provider.adBlockGateEnabled = remoteConfig.getBool(adBlockGateEnabledKey);
     provider.setBannerConfigs(
         parseBannerConfigs(remoteConfig.getString(bannersKey)));
 

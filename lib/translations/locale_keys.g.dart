@@ -1482,5 +1482,10 @@ abstract class  LocaleKeys {
   static const video_quality = 'video_quality';
   static const tv_current_provider = 'tv_current_provider';
   static const tv_font_weight_light = 'tv_font_weight_light';
+  static const ad_blocker_title = 'ad_blocker_title';
+  static const ad_blocker_message = 'ad_blocker_message';
+  static const ad_blocker_private_dns_hint = 'ad_blocker_private_dns_hint';
+  static const ad_blocker_still_detected = 'ad_blocker_still_detected';
+  static const ad_blocker_retry = 'ad_blocker_retry';
 
 }

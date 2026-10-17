@@ -57,6 +57,9 @@ abstract class BannerAdUnit {
 
   BannerSize get size;
 
+  /// The network script the unit loads.
+  Uri get scriptUrl;
+
   /// Optional slot-width threshold, for same-size mobile and web zones.
   int get minWidth => 0;
 
@@ -98,6 +101,7 @@ class AdsterraBannerUnit extends BannerAdUnit {
   };
 
   final String key;
+  @override
   final Uri scriptUrl;
   @override
   final BannerSize size;
@@ -166,6 +170,7 @@ class ClickaduBannerUnit extends BannerAdUnit {
   });
 
   final String spotId;
+  @override
   final Uri scriptUrl;
   @override
   final BannerSize size;
@@ -251,6 +256,7 @@ class ExoclickBannerUnit extends BannerAdUnit {
   };
 
   final String zoneId;
+  @override
   final Uri scriptUrl;
   final String className;
   @override
