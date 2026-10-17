@@ -222,6 +222,35 @@ class AppDependencyProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Whether a player-exit popup earned in a session that ended without
+  /// leaving the player (the app was closed from the player) opens on the next
+  /// launch, and for how long such a popup stays owed.
+  ({bool enabled, Duration maxAge}) _playerExitRelaunch =
+      (enabled: false, maxAge: const Duration(hours: 24));
+  ({bool enabled, Duration maxAge}) get playerExitRelaunch =>
+      _playerExitRelaunch;
+
+  void setPlayerExitRelaunch({required bool enabled, required int maxHours}) {
+    final config = (
+      enabled: enabled,
+      maxAge: Duration(hours: maxHours < 0 ? 0 : maxHours),
+    );
+    if (_playerExitRelaunch == config) return;
+    _playerExitRelaunch = config;
+    notifyListeners();
+  }
+
+  /// Remote Config has been applied at least once this session, from the
+  /// values stored on the device or a fetch.
+  bool _remoteConfigApplied = false;
+  bool get remoteConfigApplied => _remoteConfigApplied;
+
+  void markRemoteConfigApplied() {
+    if (_remoteConfigApplied) return;
+    _remoteConfigApplied = true;
+    notifyListeners();
+  }
+
   /// Everything that decides a playback ad. A change closes an active one.
   ({
     AdNetwork? network,
