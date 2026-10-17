@@ -13,6 +13,38 @@
     "load_timeout_ms": 10000,
     "max_duration_seconds": 30
   },
+  "player_exit": {
+    "enabled": true,
+    "mode": "smartlink",
+    "url": "https://directyp.org/4/d85eb7a00a73c8de8a3252dbd9b19411",
+    "sub_id": "fqsmartexitv1",
+    "load_timeout_ms": 10000,
+    "max_duration_seconds": 30
+  },
+  "download": {
+    "enabled": true,
+    "mode": "smartlink",
+    "url": "https://directyp.org/4/d85eb7a00a73c8de8a3252dbd9b19411",
+    "sub_id": "fqsmartdlv1",
+    "load_timeout_ms": 10000,
+    "max_duration_seconds": 30
+  },
+  "episode_switch": {
+    "enabled": true,
+    "mode": "smartlink",
+    "url": "https://directyp.org/4/d85eb7a00a73c8de8a3252dbd9b19411",
+    "sub_id": "fqsmartepv1",
+    "load_timeout_ms": 10000,
+    "max_duration_seconds": 30
+  },
+  "movie_switch": {
+    "enabled": true,
+    "mode": "smartlink",
+    "url": "https://directyp.org/4/d85eb7a00a73c8de8a3252dbd9b19411",
+    "sub_id": "fqsmartmoviev1",
+    "load_timeout_ms": 10000,
+    "max_duration_seconds": 30
+  },
   "tv_popunder": {
     "enabled": true,
     "mode": "smartlink",

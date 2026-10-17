@@ -728,7 +728,10 @@ Smartlink supplied for FlixQuest. Publish `adsterra_playback_enabled=true` to
 enable configured stages. Each stage also requires its own `enabled=true`. The
 supplied catalog enables both stages. It opens the Smartlink in FlixQuest's
 ad page on every stream-found attempt by default, with `psid=fqsmartpagev1`. It
-has no experiment. Set `playback_popup_frequency_minutes` to space out these
+has no experiment. It also gives each popup trigger the same Smartlink under its
+own sub-ID (`fqsmartexitv1`, `fqsmartdlv1`, `fqsmartepv1`, `fqsmartmoviev1`),
+so the Adsterra stats report each trigger apart; these apply only once the
+trigger is published (see [Popup triggers](#popup-triggers)). Set `playback_popup_frequency_minutes` to space out these
 popups as described below. Old per-placement `cooldown_seconds` fields remain
 ignored. Overlapping active ads are always blocked.
 

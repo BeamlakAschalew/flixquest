@@ -730,6 +730,25 @@ void main() {
     expect(smartlink.smartlinkUrl!.host, 'directyp.org');
     expect(smartlink.trackedSmartlinkUrl!.queryParameters['psid'],
         'fqsmartpagev1');
+    // Each trigger reports under its own sub-ID on the same Smartlink.
+    expect({
+      for (final stage in PlaybackAdStage.triggers)
+        stage: supplied
+            .forStage(stage)!
+            .trackedSmartlinkUrl!
+            .queryParameters['psid'],
+    }, {
+      PlaybackAdStage.playerExit: 'fqsmartexitv1',
+      PlaybackAdStage.download: 'fqsmartdlv1',
+      PlaybackAdStage.episodeSwitch: 'fqsmartepv1',
+      PlaybackAdStage.movieSwitch: 'fqsmartmoviev1',
+    });
+    expect(
+        supplied
+            .forStage(PlaybackAdStage.streamFound, television: true)!
+            .trackedSmartlinkUrl!
+            .queryParameters['psid'],
+        'fqsmarttvv1');
   });
 
   testWidgets(
