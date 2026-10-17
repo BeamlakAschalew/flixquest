@@ -9,6 +9,7 @@ import '../provider/app_dependency_provider.dart';
 import '../models/banner_ads_config.dart';
 import '../models/adsterra_playback_ads_config.dart';
 import '../models/vast_preroll_config.dart';
+import 'app_update_service.dart';
 
 class AppRemoteConfig {
   const AppRemoteConfig._();
@@ -49,6 +50,12 @@ class AppRemoteConfig {
   static const vastPrerollKey = 'vast_preroll';
   static const vastPrerollNetworkKey = 'vast_preroll_network';
   static const telegramChannelUrlKey = 'telegram_channel_url';
+  static const appDownloadUrlKey = 'app_download_url';
+
+  /// Per-ABI APK links, e.g. `app_download_url_arm64_v8a`. An empty one sends
+  /// that ABI to the universal [appDownloadUrlKey] build.
+  static String abiDownloadUrlKey(String abi) =>
+      '${appDownloadUrlKey}_${abi.replaceAll('-', '_')}';
 
   /// Live TV used to ride on the OTT flag before it got a dedicated key.
   static const legacyEnableLiveTvKey = 'enable_ott';
@@ -61,7 +68,7 @@ class AppRemoteConfig {
             kDebugMode ? Duration.zero : const Duration(minutes: 1),
       ),
     );
-    await remoteConfig.setDefaults(const <String, Object>{
+    await remoteConfig.setDefaults(<String, Object>{
       occasionalThemeKey: '{"enabled":false}',
       appLogoKey: '',
       legacyAppLogoKey: 'default',
@@ -69,7 +76,9 @@ class AppRemoteConfig {
       'latest_version': '',
       'latest_build_number': 0,
       'min_build_number': 0,
-      'app_download_url': '',
+      appDownloadUrlKey: '',
+      for (final abi in AppUpdateService.splitApkAbis)
+        abiDownloadUrlKey(abi): '',
       'change_log': '',
       flixquestApiInstancesKey: '',
       flixquestApiUrlKey: '',
@@ -283,7 +292,11 @@ class AppRemoteConfig {
       latestVersion: remoteConfig.getString('latest_version'),
       latestBuild: remoteConfig.getInt('latest_build_number'),
       minimumBuild: remoteConfig.getInt('min_build_number'),
-      downloadUrl: remoteConfig.getString('app_download_url'),
+      downloadUrl: remoteConfig.getString(appDownloadUrlKey),
+      abiDownloadUrls: {
+        for (final abi in AppUpdateService.splitApkAbis)
+          abi: remoteConfig.getString(abiDownloadUrlKey(abi)),
+      },
       changeLog: remoteConfig.getString('change_log'),
     );
     provider.tmdbProxy = remoteConfig.getString('tmdb_proxy');
