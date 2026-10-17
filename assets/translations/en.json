@@ -1516,5 +1516,10 @@
   "player_default": "Default",
   "video_quality": "Video quality",
   "tv_current_provider": "Current provider",
-  "tv_font_weight_light": "Light"
+  "tv_font_weight_light": "Light",
+  "ad_blocker_title": "Turn off your ad blocker",
+  "ad_blocker_message": "FlixQuest is free because of ads. To play or download, turn off your ad blocker for FlixQuest, then tap \"I turned it off\".",
+  "ad_blocker_private_dns_hint": "Using Private DNS such as AdGuard DNS or NextDNS? Set Private DNS to Automatic or Off in your network settings.",
+  "ad_blocker_still_detected": "Your ad blocker is still on. Turn it off, or set Private DNS to Automatic or Off, then try again.",
+  "ad_blocker_retry": "I turned it off"
 }

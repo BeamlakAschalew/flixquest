@@ -1,5 +1,6 @@
 import 'package:flixquest/models/adsterra_playback_ads_config.dart';
 import 'package:flixquest/services/adsterra_playback_ads_service.dart';
+import 'package:flixquest/widgets/ad_block_gate.dart';
 // ignore_for_file: use_build_context_synchronously
 import 'dart:async';
 import 'package:flixquest/functions/function.dart';
@@ -92,6 +93,12 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   }
 
   Future<void> _startPlayback() async {
+    if (!mounted) return;
+    if (!await AdBlockGate.instance.allowPlayback(context,
+        download: widget.download, television: widget.useTvPlayer)) {
+      if (mounted) Navigator.pop(context, false);
+      return;
+    }
     if (!mounted) return;
     _adPreload = AdsterraPlaybackAdsService.instance.preloadStreamFound(context,
         download: widget.download,

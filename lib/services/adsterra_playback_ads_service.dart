@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/adsterra_playback_ads_config.dart';
 import '../provider/app_dependency_provider.dart';
+import '../widgets/ad_block_gate.dart';
 import '../widgets/adsterra_playback_ad_screen.dart';
 import 'device_presentation_service.dart';
 import 'playback_ad_input_service.dart';
@@ -62,10 +63,18 @@ class AdsterraPlaybackAdsService {
             .contains(defaultTargetPlatform);
   }
 
+  /// The ad blocker check runs first, so a blocked viewer is not kept
+  /// waiting on an interstitial that cannot load.
   Future<bool> beforeLoader(BuildContext context,
-          {bool download = false, bool television = false}) =>
-      show(context, PlaybackAdStage.beforeLoader,
-          download: download, television: television);
+      {bool download = false, bool television = false}) async {
+    if (!await AdBlockGate.instance.allowPlayback(context,
+            download: download, television: television) ||
+        !context.mounted) {
+      return false;
+    }
+    return show(context, PlaybackAdStage.beforeLoader,
+        download: download, television: television);
+  }
 
   /// A loader the player itself started passes [PlaybackAdStage.episodeSwitch]
   /// or [PlaybackAdStage.movieSwitch] as [stage].

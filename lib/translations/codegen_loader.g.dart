@@ -1532,7 +1532,12 @@ class CodegenLoader extends AssetLoader{
   "player_default": "Default",
   "video_quality": "Video quality",
   "tv_current_provider": "Current provider",
-  "tv_font_weight_light": "Light"
+  "tv_font_weight_light": "Light",
+  "ad_blocker_title": "Turn off your ad blocker",
+  "ad_blocker_message": "FlixQuest is free because of ads. To play or download, turn off your ad blocker for FlixQuest, then tap \"I turned it off\".",
+  "ad_blocker_private_dns_hint": "Using Private DNS such as AdGuard DNS or NextDNS? Set Private DNS to Automatic or Off in your network settings.",
+  "ad_blocker_still_detected": "Your ad blocker is still on. Turn it off, or set Private DNS to Automatic or Off, then try again.",
+  "ad_blocker_retry": "I turned it off"
 };
 static const Map<String,dynamic> _hi = {
   "popularity_descending": "लोकप्रियता घटती",
@@ -3052,7 +3057,12 @@ static const Map<String,dynamic> _hi = {
   "player_default": "डिफ़ॉल्ट",
   "video_quality": "वीडियो की गुणवत्ता",
   "tv_current_provider": "वर्तमान प्रदाता",
-  "tv_font_weight_light": "हल्का"
+  "tv_font_weight_light": "हल्का",
+  "ad_blocker_title": "अपना ऐड ब्लॉकर बंद करें",
+  "ad_blocker_message": "FlixQuest विज्ञापनों की वजह से मुफ़्त है। चलाने या डाउनलोड करने के लिए FlixQuest के लिए अपना ऐड ब्लॉकर बंद करें, फिर \"मैंने बंद कर दिया\" पर टैप करें।",
+  "ad_blocker_private_dns_hint": "क्या आप AdGuard DNS या NextDNS जैसा Private DNS इस्तेमाल करते हैं? नेटवर्क सेटिंग में Private DNS को Automatic या Off पर सेट करें।",
+  "ad_blocker_still_detected": "आपका ऐड ब्लॉकर अभी भी चालू है। उसे बंद करें या Private DNS को Automatic या Off पर सेट करें, फिर दोबारा कोशिश करें।",
+  "ad_blocker_retry": "मैंने बंद कर दिया"
 };
 static const Map<String,dynamic> _es = {
   "popularity_descending": "Popularidad descendiente",
@@ -4572,7 +4582,12 @@ static const Map<String,dynamic> _es = {
   "player_default": "Predeterminado",
   "video_quality": "Calidad de vídeo",
   "tv_current_provider": "Proveedor actual",
-  "tv_font_weight_light": "Ligero"
+  "tv_font_weight_light": "Ligero",
+  "ad_blocker_title": "Desactiva tu bloqueador de anuncios",
+  "ad_blocker_message": "FlixQuest es gratis gracias a los anuncios. Para reproducir o descargar, desactiva tu bloqueador de anuncios para FlixQuest y toca \"Ya lo desactivé\".",
+  "ad_blocker_private_dns_hint": "¿Usas un DNS privado como AdGuard DNS o NextDNS? Configura el DNS privado en Automático o Desactivado en los ajustes de red.",
+  "ad_blocker_still_detected": "Tu bloqueador de anuncios sigue activo. Desactívalo o configura el DNS privado en Automático o Desactivado y vuelve a intentarlo.",
+  "ad_blocker_retry": "Ya lo desactivé"
 };
 static const Map<String,dynamic> _ar = {
   "popularity_descending": "ترتيب تنازلي حسب الشعبية",
@@ -6139,7 +6154,12 @@ static const Map<String,dynamic> _ar = {
   "player_default": "افتراضي",
   "video_quality": "جودة الفيديو",
   "tv_current_provider": "المزود الحالي",
-  "tv_font_weight_light": "خفيف"
+  "tv_font_weight_light": "خفيف",
+  "ad_blocker_title": "أوقف مانع الإعلانات",
+  "ad_blocker_message": "FlixQuest مجاني بفضل الإعلانات. للتشغيل أو التنزيل، أوقف مانع الإعلانات لتطبيق FlixQuest، ثم اضغط \"أوقفته\".",
+  "ad_blocker_private_dns_hint": "هل تستخدم DNS خاصًا مثل AdGuard DNS أو NextDNS؟ اضبط DNS الخاص على تلقائي أو إيقاف في إعدادات الشبكة.",
+  "ad_blocker_still_detected": "مانع الإعلانات لا يزال يعمل. أوقفه أو اضبط DNS الخاص على تلقائي أو إيقاف، ثم حاول مرة أخرى.",
+  "ad_blocker_retry": "أوقفته"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "hi": _hi, "es": _es, "ar": _ar};
 }

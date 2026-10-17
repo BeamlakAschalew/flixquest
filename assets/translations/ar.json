@@ -1563,5 +1563,10 @@
   "player_default": "افتراضي",
   "video_quality": "جودة الفيديو",
   "tv_current_provider": "المزود الحالي",
-  "tv_font_weight_light": "خفيف"
+  "tv_font_weight_light": "خفيف",
+  "ad_blocker_title": "أوقف مانع الإعلانات",
+  "ad_blocker_message": "FlixQuest مجاني بفضل الإعلانات. للتشغيل أو التنزيل، أوقف مانع الإعلانات لتطبيق FlixQuest، ثم اضغط \"أوقفته\".",
+  "ad_blocker_private_dns_hint": "هل تستخدم DNS خاصًا مثل AdGuard DNS أو NextDNS؟ اضبط DNS الخاص على تلقائي أو إيقاف في إعدادات الشبكة.",
+  "ad_blocker_still_detected": "مانع الإعلانات لا يزال يعمل. أوقفه أو اضبط DNS الخاص على تلقائي أو إيقاف، ثم حاول مرة أخرى.",
+  "ad_blocker_retry": "أوقفته"
 }

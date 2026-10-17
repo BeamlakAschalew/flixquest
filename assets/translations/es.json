@@ -1516,5 +1516,10 @@
   "player_default": "Predeterminado",
   "video_quality": "Calidad de vídeo",
   "tv_current_provider": "Proveedor actual",
-  "tv_font_weight_light": "Ligero"
+  "tv_font_weight_light": "Ligero",
+  "ad_blocker_title": "Desactiva tu bloqueador de anuncios",
+  "ad_blocker_message": "FlixQuest es gratis gracias a los anuncios. Para reproducir o descargar, desactiva tu bloqueador de anuncios para FlixQuest y toca \"Ya lo desactivé\".",
+  "ad_blocker_private_dns_hint": "¿Usas un DNS privado como AdGuard DNS o NextDNS? Configura el DNS privado en Automático o Desactivado en los ajustes de red.",
+  "ad_blocker_still_detected": "Tu bloqueador de anuncios sigue activo. Desactívalo o configura el DNS privado en Automático o Desactivado y vuelve a intentarlo.",
+  "ad_blocker_retry": "Ya lo desactivé"
 }
