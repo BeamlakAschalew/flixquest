@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_android/webview_flutter_android.dart';
 
 import '../models/banner_ads_config.dart';
 
@@ -57,6 +58,7 @@ class _NetworkBannerWidgetState extends State<NetworkBannerWidget> {
       _controller = controller;
       await controller.setJavaScriptMode(JavaScriptMode.unrestricted);
       await controller.setBackgroundColor(Colors.transparent);
+      await _allowThirdPartyCookies(controller);
       await controller.addJavaScriptChannel(BannerAdUnit.statusChannel,
           onMessageReceived: (message) {
         if (message.message == 'failed') _fail();
@@ -77,6 +79,22 @@ class _NetworkBannerWidgetState extends State<NetworkBannerWidget> {
       // A missing system WebView or an ad request failure must not break a
       // catalog screen or prevent playback.
       _fail();
+    }
+  }
+
+  /// The creative is served in the network's own iframe, a third-party
+  /// context that Android WebView denies cookies by default. Without them
+  /// every impression looks like a new visitor, so frequency capping and
+  /// returning-user bids are lost.
+  Future<void> _allowThirdPartyCookies(WebViewController controller) async {
+    final platform = controller.platform;
+    if (platform is! AndroidWebViewController) return;
+    try {
+      await AndroidWebViewCookieManager(
+              const PlatformWebViewCookieManagerCreationParams())
+          .setAcceptThirdPartyCookies(platform, true);
+    } catch (_) {
+      // Older system WebViews may not expose the cookie manager.
     }
   }
 
