@@ -1176,6 +1176,165 @@ void main() {
     }, variant: android);
   });
 
+  group('player exit popup', () {
+    const streamFoundKey = 'playback_ads.last_popup_shown_at';
+    const playerExitKey = 'playback_ads.last_player_exit_popup_shown_at';
+    const watched = Duration(minutes: 5);
+    late DateTime now;
+
+    setUp(() {
+      now = DateTime.utc(2026, 10, 10, 9);
+      provider
+        ..setAdsterraPlaybackAdsConfig(AdsterraPlaybackAdsConfig.parse(
+            slowSmartlinkCatalog,
+            enabled: true))
+        ..setPlayerExitPopup(
+            enabled: true, frequencyMinutes: 30, minWatchSeconds: 60);
+      service = AdsterraPlaybackAdsService(now: () => now);
+    });
+
+    Future<void> closeVisibleAd(WidgetTester tester) async {
+      await pumpAd(tester);
+      expect(find.byType(AdsterraPlaybackAdScreen), findsOneWidget);
+      final page = platform.controllers.last;
+      page.delegate!.onPageStarted!('https://advertiser.example/offer');
+      page.delegate!.onPageFinished!('https://advertiser.example/offer');
+      await tester.pump();
+      await tester.pump(AdsterraPlaybackAdScreen.minimumView);
+      await tester.tap(find.byTooltip('Close ad'));
+      await tester.pumpAndSettle();
+    }
+
+    Future<void> showExitPopup(WidgetTester tester) async {
+      final result = service.playerExit(host, watched: watched);
+      await closeVisibleAd(tester);
+      await result;
+    }
+
+    test('Remote Config keeps it off until published', () async {
+      final remote = FakeFirebaseRemoteConfig();
+      await AppRemoteConfig.configure(remote);
+      expect(remote.defaults[AppRemoteConfig.playerExitPopupEnabledKey], false);
+      provider = AppDependencyProvider();
+      AppRemoteConfig.apply(remote, provider);
+      expect(provider.playerExitPopup, (
+        enabled: false,
+        frequencyMinutes: 0,
+        minWatch: const Duration(seconds: 60),
+      ));
+      remote
+        ..setMockBool(AppRemoteConfig.playerExitPopupEnabledKey, true)
+        ..setMockInt(AppRemoteConfig.playerExitPopupFrequencyMinutesKey, 45)
+        ..setMockInt(AppRemoteConfig.playerExitPopupMinWatchSecondsKey, 120);
+      AppRemoteConfig.apply(remote, provider);
+      expect(provider.playerExitPopup, (
+        enabled: true,
+        frequencyMinutes: 45,
+        minWatch: const Duration(seconds: 120),
+      ));
+      remote
+        ..setMockInt(AppRemoteConfig.playerExitPopupFrequencyMinutesKey, -5)
+        ..setMockInt(AppRemoteConfig.playerExitPopupMinWatchSecondsKey, -5);
+      AppRemoteConfig.apply(remote, provider);
+      expect(provider.playerExitPopup.frequencyMinutes, 0);
+      expect(provider.playerExitPopup.minWatch, Duration.zero);
+    });
+
+    test('a catalog may give it its own zone, else it uses the popunder', () {
+      const ownZone = '''{
+        "popunder":{"enabled":true,"script_url":"https://ads.example/pop"},
+        "player_exit":{"enabled":true,"mode":"smartlink","url":"https://ads.example/exit"}
+      }''';
+      final adsterra = AdsterraPlaybackAdsConfig.parse(ownZone, enabled: true);
+      expect(adsterra.forStage(PlaybackAdStage.playerExit)?.smartlinkUrl,
+          Uri.parse('https://ads.example/exit'));
+      expect(adsterra.forStage(PlaybackAdStage.playerExit, television: true),
+          isNull);
+      expect(
+          AdsterraPlaybackAdsConfig.parse(catalog, enabled: true)
+              .forStage(PlaybackAdStage.playerExit)
+              ?.scriptUrl,
+          Uri.parse('https://ads.example/pop'));
+      expect(
+          AdsterraPlaybackAdsConfig.parse(experimentCatalog, enabled: true)
+              .forStage(PlaybackAdStage.playerExit)
+              ?.scriptUrl,
+          Uri.parse('https://ads.example/pop'));
+      final clickadu = PopunderAdsConfig.parse(ownZone,
+          network: AdNetwork.clickadu, enabled: true);
+      expect(clickadu.activePlayerExit?.smartlinkUrl,
+          Uri.parse('https://ads.example/exit'));
+      expect(
+          PopunderAdsConfig.parse(catalog,
+                  network: AdNetwork.monetag, enabled: true)
+              .activePlayerExit
+              ?.scriptUrl,
+          Uri.parse('https://ads.example/pop'));
+      expect(
+          PopunderAdsConfig.parse(ownZone,
+                  network: AdNetwork.clickadu, enabled: false)
+              .activePlayerExit,
+          isNull);
+    });
+
+    test('its tag page does not promise a video', () {
+      final html = playbackAdHtml(
+          PlaybackAdPlacement.parse(
+              {'enabled': true, 'script_url': 'https://ads.example/pop'})!,
+          PlaybackAdStage.playerExit);
+      expect(html, contains('Thanks for watching'));
+      expect(html, contains('https://ads.example/pop'));
+      expect(html, isNot(contains('Play now')));
+      expect(html, isNot(contains('Your video is ready')));
+    });
+
+    testWidgets('the switch, a short watch and TV show nothing',
+        (tester) async {
+      await pumpHost(tester);
+      provider.setPlayerExitPopup(
+          enabled: false, frequencyMinutes: 0, minWatchSeconds: 60);
+      await service.playerExit(host, watched: watched);
+      expect(await service.show(host, PlaybackAdStage.playerExit), isTrue);
+      provider.setPlayerExitPopup(
+          enabled: true, frequencyMinutes: 0, minWatchSeconds: 60);
+      await service.playerExit(host,
+          watched: const Duration(seconds: 59, milliseconds: 999));
+      DevicePresentationService.instance.isTelevision = true;
+      await service.playerExit(host, watched: watched);
+      await tester.pump();
+      expect(find.byType(AdsterraPlaybackAdScreen), findsNothing);
+      expect(platform.controllers, isEmpty);
+    }, variant: android);
+
+    testWidgets('keeps its own interval apart from stream found',
+        (tester) async {
+      provider.setPlaybackPopupFrequencyMinutes(60);
+      await pumpHost(tester);
+      await showExitPopup(tester);
+      expect(sharedPrefsSingleton.getInt(playerExitKey),
+          now.millisecondsSinceEpoch);
+      expect(sharedPrefsSingleton.getInt(streamFoundKey), isNull);
+      expect(platform.controllers, hasLength(1));
+
+      // The exit popup does not use up the stream-found one.
+      final streamFound = service.streamFound(host);
+      await closeVisibleAd(tester);
+      expect(await streamFound, isTrue);
+      expect(platform.controllers, hasLength(2));
+
+      now = now.add(const Duration(minutes: 29));
+      service = AdsterraPlaybackAdsService(now: () => now);
+      await service.playerExit(host, watched: watched);
+      await tester.pump();
+      expect(find.byType(AdsterraPlaybackAdScreen), findsNothing);
+      expect(platform.controllers, hasLength(2));
+
+      now = now.add(const Duration(minutes: 1));
+      await showExitPopup(tester);
+      expect(platform.controllers, hasLength(3));
+    }, variant: android);
+  });
+
   test('pop script receives a real DOM button with no fabricated clicks', () {
     final config = AdsterraPlaybackAdsConfig.parse(catalog, enabled: true);
     final html = playbackAdHtml(config.popunder!, PlaybackAdStage.streamFound);

@@ -1,4 +1,5 @@
 import 'package:flixquest/widgets/adsterra_playback_gate.dart';
+import 'package:flixquest/services/adsterra_playback_ads_service.dart';
 import 'package:flixquest/widgets/playback_action.dart';
 // ignore_for_file: deprecated_member_use
 
@@ -3566,6 +3567,23 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   void _exitPlayer() {
     final playerRoute = ModalRoute.of(context);
     final onTvPlayerExit = widget.onTvPlayerExit;
+    if (!widget.useTvControls) {
+      // The popup opens over the screen the viewer returns to, once the pop
+      // has finished; Back itself is never held.
+      final navigator = Navigator.of(context);
+      final watched = Duration(milliseconds: _wellnessTracker.watchedMs());
+      void showExitPopup() {
+        if (!navigator.mounted) return;
+        unawaited(AdsterraPlaybackAdsService.instance
+            .playerExit(navigator.context, watched: watched));
+      }
+
+      if (playerRoute == null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) => showExitPopup());
+      } else {
+        unawaited(playerRoute.completed.then((_) => showExitPopup()));
+      }
+    }
     Navigator.pop(
       context,
       _isVideoInitializedSafely()

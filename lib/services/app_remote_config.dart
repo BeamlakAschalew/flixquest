@@ -46,6 +46,11 @@ class AppRemoteConfig {
   static const tvPlaybackPopunderNetworkKey = 'tv_playback_popunder_network';
   static const tvPlaybackPopupFrequencyMinutesKey =
       'tv_playback_popup_frequency_minutes';
+  static const playerExitPopupEnabledKey = 'player_exit_popup_enabled';
+  static const playerExitPopupFrequencyMinutesKey =
+      'player_exit_popup_frequency_minutes';
+  static const playerExitPopupMinWatchSecondsKey =
+      'player_exit_popup_min_watch_seconds';
   static const clickaduPlaybackEnabledKey = 'clickadu_playback_enabled';
   static const clickaduPlaybackAdsKey = 'clickadu_playback_ads';
   static const monetagPlaybackEnabledKey = 'monetag_playback_enabled';
@@ -113,6 +118,9 @@ class AppRemoteConfig {
       adsterraPlaybackAdsKey: '{}',
       playbackPopunderNetworkKey: 'adsterra',
       playbackPopupFrequencyMinutesKey: 0,
+      playerExitPopupEnabledKey: false,
+      playerExitPopupFrequencyMinutesKey: 0,
+      playerExitPopupMinWatchSecondsKey: 60,
       clickaduPlaybackEnabledKey: false,
       clickaduPlaybackAdsKey: '{}',
       monetagPlaybackEnabledKey: false,
@@ -281,6 +289,13 @@ class AppRemoteConfig {
         AdNetwork.parse(remoteConfig.getString(playbackPopunderNetworkKey)));
     provider.setPlaybackPopupFrequencyMinutes(
         remoteConfig.getValue(playbackPopupFrequencyMinutesKey).asInt());
+    provider.setPlayerExitPopup(
+      enabled: _remoteBool(remoteConfig, playerExitPopupEnabledKey),
+      frequencyMinutes:
+          remoteConfig.getValue(playerExitPopupFrequencyMinutesKey).asInt(),
+      minWatchSeconds:
+          remoteConfig.getValue(playerExitPopupMinWatchSecondsKey).asInt(),
+    );
     // Android TV follows the phone selector and interval until its own keys
     // are published.
     final tvNetwork = remoteConfig.getValue(tvPlaybackPopunderNetworkKey);
@@ -325,6 +340,7 @@ class AppRemoteConfig {
           'popupFrequencyMinutes=${provider.playbackPopupFrequencyMinutes} '
           'tvNetwork=${provider.tvPlaybackPopunderNetwork?.name ?? 'none'} '
           'tvPopupFrequencyMinutes=${provider.tvPlaybackPopupFrequencyMinutes} '
+          'playerExit=${provider.playerExitPopup} '
           'enabled=$enabled interstitialEnabled=$interstitialEnabled '
           'mode=${placement?.mode ?? 'disabled/invalid'} '
           'target=${target == null ? 'none' : '${target.origin}${target.path}'}');

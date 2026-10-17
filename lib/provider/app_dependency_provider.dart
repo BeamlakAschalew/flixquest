@@ -187,6 +187,32 @@ class AppDependencyProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// The popup after a viewer leaves the player, from the phone's selected
+  /// network. Off unless published; [frequencyMinutes] is its own interval,
+  /// apart from the stream-found popup's, and zero allows every exit.
+  ({bool enabled, int frequencyMinutes, Duration minWatch}) _playerExitPopup = (
+    enabled: false,
+    frequencyMinutes: 0,
+    minWatch: const Duration(seconds: 60)
+  );
+  ({bool enabled, int frequencyMinutes, Duration minWatch})
+      get playerExitPopup => _playerExitPopup;
+
+  void setPlayerExitPopup({
+    required bool enabled,
+    required int frequencyMinutes,
+    required int minWatchSeconds,
+  }) {
+    final config = (
+      enabled: enabled,
+      frequencyMinutes: frequencyMinutes < 0 ? 0 : frequencyMinutes,
+      minWatch: Duration(seconds: minWatchSeconds < 0 ? 0 : minWatchSeconds),
+    );
+    if (_playerExitPopup == config) return;
+    _playerExitPopup = config;
+    notifyListeners();
+  }
+
   /// Everything that decides a playback ad. A change closes an active one.
   ({
     AdNetwork? network,

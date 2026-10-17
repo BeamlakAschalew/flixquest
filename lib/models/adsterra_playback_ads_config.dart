@@ -4,7 +4,9 @@ import 'ad_network.dart';
 
 export 'ad_network.dart';
 
-enum PlaybackAdStage { beforeLoader, streamFound }
+/// [playerExit] follows a viewer leaving the player after watching; it shows
+/// the stream-found popup unless the catalog names a `player_exit` placement.
+enum PlaybackAdStage { beforeLoader, streamFound, playerExit }
 
 /// Independent of banner settings; missing or malformed remote values disable
 /// playback ads. Codes belong in Remote Config, never in compiled defaults.
@@ -14,6 +16,7 @@ class AdsterraPlaybackAdsConfig {
     this.interstitial,
     this.popunder,
     this.tvPopunder,
+    this.playerExit,
     this.streamFoundExperiment,
   });
 
@@ -24,9 +27,13 @@ class AdsterraPlaybackAdsConfig {
   /// The stream-found popup on Android TV (`tv_popunder`). A remote has no
   /// touch, so only formats that open without one qualify.
   final PlaybackAdPlacement? tvPopunder;
+
+  /// Its own zone for the player-exit popup, so the dashboard reports it apart.
+  final PlaybackAdPlacement? playerExit;
   final PlaybackAdExperiment? streamFoundExperiment;
 
-  /// TV has no Social Bar and no experiment: only [tvPopunder].
+  /// TV has no Social Bar, no player-exit popup and no experiment: only
+  /// [tvPopunder].
   PlaybackAdPlacement? forStage(PlaybackAdStage stage,
           {bool television = false}) =>
       !enabled
@@ -35,9 +42,14 @@ class AdsterraPlaybackAdsConfig {
               ? stage == PlaybackAdStage.streamFound
                   ? tvPopunder
                   : null
-              : stage == PlaybackAdStage.beforeLoader
-                  ? interstitial
-                  : streamFoundExperiment?.variants.first.placement ?? popunder;
+              : switch (stage) {
+                  PlaybackAdStage.beforeLoader => interstitial,
+                  PlaybackAdStage.streamFound =>
+                    streamFoundExperiment?.variants.first.placement ?? popunder,
+                  PlaybackAdStage.playerExit => playerExit ??
+                      streamFoundExperiment?.variants.first.placement ??
+                      popunder,
+                };
 
   static AdsterraPlaybackAdsConfig parse(String raw, {required bool enabled}) {
     try {
@@ -55,6 +67,7 @@ class AdsterraPlaybackAdsConfig {
             ? null
             : PlaybackAdPlacement.parse(json['popunder']),
         tvPopunder: PlaybackAdPlacement.parseTv(json['tv_popunder']),
+        playerExit: PlaybackAdPlacement.parse(json['player_exit']),
         streamFoundExperiment:
             PlaybackAdExperiment.parse(json['stream_found_experiment']),
       );
@@ -240,7 +253,7 @@ class PlaybackAdPlacement {
 /// Missing or malformed values disable it.
 class PopunderAdsConfig {
   const PopunderAdsConfig(this.network,
-      {this.enabled = false, this.popunder, this.tvPopunder});
+      {this.enabled = false, this.popunder, this.tvPopunder, this.playerExit});
 
   final AdNetwork network;
   final bool enabled;
@@ -250,7 +263,13 @@ class PopunderAdsConfig {
   /// [PlaybackAdPlacement.playsWithoutTouch].
   final PlaybackAdPlacement? tvPopunder;
 
+  /// The player-exit popup's own zone; [popunder] serves it when absent.
+  final PlaybackAdPlacement? playerExit;
+
   PlaybackAdPlacement? get activePopunder => enabled ? popunder : null;
+
+  PlaybackAdPlacement? get activePlayerExit =>
+      enabled ? playerExit ?? popunder : null;
 
   PlaybackAdPlacement? activeFor({required bool television}) => !enabled
       ? null
@@ -269,6 +288,8 @@ class PopunderAdsConfig {
         popunder: PlaybackAdPlacement.parse(json['popunder'], network: network),
         tvPopunder:
             PlaybackAdPlacement.parseTv(json['tv_popunder'], network: network),
+        playerExit:
+            PlaybackAdPlacement.parse(json['player_exit'], network: network),
       );
     } catch (_) {
       return PopunderAdsConfig(network);
