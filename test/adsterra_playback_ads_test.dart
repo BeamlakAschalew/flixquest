@@ -1549,6 +1549,235 @@ void main() {
       expect(platform.controllers, hasLength(controllers));
     }, variant: android);
 
+    group('owed after closing the app from the player', () {
+      const owedKey = 'playback_ads.player_exit_owed_at';
+
+      setUp(() {
+        provider
+          ..setPlayerExitRelaunch(enabled: true, maxHours: 24)
+          ..markRemoteConfigApplied();
+      });
+
+      void owe(DateTime at) =>
+          sharedPrefsSingleton.setInt(owedKey, at.millisecondsSinceEpoch);
+
+      test('Remote Config keeps it off until published', () async {
+        final remote = FakeFirebaseRemoteConfig();
+        await AppRemoteConfig.configure(remote);
+        provider = AppDependencyProvider();
+        expect(provider.remoteConfigApplied, isFalse);
+        AppRemoteConfig.apply(remote, provider);
+        expect(provider.remoteConfigApplied, isTrue);
+        expect(provider.playerExitRelaunch,
+            (enabled: false, maxAge: const Duration(hours: 24)));
+        remote
+          ..setMockBool(AppRemoteConfig.playerExitPopupRelaunchEnabledKey, true)
+          ..setMockInt(AppRemoteConfig.playerExitPopupRelaunchMaxHoursKey, 6);
+        AppRemoteConfig.apply(remote, provider);
+        expect(provider.playerExitRelaunch,
+            (enabled: true, maxAge: const Duration(hours: 6)));
+      });
+
+      testWidgets('is saved the moment the minimum watch is reached',
+          (tester) async {
+        await pumpHost(tester);
+        service.notePlayerWatch(host, const Duration(seconds: 59));
+        await tester.pump();
+        expect(sharedPrefsSingleton.getInt(owedKey), isNull);
+        service.notePlayerWatch(host, const Duration(seconds: 60));
+        await tester.pump();
+        expect(
+            sharedPrefsSingleton.getInt(owedKey), now.millisecondsSinceEpoch);
+        // Written once, not on every later tick.
+        final first = now;
+        now = now.add(const Duration(minutes: 1));
+        service.notePlayerWatch(host, const Duration(minutes: 2));
+        await tester.pump();
+        expect(
+            sharedPrefsSingleton.getInt(owedKey), first.millisecondsSinceEpoch);
+      }, variant: android);
+
+      testWidgets('is not saved when off, on TV or with exits off',
+          (tester) async {
+        await pumpHost(tester);
+        provider.setPlayerExitRelaunch(enabled: false, maxHours: 24);
+        service.notePlayerWatch(host, watched);
+        provider.setPlayerExitRelaunch(enabled: true, maxHours: 24);
+        DevicePresentationService.instance.isTelevision = true;
+        service.notePlayerWatch(host, watched);
+        DevicePresentationService.instance.isTelevision = false;
+        provider.setPopupTrigger(PlaybackAdStage.playerExit,
+            enabled: false, frequencyMinutes: 0);
+        service.notePlayerWatch(host, watched);
+        await tester.pump();
+        expect(sharedPrefsSingleton.getInt(owedKey), isNull);
+      }, variant: android);
+
+      testWidgets('a normal exit settles it', (tester) async {
+        await pumpHost(tester);
+        service.notePlayerWatch(host, watched);
+        await tester.pump();
+        expect(sharedPrefsSingleton.getInt(owedKey), isNotNull);
+        await showExitPopup(tester);
+        expect(sharedPrefsSingleton.getInt(owedKey), isNull);
+        // Within the interval the next exit is skipped, and nothing stays owed.
+        service.notePlayerWatch(host, watched);
+        await tester.pump();
+        expect(sharedPrefsSingleton.getInt(owedKey), isNotNull);
+        await service.playerExit(host, watched: watched);
+        expect(find.byType(AdsterraPlaybackAdScreen), findsNothing);
+        expect(sharedPrefsSingleton.getInt(owedKey), isNull);
+      }, variant: android);
+
+      testWidgets('survives an in-player switch to a short watch',
+          (tester) async {
+        await pumpHost(tester);
+        service.notePlayerWatch(host, watched);
+        await tester.pump();
+        final result =
+            service.playerExit(host, watched: const Duration(seconds: 5));
+        await closeVisibleAd(tester);
+        await result;
+        expect(platform.controllers, hasLength(1));
+        expect(sharedPrefsSingleton.getInt(owedKey), isNull);
+      }, variant: android);
+
+      testWidgets('opens on launch and holds Back until the ad is seen',
+          (tester) async {
+        owe(now.subtract(const Duration(hours: 2)));
+        await pumpHost(tester);
+        final launch = service.showOwedPlayerExitOnLaunch(host);
+        await pumpAd(tester);
+        expect(find.byType(AdsterraPlaybackAdScreen), findsOneWidget);
+        // Closing the app now, before the ad shows, keeps it owed.
+        expect(sharedPrefsSingleton.getInt(owedKey), isNotNull);
+        await tester.binding.handlePopRoute();
+        await tester.pump();
+        expect(find.byType(AdsterraPlaybackAdScreen), findsOneWidget);
+        final page = platform.controllers.last;
+        page.delegate!.onPageStarted!('https://advertiser.example/offer');
+        page.delegate!.onPageFinished!('https://advertiser.example/offer');
+        await tester.pump();
+        // Seen: no longer owed even if the app is closed now.
+        expect(sharedPrefsSingleton.getInt(owedKey), isNull);
+        await tester.pump(AdsterraPlaybackAdScreen.minimumView);
+        await tester.tap(find.byTooltip('Close ad'));
+        await tester.pumpAndSettle();
+        await launch;
+        expect(find.text('Title details'), findsOneWidget);
+        // Once per launch.
+        owe(now);
+        await service.showOwedPlayerExitOnLaunch(host);
+        await tester.pump();
+        expect(platform.controllers, hasLength(1));
+      }, variant: android);
+
+      testWidgets('an ad that cannot fill lets the viewer in', (tester) async {
+        platform.pageHasContent = false;
+        owe(now);
+        await pumpHost(tester);
+        final launch = service.showOwedPlayerExitOnLaunch(host);
+        await pumpAd(tester);
+        final page = platform.controllers.single;
+        page.delegate!.onPageStarted!('https://advertiser.example/empty');
+        page.delegate!.onPageFinished!('https://advertiser.example/empty');
+        await tester.pump(const Duration(seconds: 15));
+        await tester.pumpAndSettle();
+        await launch;
+        expect(find.byType(AdsterraPlaybackAdScreen), findsNothing);
+        expect(sharedPrefsSingleton.getInt(owedKey), isNull);
+      }, variant: android);
+
+      for (final (label, setUpCase) in [
+        (
+          'turned off',
+          () => provider.setPlayerExitRelaunch(enabled: false, maxHours: 24)
+        ),
+        (
+          'older than the limit',
+          () => now = now.add(const Duration(hours: 25))
+        ),
+        (
+          'dated in the future',
+          () => now = now.subtract(const Duration(hours: 1))
+        ),
+        (
+          'exits switched off',
+          () => provider.setPopupTrigger(PlaybackAdStage.playerExit,
+              enabled: false, frequencyMinutes: 0)
+        ),
+      ]) {
+        testWidgets('is dropped on launch when $label', (tester) async {
+          owe(now);
+          setUpCase();
+          await pumpHost(tester);
+          await service.showOwedPlayerExitOnLaunch(host);
+          await tester.pump();
+          expect(find.byType(AdsterraPlaybackAdScreen), findsNothing);
+          expect(platform.controllers, isEmpty);
+          expect(sharedPrefsSingleton.getInt(owedKey), isNull);
+        }, variant: android);
+      }
+
+      testWidgets('is honoured within its interval only once it expires',
+          (tester) async {
+        await pumpHost(tester);
+        await showExitPopup(tester);
+        owe(now);
+        service = AdsterraPlaybackAdsService(now: () => now);
+        await service.showOwedPlayerExitOnLaunch(host);
+        await tester.pump();
+        expect(platform.controllers, hasLength(1));
+        expect(sharedPrefsSingleton.getInt(owedKey), isNull);
+      }, variant: android);
+
+      testWidgets('waits briefly for the stored Remote Config', (tester) async {
+        owe(now);
+        provider = AppDependencyProvider()
+          ..setAdsterraPlaybackAdsConfig(AdsterraPlaybackAdsConfig.parse(
+              slowSmartlinkCatalog,
+              enabled: true))
+          ..setPopupTrigger(PlaybackAdStage.playerExit,
+              enabled: true, frequencyMinutes: 30, minWatchSeconds: 60)
+          ..setPlayerExitRelaunch(enabled: true, maxHours: 24);
+        await pumpHost(tester);
+        final late = service.showOwedPlayerExitOnLaunch(host);
+        await tester.pump(AdsterraPlaybackAdsService.owedPopupConfigWait);
+        await late;
+        // Too late to interrupt: kept for the next launch.
+        expect(platform.controllers, isEmpty);
+        expect(sharedPrefsSingleton.getInt(owedKey), isNotNull);
+
+        service = AdsterraPlaybackAdsService(now: () => now);
+        final inTime = service.showOwedPlayerExitOnLaunch(host);
+        await tester.pump(const Duration(seconds: 1));
+        provider.markRemoteConfigApplied();
+        await closeVisibleAd(tester);
+        await inTime;
+        expect(sharedPrefsSingleton.getInt(owedKey), isNull);
+      }, variant: android);
+
+      testWidgets('stays owed when the viewer has already moved on',
+          (tester) async {
+        owe(now);
+        provider = AppDependencyProvider()
+          ..setAdsterraPlaybackAdsConfig(AdsterraPlaybackAdsConfig.parse(
+              slowSmartlinkCatalog,
+              enabled: true))
+          ..setPopupTrigger(PlaybackAdStage.playerExit,
+              enabled: true, frequencyMinutes: 30, minWatchSeconds: 60)
+          ..setPlayerExitRelaunch(enabled: true, maxHours: 24);
+        await pumpHost(tester);
+        final launch = service.showOwedPlayerExitOnLaunch(host);
+        await pushRoute(tester, 'Details');
+        provider.markRemoteConfigApplied();
+        await launch;
+        await tester.pump();
+        expect(platform.controllers, isEmpty);
+        expect(sharedPrefsSingleton.getInt(owedKey), isNotNull);
+      }, variant: android);
+    });
+
     testWidgets('TV switches keep the TV stream-found popup', (tester) async {
       provider
         ..setAdsterraPlaybackAdsConfig(

@@ -243,6 +243,10 @@ class _LivePlayerState extends State<LivePlayer> {
 
   void _checkPlaybackProgress() {
     if (!mounted) return;
+    if (!widget.useTvControls) {
+      AdsterraPlaybackAdsService.instance.notePlayerWatch(
+          context, Duration(milliseconds: _wellnessTracker.watchedMs()));
+    }
     final value = _betterPlayerController.videoPlayerController?.value;
     // Offline, the player waits for the connection by itself; a stall then
     // says nothing about the stream.

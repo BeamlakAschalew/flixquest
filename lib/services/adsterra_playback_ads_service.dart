@@ -39,6 +39,17 @@ class AdsterraPlaybackAdsService {
   final PlaybackContinueTap? continueTap;
   final Map<String, int> _rotation = {};
   final Map<PlaybackAdStage, DateTime> _lastPopupShownAt = {};
+
+  /// When a player-exit popup was earned and not yet settled. Saved on the
+  /// device as soon as it is earned, so closing the app from the player
+  /// instead of leaving it still owes the popup on the next launch.
+  static const _owedPlayerExitKey = 'playback_ads.player_exit_owed_at';
+  bool _playerExitOwed = false;
+  bool _launchChecked = false;
+
+  /// How long the next launch waits for the stored Remote Config before
+  /// leaving an owed popup for a later launch.
+  static const owedPopupConfigWait = Duration(seconds: 5);
   bool _busy = false;
 
   /// Lets route builders omit the waiting frame when no interstitial can run.
@@ -134,14 +145,131 @@ class AdsterraPlaybackAdsService {
         ?.popupTrigger(PlaybackAdStage.playerExit);
     if (exit == null || !exit.enabled) {
       _logSkip(PlaybackAdStage.playerExit, 'disabled');
+      await _settleOwedPlayerExit();
       return;
     }
-    if (watched < exit.minWatch) {
+    // A popup earned in an earlier player of this session (before an
+    // in-player episode or movie switch) is still owed.
+    if (watched < exit.minWatch && !_playerExitOwed) {
       _logSkip(PlaybackAdStage.playerExit,
           'watched=${watched.inSeconds}s min=${exit.minWatch.inSeconds}s');
       return;
     }
-    await show(context, PlaybackAdStage.playerExit);
+    await _showOwedPlayerExit(context);
+  }
+
+  /// Players report their content watch time as it grows. Once it earns the
+  /// player-exit popup, that is saved at once, before the viewer can close
+  /// the app instead of leaving the player.
+  void notePlayerWatch(BuildContext context, Duration watched) {
+    if (_playerExitOwed || !context.mounted) return;
+    final provider = context.read<AppDependencyProvider?>();
+    final exit = provider?.popupTrigger(PlaybackAdStage.playerExit);
+    if (provider == null ||
+        exit == null ||
+        !exit.enabled ||
+        !provider.playerExitRelaunch.enabled ||
+        watched < exit.minWatch ||
+        DevicePresentationService.instance.isTelevision) {
+      return;
+    }
+    _playerExitOwed = true;
+    final owedAt = _now();
+    debugPrint('[AdsterraPlayback] playerExit: owed from '
+        '${owedAt.toIso8601String()} watched=${watched.inSeconds}s');
+    unawaited(_writeOwedPlayerExit(owedAt));
+  }
+
+  /// On launch, once the first screen is up: opens a player-exit popup owed
+  /// by a session that ended in the player. It opens only over that first
+  /// screen, within [owedPopupConfigWait], under the trigger's own switch and
+  /// interval, and is dropped once older than
+  /// `player_exit_popup_relaunch_max_hours`. The way on waits for the ad as
+  /// for any popup; an ad that cannot load or fill lets the viewer in.
+  Future<void> showOwedPlayerExitOnLaunch(BuildContext context) async {
+    if (_launchChecked || !context.mounted) return;
+    _launchChecked = true;
+    final provider = context.read<AppDependencyProvider?>();
+    if (provider == null) return;
+    final host = ModalRoute.of(context);
+    int? owedAtMs;
+    try {
+      owedAtMs = (await _preferences()).getInt(_owedPlayerExitKey);
+    } catch (error) {
+      debugPrint('[AdsterraPlayback] owed popup unavailable ($error)');
+      return;
+    }
+    if (owedAtMs == null) return;
+    if (!await _configApplied(provider)) {
+      _logSkip(PlaybackAdStage.playerExit,
+          'owed popup: Remote Config not ready; kept for a later launch');
+      return;
+    }
+    if (!context.mounted || (host != null && !host.isCurrent)) return;
+    final relaunch = provider.playerExitRelaunch;
+    final age =
+        _now().difference(DateTime.fromMillisecondsSinceEpoch(owedAtMs));
+    if (!relaunch.enabled || age.isNegative || age > relaunch.maxAge) {
+      _logSkip(PlaybackAdStage.playerExit,
+          'owed popup dropped relaunch=${relaunch.enabled} age=${age.inMinutes}m');
+      await _settleOwedPlayerExit();
+      return;
+    }
+    _playerExitOwed = true;
+    debugPrint('[AdsterraPlayback] playerExit: showing popup owed for '
+        '${age.inMinutes}m on launch');
+    await _showOwedPlayerExit(context);
+  }
+
+  /// Settles the owed popup once the attempt finishes in the app: shown,
+  /// skipped by its switch or interval, or unfilled. An attempt cut short by
+  /// navigation, another ad or the app closing leaves it owed.
+  Future<void> _showOwedPlayerExit(BuildContext context) async {
+    if (await show(context, PlaybackAdStage.playerExit)) {
+      await _settleOwedPlayerExit();
+    }
+  }
+
+  Future<bool> _configApplied(AppDependencyProvider provider) async {
+    if (provider.remoteConfigApplied) return true;
+    final applied = Completer<bool>();
+    void onChanged() {
+      if (provider.remoteConfigApplied && !applied.isCompleted) {
+        applied.complete(true);
+      }
+    }
+
+    provider.addListener(onChanged);
+    final timer = Timer(owedPopupConfigWait, () {
+      if (!applied.isCompleted) applied.complete(false);
+    });
+    try {
+      return await applied.future;
+    } finally {
+      timer.cancel();
+      provider.removeListener(onChanged);
+    }
+  }
+
+  Future<void> _writeOwedPlayerExit(DateTime owedAt) async {
+    try {
+      final preferences = await _preferences();
+      if (!await preferences.setInt(
+          _owedPlayerExitKey, owedAt.millisecondsSinceEpoch)) {
+        debugPrint('[AdsterraPlayback] owed popup persistence unavailable');
+      }
+    } catch (error) {
+      debugPrint('[AdsterraPlayback] owed popup persistence failed ($error)');
+    }
+  }
+
+  Future<void> _settleOwedPlayerExit() async {
+    _playerExitOwed = false;
+    try {
+      await (await _preferences()).remove(_owedPlayerExitKey);
+    } catch (error) {
+      debugPrint('[AdsterraPlayback] owed popup not cleared ($error)');
+    }
   }
 
   /// Prepare an empty WebView while sources load, for any network or format.
@@ -296,7 +424,13 @@ class AdsterraPlaybackAdsService {
           continueTap: continueTap,
           onAdShown: stage == PlaybackAdStage.beforeLoader
               ? null
-              : () => unawaited(_recordPopupShown(stage)),
+              : () {
+                  unawaited(_recordPopupShown(stage));
+                  // Seen: closing the app now no longer owes it again.
+                  if (stage == PlaybackAdStage.playerExit) {
+                    unawaited(_settleOwedPlayerExit());
+                  }
+                },
         ),
       );
       // Compare the catalogs and network, not the chosen arm: unrelated
