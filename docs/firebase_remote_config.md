@@ -705,6 +705,39 @@ Legacy format does not expose user selection. Move to schema version 2 for
 overlaps, selection, priorities, and global effect controls.
 
 
+## Ad blocker check
+
+| Parameter | Firebase type | Default | Purpose |
+| --- | --- | --- | --- |
+| `ad_block_gate_enabled` | Boolean | `false` | Asks viewers to turn off their ad blocker when they press **Play** or **Download**. Browsing is never blocked. |
+
+Android apps have no browser extensions: ads are blocked through DNS, by
+Private DNS (AdGuard DNS, NextDNS), local VPN blockers (AdGuard, Blokada,
+RethinkDNS), hosts files (AdAway) or a network filter such as Pi-hole. When
+Play or Download starts, FlixQuest resolves the hosts of the ads it currently
+shows: the live banner catalog and the Adsterra playback placements.
+
+A blocker is reported only on positive evidence:
+
+- an ad host answers with a sinkhole address (`0.0.0.0`, `::` or loopback); or
+- the device cannot resolve an ad host, twice, while Cloudflare or Google DNS
+  over HTTPS can. A retired ad domain fails publicly too, so it never counts.
+
+Anything else, including a slow or offline network or a check that takes over
+six seconds, lets playback continue. Viewers with a blocker see **Turn off your
+ad blocker** with **I turned it off**, which checks again, and **Cancel**,
+which closes the loader. A passed check covers the next five minutes, so an
+episode switch is not checked twice. On phones the check runs before the
+Adsterra interstitial, so a blocked viewer is not kept waiting on an ad that
+cannot load.
+
+Each prompt sends the Mixpanel event `Ad Blocker Gate` with `Outcome`
+(`detected`, `cleared` or `cancelled`), `Action` (`play` or `download`) and
+`Television`. Events from viewers who keep their blocker on may never arrive,
+since many blockers also block Mixpanel.
+
+Publish `false` to withdraw the check immediately.
+
 ## Playback ads
 
 Playback ads are controlled separately from banners. Android/iOS phones and

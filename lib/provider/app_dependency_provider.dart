@@ -51,6 +51,10 @@ class AppDependencyProvider extends ChangeNotifier {
   bool _displayLiveTV = true;
   bool get displayLiveTV => _displayLiveTV;
 
+  /// Asks viewers to turn off their ad blocker when Play or Download starts.
+  bool _adBlockGateEnabled = false;
+  bool get adBlockGateEnabled => _adBlockGateEnabled;
+
   Map<String, BannerDisplayConfig> _bannerConfigs = const {};
 
   BannerDisplayConfig bannerConfigFor(String key) =>
@@ -448,6 +452,12 @@ class AppDependencyProvider extends ChangeNotifier {
 
   set displayLiveTV(bool value) {
     _displayLiveTV = value;
+    notifyListeners();
+  }
+
+  set adBlockGateEnabled(bool value) {
+    if (_adBlockGateEnabled == value) return;
+    _adBlockGateEnabled = value;
     notifyListeners();
   }
 
