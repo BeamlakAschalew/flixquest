@@ -254,6 +254,18 @@ better_player_plus:
    flutter build apk --release
    ```
 
+   For smaller per-device downloads, also build split APKs:
+
+   ```bash
+   flutter build apk --release --split-per-abi
+   ```
+
+   The update screen downloads the APK matching the device's CPU. Publish each
+   split APK's link in Remote Config under `app_download_url_arm64_v8a`,
+   `app_download_url_armeabi_v7a` and `app_download_url_x86_64`, and keep the
+   universal APK in `app_download_url`. A device whose ABI can't be read, or
+   whose key is empty, downloads the universal APK.
+
 ---
 
 ## 🤝 Contributing

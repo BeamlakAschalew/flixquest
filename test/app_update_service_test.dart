@@ -70,4 +70,54 @@ void main() {
       '4.1.0',
     );
   });
+
+  group('resolveDownloadUrl', () {
+    const universal = 'https://example.com/flixquest.apk';
+    const abiUrls = {
+      'arm64-v8a': 'https://example.com/flixquest-arm64-v8a.apk',
+      'armeabi-v7a': 'https://example.com/flixquest-armeabi-v7a.apk',
+    };
+
+    test('picks the most preferred ABI that has a link', () {
+      expect(
+        AppUpdateService.resolveDownloadUrl(
+          deviceAbis: const ['arm64-v8a', 'armeabi-v7a', 'armeabi'],
+          abiUrls: abiUrls,
+          universalUrl: universal,
+        ),
+        abiUrls['arm64-v8a'],
+      );
+    });
+
+    test('falls through to a compatible ABI when the preferred one is empty',
+        () {
+      expect(
+        AppUpdateService.resolveDownloadUrl(
+          deviceAbis: const ['arm64-v8a', 'armeabi-v7a'],
+          abiUrls: {...abiUrls, 'arm64-v8a': '  '},
+          universalUrl: universal,
+        ),
+        abiUrls['armeabi-v7a'],
+      );
+    });
+
+    test('uses the universal APK when the ABI is unknown or unpublished', () {
+      expect(
+        AppUpdateService.resolveDownloadUrl(
+          deviceAbis: const [],
+          abiUrls: abiUrls,
+          universalUrl: universal,
+        ),
+        universal,
+      );
+      expect(
+        AppUpdateService.resolveDownloadUrl(
+          deviceAbis: const ['x86_64'],
+          abiUrls: abiUrls,
+          universalUrl: universal,
+        ),
+        universal,
+      );
+    });
+  });
 }

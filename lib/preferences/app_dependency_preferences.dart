@@ -1,5 +1,7 @@
 // ignore_for_file: constant_identifier_names
 
+import 'dart:convert';
+
 import '../constants/api_constants.dart';
 import '../constants/app_constants.dart';
 
@@ -93,6 +95,7 @@ class AppDependencies {
   static const LATEST_BUILD_NUMBER = 'latest_build_number';
   static const MINIMUM_BUILD_NUMBER = 'minimum_build_number';
   static const APP_DOWNLOAD_URL = 'app_download_url';
+  static const APP_ABI_DOWNLOAD_URLS = 'app_abi_download_urls';
   static const CHANGE_LOG = 'change_log';
 
   Future<void> setUpdateConfiguration({
@@ -101,6 +104,7 @@ class AppDependencies {
     required int latestBuild,
     required int minimumBuild,
     required String downloadUrl,
+    required Map<String, String> abiDownloadUrls,
     required String changeLog,
   }) async {
     await sharedPrefsSingleton.setBool(IS_FORCED_UPDATE, forced);
@@ -108,6 +112,8 @@ class AppDependencies {
     await sharedPrefsSingleton.setInt(LATEST_BUILD_NUMBER, latestBuild);
     await sharedPrefsSingleton.setInt(MINIMUM_BUILD_NUMBER, minimumBuild);
     await sharedPrefsSingleton.setString(APP_DOWNLOAD_URL, downloadUrl);
+    await sharedPrefsSingleton.setString(
+        APP_ABI_DOWNLOAD_URLS, jsonEncode(abiDownloadUrls));
     await sharedPrefsSingleton.setString(CHANGE_LOG, changeLog);
   }
 
@@ -118,7 +124,26 @@ class AppDependencies {
       'latestBuild': sharedPrefsSingleton.getInt(LATEST_BUILD_NUMBER) ?? 0,
       'minimumBuild': sharedPrefsSingleton.getInt(MINIMUM_BUILD_NUMBER) ?? 0,
       'downloadUrl': sharedPrefsSingleton.getString(APP_DOWNLOAD_URL) ?? '',
+      'abiDownloadUrls': _decodeAbiDownloadUrls(
+          sharedPrefsSingleton.getString(APP_ABI_DOWNLOAD_URLS)),
       'changeLog': sharedPrefsSingleton.getString(CHANGE_LOG) ?? '',
     };
+  }
+
+  static Map<String, String> _decodeAbiDownloadUrls(String? raw) {
+    if (raw == null || raw.isEmpty) return const {};
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is Map) {
+        return {
+          for (final entry in decoded.entries)
+            if (entry.value is String)
+              entry.key.toString(): entry.value as String,
+        };
+      }
+    } catch (_) {
+      // A corrupt cache falls back to the universal link until the next fetch.
+    }
+    return const {};
   }
 }

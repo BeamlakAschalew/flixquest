@@ -4,6 +4,24 @@ import 'package:package_info_plus/package_info_plus.dart';
 class AppUpdateService {
   const AppUpdateService._();
 
+  /// ABIs `flutter build apk --split-per-abi` produces an APK for.
+  static const splitApkAbis = ['arm64-v8a', 'armeabi-v7a', 'x86_64'];
+
+  /// The smallest APK this device can install: the first of [deviceAbis]
+  /// (most preferred first, as Android reports them) that has a per-ABI link,
+  /// else the universal [universalUrl].
+  static String resolveDownloadUrl({
+    required List<String> deviceAbis,
+    required Map<String, String> abiUrls,
+    required String universalUrl,
+  }) {
+    for (final abi in deviceAbis) {
+      final url = abiUrls[abi]?.trim() ?? '';
+      if (url.isNotEmpty) return url;
+    }
+    return universalUrl;
+  }
+
   static int effectiveBuildNumber({
     required int latestBuildNumber,
     required int minimumBuildNumber,

@@ -234,6 +234,10 @@ class AppDependencyProvider extends ChangeNotifier {
   String _appDownloadUrl = '';
   String get appDownloadUrl => _appDownloadUrl;
 
+  /// Split-APK links keyed by ABI; see [AppUpdateService.resolveDownloadUrl].
+  Map<String, String> _abiDownloadUrls = const {};
+  Map<String, String> get abiDownloadUrls => _abiDownloadUrls;
+
   String _changeLog = '';
   String get changeLog => _changeLog;
 
@@ -406,6 +410,7 @@ class AppDependencyProvider extends ChangeNotifier {
     _latestBuildNumber = config['latestBuild'] as int;
     _minimumBuildNumber = config['minimumBuild'] as int;
     _appDownloadUrl = config['downloadUrl'] as String;
+    _abiDownloadUrls = config['abiDownloadUrls'] as Map<String, String>;
     _changeLog = config['changeLog'] as String;
     notifyListeners();
   }
@@ -416,15 +421,21 @@ class AppDependencyProvider extends ChangeNotifier {
     required int latestBuild,
     required int minimumBuild,
     required String downloadUrl,
+    Map<String, String> abiDownloadUrls = const {},
     required String changeLog,
   }) {
     final normalizedVersion = latestVersion.trim();
     final normalizedDownloadUrl = downloadUrl.trim();
+    final normalizedAbiUrls = Map<String, String>.unmodifiable({
+      for (final entry in abiDownloadUrls.entries)
+        if (entry.value.trim().isNotEmpty) entry.key: entry.value.trim(),
+    });
     if (_isForcedUpdate == forced &&
         _latestAppVersion == normalizedVersion &&
         _latestBuildNumber == latestBuild &&
         _minimumBuildNumber == minimumBuild &&
         _appDownloadUrl == normalizedDownloadUrl &&
+        mapEquals(_abiDownloadUrls, normalizedAbiUrls) &&
         _changeLog == changeLog) {
       return;
     }
@@ -433,6 +444,7 @@ class AppDependencyProvider extends ChangeNotifier {
     _latestBuildNumber = latestBuild;
     _minimumBuildNumber = minimumBuild;
     _appDownloadUrl = normalizedDownloadUrl;
+    _abiDownloadUrls = normalizedAbiUrls;
     _changeLog = changeLog;
     _preferences.setUpdateConfiguration(
       forced: forced,
@@ -440,6 +452,7 @@ class AppDependencyProvider extends ChangeNotifier {
       latestBuild: latestBuild,
       minimumBuild: minimumBuild,
       downloadUrl: normalizedDownloadUrl,
+      abiDownloadUrls: normalizedAbiUrls,
       changeLog: changeLog,
     );
     notifyListeners();

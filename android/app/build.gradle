@@ -79,6 +79,17 @@ android {
            minifyEnabled true
        }
    }
+
+    // `flutter build apk --split-per-abi` adds 1000/2000/4000 to each ABI's
+    // versionCode. Every APK keeps the pubspec build number instead, so the
+    // in-app updater's build comparison holds and devices can move between
+    // the universal and per-ABI APKs without a downgrade error. Registered
+    // after the Flutter plugin's hook, so it runs last.
+    applicationVariants.configureEach { variant ->
+        variant.outputs.each { output ->
+            output.versionCodeOverride = flutterVersionCode.toInteger()
+        }
+    }
 }
 
 flutter {
