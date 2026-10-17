@@ -11,6 +11,7 @@ import '../models/banner_ads_config.dart';
 import '../models/adsterra_playback_ads_config.dart';
 import '../models/vast_preroll_config.dart';
 import 'app_update_service.dart';
+import 'remote_config_refresh_controller.dart';
 
 class AppRemoteConfig {
   const AppRemoteConfig._();
@@ -81,8 +82,9 @@ class AppRemoteConfig {
     await remoteConfig.setConfigSettings(
       RemoteConfigSettings(
         fetchTimeout: const Duration(minutes: 1),
-        minimumFetchInterval:
-            kDebugMode ? Duration.zero : const Duration(minutes: 1),
+        minimumFetchInterval: kDebugMode
+            ? Duration.zero
+            : RemoteConfigRefreshController.minimumFetchInterval,
       ),
     );
     await remoteConfig.setDefaults(<String, Object>{

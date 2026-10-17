@@ -328,5 +328,5 @@ Contributions, feature suggestions, design ideas, and translations are always we
 
 <p align="center">
   <i>GNU, but for Entertainment</i><br><br>
-  <strong>© 2022–2026 Beamlak Aschalew</strong>
+  <strong>© 2022–2026 FlixQuest</strong>
 </p>
